@@ -1,10 +1,11 @@
-<script> 
+<script>
   import Keycloak from "keycloak-js";
-  import { shelves } from '$lib/stores/libraryStore.js';
+  import { shelves } from "$lib/stores/libraryStore.js";
   import { onMount } from "svelte";
+  import Library from "$lib/components/Library.svelte";
 
-  let keycloak;   
-  
+  let keycloak;
+
   let loginState = "waiting for login...";
 
   const getData = async () => {
@@ -25,9 +26,6 @@
     const data = await response.json();
     console.log(data);
     $shelves = data;
-   
-    
-   
   };
 
   function initKeycloak() {
@@ -44,7 +42,6 @@
         if (auth) {
           loginState = "logged in";
           getData();
-          
         }
       })
       .catch(function () {
@@ -55,29 +52,13 @@
   onMount(() => {
     console.log("onMount");
     initKeycloak();
-
   });
 </script>
 
 <h1>Welcome to SvelteKit</h1>
 <div>{loginState}</div>
-<p>
-  Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the
-  documentation  
+<Library />
 
-  {#if $shelves == null}
-    <div>Loading Shelves...</div>
-  {:else}
-    {#each Object.values($shelves) as shelf, i}
-      <h1>
-        {shelf.name}
-      </h1>
-      <h3>Works:</h3>
-      {#each Object.values(shelf.works) as work, j}
-        <p>
-          {"- " + j + " " + work.name}
-        </p>
-      {/each}
-    {/each}
-  {/if}
-</p>
+Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the
+documentation
+<Library />
