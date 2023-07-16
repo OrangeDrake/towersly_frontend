@@ -1,22 +1,20 @@
 <script>
   import Keycloak from "keycloak-js";
-  import { shelves } from "$lib/stores/libraryStore.js";
   import { onMount } from "svelte";
   import Library from "$lib/components/Library.svelte";
-
-  let keycloak;
+  import { shelves } from "$lib/stores/libraryStore.js";
+  import { keycloak } from "$lib/stores/keycloakStore.js";
 
   let loginState = "waiting for login...";
 
   const getData = async () => {
-    const token_value = "Bearer " + keycloak.token;
+    const token_value = "Bearer " + $keycloak.token;
     //console.log(token_value);
 
     console.log("api zavolano");
 
     var response = await fetch("http://localhost:8090/library", {
-      method: "GET",
-      //credentials: "include",
+      method: "GET",      
       headers: {
         Authorization: token_value,
       },
@@ -29,12 +27,12 @@
   };
 
   function initKeycloak() {
-    keycloak = new Keycloak({
+    $keycloak = new Keycloak({
       url: "http://localhost:8080",
       realm: "master",
       clientId: "t_client",
     });
-    keycloak
+    $keycloak
       .init({
         onLoad: "login-required",
       })
@@ -59,6 +57,4 @@
 <div>{loginState}</div>
 <Library />
 
-Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the
-documentation
-
+Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation
