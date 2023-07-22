@@ -4,13 +4,25 @@
   import Shelf from "$lib/components/Shelf.svelte";
   import AddShelf from "$lib/components/AddShelf.svelte";
 
+  let ordered_shelves = null;
+  
+  $: {
+    if ($shelves != null) {
+      ordered_shelves = $shelves.sort((a, b) => {
+        return a.rank - b.rank;
+      });
+      console.log("change: ");
+      console.log(Object.values(ordered_shelves));
+    }
+    
+  }
 </script>
 
 {#if $shelves == null}
   <div>Loading Shelves...</div>
 {:else}
   <div class="flex flex-nowrap">
-    {#each Object.values($shelves) as shelf, i}
+    {#each Object.values(ordered_shelves) as shelf, i}
       <Shelf {shelf} />
     {/each}
     <AddShelf />
