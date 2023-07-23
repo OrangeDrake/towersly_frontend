@@ -2,16 +2,6 @@
   import { shelves } from "$lib/stores/libraryStore.js";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   let name = "name";
-  let ordered_shelves;
-
-  $: {
-    ordered_shelves =  $shelves.short_shelves((a, b) => {
-      return a.rank - b.rank;
-    });
-    console.log("change: ")
-    console.log( Object.values(short_shelves))
-  }
-
 
   const addShelf = async () => {
     const token_value = "Bearer " + $keycloak.token;
