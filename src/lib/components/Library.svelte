@@ -23,7 +23,7 @@
 {:else}
   <div class="flex flex-nowrap">
     {#each Object.values(ordered_shelves) as shelf, i}
-      <Shelf {shelf} />
+      <Shelf {shelf}/>
     {/each}
     <AddShelf />
   </div>
