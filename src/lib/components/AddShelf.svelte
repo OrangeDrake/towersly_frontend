@@ -27,7 +27,7 @@
     </label>
     <button
       type="button"
-      class="btn btn-sm m-2 variant-filled"
+      class="btn btn-sm m-2 variant-filled bg-green-500 "
       on:click={() => {
         addShelf();
       }}>Add Shelf</button>
