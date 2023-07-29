@@ -17,7 +17,8 @@
   export let shelf;
   let works = shelf.works;
 
-  let work_name = "name";
+  let work_name = "";
+  let work_description = "";
   const targer_popup = "popup_" + shelf.id;
   console.log("targer_popup: " + targer_popup);
 
@@ -43,28 +44,61 @@
         Authorization: token_value,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: work_name }),
+      body: JSON.stringify({ name: work_name, description: work_description }),
     });
 
     const n_work = await response.json();
     works.push(n_work);
     works = works;
-    value = value + 1;
-    //shelf = undefined;
-    //shelves.update(libraries => [...libraries, ...libraries]);
   };
 </script>
 
-<div class="card p-2 m-2 w-56">
-  <div class="card-header p-2 m-2 w-52">
+<div class="card p-2 m-2 h-50 w-72">
+  <div class="card-header w-64 p-2 m-2">
+    <svg
+      class="inline-block w-5 h-5 text-gray-800 dark:text-white"
+      aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 18 18"
+    >
+      <path
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M1 5v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H1Zm0 0V2a1 1 0 0 1 1-1h5.443a1 1 0 0 1 .8.4l2.7 3.6H1Z"
+      />
+    </svg>
     <strong>{shelf.name}</strong>
   </div>
-  <h3>Works:</h3>
-  {#each Object.values(works).slice(0, 4) as work, j}
-    <p>
-      {"- " + j + " " + work.name}
-    </p>
-  {/each}
+  <div>
+    {#each Object.values(works).slice(0, 4) as work, j}
+      <div class="bg-slate-300 p-1 m-1">
+        <div class="truncate">
+          <svg
+            class="inline-block w-4 h-4 text-gray-800 dark:text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 16 20"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4.828 10h6.239m-6.239 4h6.239M6 1v4a1 1 0 0 1-1 1H1m14-4v16a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2Z"
+            />
+          </svg>         
+            {work.name}
+        </div>
+        <div class="truncate overflow-hidden">
+        <i>{work.description}</i>
+        </div>
+      </div>
+    {/each}
+  </div>
   {#if shelf.works.length > 5}
     <p>...</p>
   {/if}
@@ -76,12 +110,15 @@
 
   <div class="card p-4 w-72 shadow-xl" data-popup={targer_popup}>
     <label class="label">
-      <span>{shelf.name}</span>
+      <span>Name</span>
+      <input bind:value={work_name} class="input rounded p-1" type="text" />
+    </label>
+    <label class="label">
+      <span>Description</span>
       <input
-        bind:value={work_name}
-        class="input"
+        bind:value={work_description}
+        class="input p-1 rounded"
         type="text"
-        placeholder="Input"
       />
     </label>
     <button
@@ -89,7 +126,26 @@
       class="btn btn-sm m-2 variant-filled bg-green-500"
       on:click={() => {
         addWork();
-      }}>Add Work</button
+      }}
+    >
+      <svg
+        class="p-1 w-6 h-6 text-white dark:text-white"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        fill="none"
+        viewBox="0 0 20 20"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+        />
+      </svg>
+      Add Work</button
     >
   </div>
 </div>
