@@ -1,6 +1,6 @@
 <script>
   import { keycloak } from "$lib/stores/keycloakStore.js";
-
+  import Work from "$lib/components/Work.svelte";
   import {
     computePosition,
     autoUpdate,
@@ -20,14 +20,10 @@
   let work_name = "";
   let work_description = "";
   const targer_popup = "popup_" + shelf.id;
-  console.log("targer_popup: " + targer_popup);
 
-  const popupFeatured = {
-    // Represents the type of event that opens/closed the popup
-    event: "click",
-    // Matches the data-popup value on your popup element
-    target: targer_popup,
-    // Defines which side of your trigger the popup will appear
+  const popupFeatured = {    
+    event: "click",  
+    target: targer_popup,   
     placement: "bottom",
   };
 
@@ -74,29 +70,7 @@
   </div>
   <div>
     {#each Object.values(works).slice(0, 4) as work, j}
-      <div class="bg-slate-300 p-1 m-1">
-        <div class="truncate">
-          <svg
-            class="inline-block w-4 h-4 text-gray-800 dark:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 16 20"
-          >
-            <path
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4.828 10h6.239m-6.239 4h6.239M6 1v4a1 1 0 0 1-1 1H1m14-4v16a.97.97 0 0 1-.933 1H1.933A.97.97 0 0 1 1 18V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2Z"
-            />
-          </svg>         
-            {work.name}
-        </div>
-        <div class="truncate overflow-hidden">
-        <i>{work.description}</i>
-        </div>
-      </div>
+      <Work {work}/>
     {/each}
   </div>
   {#if shelf.works.length > 5}
