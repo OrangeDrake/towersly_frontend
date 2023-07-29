@@ -70,7 +70,7 @@
   </div>
   <div>
     {#each Object.values(works).slice(0, 4) as work, j}
-      <Work {work}/>
+      <Work work = {work} index = {j}/>
     {/each}
   </div>
   {#if shelf.works.length > 5}
@@ -82,7 +82,7 @@
     use:popup={popupFeatured}>Create work</button
   >
 
-  <div class="card p-4 w-72 shadow-xl" data-popup={targer_popup}>
+  <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>
     <label class="label">
       <span>Name</span>
       <input bind:value={work_name} class="input rounded p-1" type="text" />
