@@ -54,7 +54,7 @@
 </div>
 
 <div
-  class="bg-slate-300 p-4 m-1 border-solid border-2 bg-orange-200"
+  class="bg-slate-300 p-4 m-1 border-solid border-2 bg-purple-200"
   data-popup={targer_popup}
 >
   <div class="text-stone-600">Name:</div>

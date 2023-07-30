@@ -13,8 +13,8 @@
       },
       body: JSON.stringify({ name: name, works: [] }),
     });
-    const n_library = await response.json();
-    shelves.update((libraries) => [...libraries, n_library]);
+    const n_shelf = await response.json();
+    shelves.update((shelves) => [...shelves, n_shelf]);
     console.log(Object.values($shelves));
   };
 </script>
