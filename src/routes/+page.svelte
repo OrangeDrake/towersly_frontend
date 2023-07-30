@@ -1,13 +1,15 @@
 <script>
+  import Library from "$lib/components/Library.svelte";
+  import Planning from "$lib/components/Planning.svelte";
+  import { shelves } from "$lib/stores/libraryStore.js";
+  import { distributions } from "$lib/stores/planningStore.js";
+  import { keycloak } from "$lib/stores/keycloakStore.js";
   import Keycloak from "keycloak-js";
   import { onMount } from "svelte";
-  import Library from "$lib/components/Library.svelte";
-  import { shelves } from "$lib/stores/libraryStore.js";
-  import { keycloak } from "$lib/stores/keycloakStore.js";
 
   let loginState = "waiting for login...";
 
-  const getData = async () => {
+  const getShelves = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
     var response = await fetch("http://localhost:8090/library", {
@@ -20,6 +22,21 @@
     const data = await response.json();
 
     $shelves = data;
+  };
+
+  const getDistributions = async () => {
+    const token_value = "Bearer " + $keycloak.token;
+
+    var response = await fetch("http://localhost:8090/planning", {
+      method: "GET",      
+      headers: {
+        Authorization: token_value,
+      },
+    });
+
+    const data = await response.json();
+
+    $distributions = data;
   };
 
   function initKeycloak() {
@@ -35,7 +52,8 @@
       .then((auth) => {
         if (auth) {
           loginState = "logged in";
-          getData();
+          getShelves();
+          getDistributions();
         }
       })
       .catch(function () {
@@ -51,5 +69,6 @@
 <h1>Welcome to SvelteKit</h1>
 <div>{loginState}</div>
 <Library />
+<Planning />
 
 Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation

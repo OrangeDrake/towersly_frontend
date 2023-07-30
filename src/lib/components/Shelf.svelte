@@ -1,17 +1,6 @@
 <script>
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import Work from "$lib/components/Work.svelte";
-  import {
-    computePosition,
-    autoUpdate,
-    offset,
-    shift,
-    flip,
-    arrow,
-  } from "@floating-ui/dom";
-  import { storePopup } from "@skeletonlabs/skeleton";
-  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-
   import { popup } from "@skeletonlabs/skeleton";
 
   export let shelf;
@@ -66,7 +55,7 @@
         d="M1 5v11a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H1Zm0 0V2a1 1 0 0 1 1-1h5.443a1 1 0 0 1 .8.4l2.7 3.6H1Z"
       />
     </svg>
-    <strong>{shelf.name}</strong>
+    <span  class = "font-bold">{shelf.name}</span>
   </div>
   <div>
     {#each Object.values(works).slice(0, 4) as work, j}
