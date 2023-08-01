@@ -36,10 +36,13 @@
     works.push(n_work);
     works = works;
   };
+
+  let width;
 </script>
 
-<div class="card p-2 m-2 h-50 w-72">
-  <div class="card-header w-64 p-2 m-2">
+<div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72" bind:clientWidth={width}>
+  <div class="card-header w-64 p-2 m-2" >
+    <div>{width}</div>
     <svg
       class="inline-block w-5 h-5 text-gray-800 dark:text-white"
       aria-hidden="true"
