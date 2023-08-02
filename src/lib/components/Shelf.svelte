@@ -65,7 +65,7 @@
       <Work work = {work} index = {j}/>
     {/each}
   </div>
-  {#if shelf.works.length > 5}
+  {#if works.length > 5}
     <p>...</p>
   {/if}
 
