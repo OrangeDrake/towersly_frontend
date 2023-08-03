@@ -2,14 +2,7 @@
   export let work;
   export let index;
   import { popup } from "@skeletonlabs/skeleton";
-  import {
-    computePosition,
-    autoUpdate,
-    offset,
-    shift,
-    flip,
-    arrow,
-  } from "@floating-ui/dom";
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { storePopup } from "@skeletonlabs/skeleton";
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -20,23 +13,15 @@
     target: targer_popup,
     placement: "top",
   };
+
 </script>
 
-<div
-  class="bg-slate-300 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-100"
-  use:popup={popupHover}
->
+<div class="bg-slate-300 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-100" use:popup={popupHover}>
   <div class="truncate">
     <span class="text-stone-600">
       {index + 1}
     </span>
-    <svg
-      class="inline-block w-4 h-4 text-gray-800 dark:text-white"
-      aria-hidden="true"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 16 20"
-    >
+    <svg class="inline-block w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
       <path
         stroke="currentColor"
         stroke-linecap="round"
@@ -53,16 +38,13 @@
   </div>
 </div>
 
-<div
-  class="bg-slate-300 p-4 m-1 border-solid border-2 bg-purple-200"
-  data-popup={targer_popup}
->
+<div class="bg-slate-400 p-4 m-1 border-solid border-2 bg-purple-200 break-words w-72" data-popup={targer_popup}>
   <div class="text-stone-600">Name:</div>
   <div>
     {work.name}
-  </div >
+  </div>
   <div class="text-stone-600">Description:</div>
-  <div >
+  <div>
     {work.description}
   </div>
 </div>

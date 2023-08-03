@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="m-2 mt-0 p-2 bg-sky-200">
+<div class="m-0 mt-0 p-2 bg-sky-200">
   <svg
     class="inline-block w-7 h-7 text-gray-800 dark:text-white"
     aria-hidden="true"

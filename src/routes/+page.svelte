@@ -92,8 +92,6 @@
 <!-- <script src="leader-line.min.js" on:load={initializeRemarkable}></script>
   <script src="leader-line.min.js"></script>
 </svelte:head> -->
-
-<h1>Welcome to SvelteKit</h1>
 <div>{loginState}</div>
 <Library />
 <Connection />

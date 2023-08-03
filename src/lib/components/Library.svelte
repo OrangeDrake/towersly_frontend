@@ -1,22 +1,17 @@
 <script>
-  import { shelves } from "$lib/stores/libraryStore.js";
+  import { ordered_shelves, shelves_location} from "$lib/stores/libraryStore.js";
   import Shelf from "$lib/components/Shelf.svelte";
   import AddShelf from "$lib/components/AddShelf.svelte";
 
-  let ordered_shelves = null;
-
-  $: {
-    if ($shelves != null) {
-      ordered_shelves = $shelves.sort((a, b) => {
-        return a.rank - b.rank;
-      });
-      console.log("change: ");
-      console.log(Object.values(ordered_shelves));
-    }
+  $:{
+    console.log("shelves_wides");
+    console.log($shelves_location);
   }
+
+
 </script>
 
-<div class="m-2 mb-0 p-2 pb-10 bg-sky-100">
+<div class="ml-2 p-2 pb-10 bg-sky-100">
   <svg
     class="inline-block w-7 h-7 text-gray-800 dark:text-white"
     aria-hidden="true"
@@ -33,11 +28,11 @@
     />
   </svg>
   <span class="text-stone-600 text-lg font-bold">Library</span>
-  {#if ordered_shelves == null}
+  {#if $ordered_shelves == null}
     <div>Loading Shelves...</div>
   {:else}
     <div class="flex flex-nowrap">
-      {#each Object.values(ordered_shelves) as shelf, i}
+      {#each Object.values($ordered_shelves) as shelf, i}
         <Shelf {shelf} />
       {/each}
       <AddShelf />
