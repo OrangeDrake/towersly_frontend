@@ -1,19 +1,13 @@
 <script>
-  import { distributions } from "$lib/stores/planningStore.js";
+  import { ordered_distributions, distributions_location } from "$lib/stores/planningStore.js";
   import Distribution from "$lib/components/Distribution.svelte";
   import AddDistribution from "$lib/components/AddDistribution.svelte";
-
-  let ordered_distributions = null;
-
-  $: {
-    if ($distributions != null) {
-      ordered_distributions = $distributions.sort((a, b) => {
-        return a.rank - b.rank;
-      });
-      console.log("change: ");
-      console.log(Object.values(ordered_distributions));
-    }
+ 
+  $:{
+    console.log("distributions_location");
+    console.log($distributions_location);
   }
+
 </script>
 
 <div class="m-0 mt-0 p-2 bg-sky-200">
@@ -33,11 +27,11 @@
     />
   </svg>
   <span class="text-stone-600 text-lg font-bold">Planning</span>
-  {#if ordered_distributions == null}
+  {#if $ordered_distributions == null}
     <div>Loading Distributions...</div>
   {:else}
     <div class="flex flex-nowrap">
-      {#each Object.values(ordered_distributions) as distribution, i}
+      {#each Object.values($ordered_distributions) as distribution, i}
         <Distribution {distribution} />
       {/each}
       <AddDistribution />

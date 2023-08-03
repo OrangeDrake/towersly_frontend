@@ -4,10 +4,9 @@
   import AddShelf from "$lib/components/AddShelf.svelte";
 
   $:{
-    console.log("shelves_wides");
+    console.log("shelves_location");
     console.log($shelves_location);
   }
-
 
 </script>
 

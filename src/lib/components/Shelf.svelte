@@ -1,10 +1,9 @@
 <script>
+  import { afterUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { shelves_location } from "$lib/stores/libraryStore.js";
   import Work from "$lib/components/Work.svelte";
-
-  import { afterUpdate } from "svelte";
 
   export let shelf;
   let works = shelf.works;
@@ -40,7 +39,6 @@
     works = works;
   };
 
-  
   let element;
   let offsetTop;
   let offsetLeft;
@@ -51,15 +49,13 @@
     offsetLeft = element.offsetLeft;
     offsetWidth = element.offsetWidth;
 
-    const location = {"offsetTop" : offsetTop, "offsetLeft" : offsetLeft, "offsetWidth" : offsetWidth};
- 
-
+    const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
     $shelves_location[shelf.name] = location;
   });
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72" bind:this={element}>
-  <div class="card-header w-64 p-2 m-2">    
+  <div class="card-header w-64 p-2 m-2">
     <svg class="inline-block w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
       <path
         stroke="currentColor"
