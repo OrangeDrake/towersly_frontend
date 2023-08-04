@@ -1,11 +1,11 @@
 <script>
-  import { ordered_distributions, distributions_location } from "$lib/stores/planningStore.js";
+  import { ordered_distributions, distributions_locations } from "$lib/stores/planningStore.js";
   import Distribution from "$lib/components/Distribution.svelte";
   import AddDistribution from "$lib/components/AddDistribution.svelte";
  
   $:{
     console.log("distributions_location");
-    console.log($distributions_location);
+    console.log($distributions_locations);
   }
 
 </script>

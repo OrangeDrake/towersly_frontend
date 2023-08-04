@@ -2,7 +2,7 @@
   import { afterUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
-  import { shelves_location } from "$lib/stores/libraryStore.js";
+  import { shelves_locations } from "$lib/stores/libraryStore.js";
   import Work from "$lib/components/Work.svelte";
 
   export let shelf;
@@ -43,14 +43,16 @@
   let offsetTop;
   let offsetLeft;
   let offsetWidth;
+  let offsetHeight
 
   afterUpdate(() => {
     offsetTop = element.offsetTop;
     offsetLeft = element.offsetLeft;
     offsetWidth = element.offsetWidth;
+    offsetHeight = element.offsetHeight;
 
-    const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
-    $shelves_location[shelf.name] = location;
+    const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth, offsetHeight: offsetHeight };
+    $shelves_locations[shelf.name] = location;
   });
 </script>
 

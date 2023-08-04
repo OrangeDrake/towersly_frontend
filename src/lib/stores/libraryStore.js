@@ -11,7 +11,7 @@ export const ordered_shelves = derived(shelves, (shelves) => {
   });
 });
 
-export const shelves_location = writable({});
+export const shelves_locations = writable({});
 
 
 

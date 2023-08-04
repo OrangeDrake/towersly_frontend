@@ -11,4 +11,4 @@ export const ordered_distributions = derived(distributions, (distributions) => {
     });
   });
 
-  export const distributions_location = writable({});
+  export const distributions_locations = writable({});

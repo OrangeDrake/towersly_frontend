@@ -1,6 +1,6 @@
 <script>
   import { afterUpdate } from "svelte";
-  import { distributions_location } from "$lib/stores/planningStore.js";
+  import { distributions_locations } from "$lib/stores/planningStore.js";
 
   export let distribution;
 
@@ -14,8 +14,8 @@
     offsetLeft = element.offsetLeft;
     offsetWidth = element.offsetWidth;
 
-    const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
-    $distributions_location[distribution.name] = location;
+    const location = {offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
+    $distributions_locations[distribution.name] = location;
   });  
 </script>
 
