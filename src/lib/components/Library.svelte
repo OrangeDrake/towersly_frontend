@@ -1,5 +1,4 @@
 <script>
-  import { curves} from "$lib/stores/connectionStore.js";
   import { ordered_shelves, shelves_locations} from "$lib/stores/libraryStore.js";
   import Shelf from "$lib/components/Shelf.svelte";
   import AddShelf from "$lib/components/AddShelf.svelte";
@@ -8,11 +7,6 @@
     console.log("shelves_location");
     console.log($shelves_locations);
 
-  }
-
-  $: {
-    console.log("curves");
-    console.log($curves);
   }
 
 </script>

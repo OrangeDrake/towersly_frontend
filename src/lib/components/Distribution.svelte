@@ -1,5 +1,5 @@
 <script>
-  import { afterUpdate } from "svelte";
+  import { afterUpdate, onMount } from "svelte";
   import { distributions_locations } from "$lib/stores/planningStore.js";
 
   export let distribution;
@@ -9,12 +9,13 @@
   let offsetLeft;
   let offsetWidth;
 
-  afterUpdate(() => {
+  onMount(() => {
     offsetTop = element.offsetTop;
     offsetLeft = element.offsetLeft;
     offsetWidth = element.offsetWidth;
 
     const location = {offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
+    console.log("distribution: offsetTop2: " + offsetTop)
     $distributions_locations[distribution.name] = location;
   });  
 </script>

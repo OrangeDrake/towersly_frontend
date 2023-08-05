@@ -103,16 +103,3 @@
     >
   </div>
 </div>
-
-<div class="absolute">aboslute</div>
-
-<style>
-  div.absolute {
-    position: absolute;
-    top: 128px;
-    right: 0;
-    width: 200px;
-    height: 100px;
-    border: 3px solid #73ad21;
-  }
-</style>
