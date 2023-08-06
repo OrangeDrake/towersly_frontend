@@ -8,7 +8,7 @@
     console.log($shelves_locations);
 
   }
-
+ 
 </script>
 
 <div class="ml-2 p-2 pb-10 bg-sky-100">

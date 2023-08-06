@@ -50,7 +50,6 @@ export const curves = derived([ordered_distributions, distributions_locations, s
                 const curve = {shelf_point: shelf_point, distribution_point: distribution_point, distribution_type: distribution_type };                
                 curves.push(curve);
         }
-
     }
     return curves;
     });

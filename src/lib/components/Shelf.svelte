@@ -1,9 +1,10 @@
 <script>
-  import { afterUpdate } from "svelte";
+  import { onMount, afterUpdate, tick } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
-  import { shelves_locations } from "$lib/stores/libraryStore.js";
   import Work from "$lib/components/Work.svelte";
+  import { ordered_distributions } from "$lib/stores/planningStore.js";
+  import { ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
 
   export let shelf;
   let works = shelf.works;
@@ -43,17 +44,27 @@
   let offsetTop;
   let offsetLeft;
   let offsetWidth;
-  let offsetHeight
+  let offsetHeight;
 
-  afterUpdate(() => {
-    offsetTop = element.offsetTop;
-    offsetLeft = element.offsetLeft;
-    offsetWidth = element.offsetWidth;
-    offsetHeight = element.offsetHeight;
-
-    const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth, offsetHeight: offsetHeight };
-    $shelves_locations[shelf.name] = location;
+  onMount(() => {
+    console.log("******************onMount shelf");
+    //souradnice();
   });
+
+  $: {
+    $ordered_distributions;   
+    $ordered_shelves;  
+
+    if(element != undefined){
+    
+      offsetTop = element.offsetTop;
+      offsetLeft = element.offsetLeft;
+      offsetWidth = element.offsetWidth;
+      offsetHeight = element.offsetHeight;
+      const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth, offsetHeight: offsetHeight };
+      $shelves_locations[shelf.name] = location;
+    }
+  }
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72" bind:this={element}>

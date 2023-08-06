@@ -84,6 +84,7 @@
 
   onMount(() => {
     initKeycloak();
+    console.log("*********************onMount page");
   });
 </script>
 
