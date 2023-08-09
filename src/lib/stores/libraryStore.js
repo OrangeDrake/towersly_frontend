@@ -14,6 +14,17 @@ export const ordered_shelves = derived(shelves, (shelves) => {
 export const shelves_locations = writable({});
 
 
+export const ordered_shelves_names = derived(ordered_shelves, (ordered_shelves) =>{
+  if (ordered_shelves == null){
+    return null;
+  }
+  return ordered_shelves.map((s) => {return s.name});
+});
+
+
+
+
+
 
 // export const connection_coordinates_library = derived(ordered_shelves, shelves_location, (ordered_shelves, shelves_wides) => {
 //   let coordinates = [];

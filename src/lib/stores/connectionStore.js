@@ -5,10 +5,10 @@ import { ordered_shelves, shelves_locations} from "$lib/stores/libraryStore.js";
 export const curves = derived([ordered_distributions, distributions_locations, shelves_locations, ordered_shelves],
     ([ordered_distributions, distributions_locations, shelves_locations, ordered_shelves]) => {
         console.log("/// creating new curvesss /// ");
-        if(ordered_distributions == null){
-            console.log("ordered_distributions:" + ordered_distributions);            
+        if(ordered_distributions != null){
+            console.log("coordered_distributions:" + ordered_distributions);            
         }
-        if(ordered_shelves == null){
+        if(ordered_shelves != null){
             console.log("ordered_shelves:" + ordered_shelves);            
         }
         if (ordered_distributions != null && ordered_shelves != null ){
@@ -25,13 +25,13 @@ export const curves = derived([ordered_distributions, distributions_locations, s
            
             const distribution = ordered_distributions[i];
 
-            if(distribution.connect == null){
+            if(distribution.connection == null){
                 continue;
             }
 
-            const distribution_type = distribution.connect.type;
+            const distribution_type = distribution.connection.type;
             const distribution_name = distribution.name;
-            const distribution_shelves_name = distribution.connect.shelves_names;
+            const distribution_shelves_name = distribution.connection.shelves_names;
 
             const distribution_location = distributions_locations[distribution_name];
             const distribution_x = distribution_location.offsetLeft + Math.floor(distribution_location.offsetWidth/2);

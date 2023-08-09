@@ -1,7 +1,8 @@
 <script>
-  import { onMount, afterUpdate, tick } from "svelte";
+  import { afterUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
+  import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
   import { ordered_distributions } from "$lib/stores/planningStore.js";
   import { ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
@@ -23,7 +24,7 @@
     const token_value = "Bearer " + $keycloak.token;
 
     var parametr = { id: shelf.id };
-    var url = new URL("http://localhost:8090/library/addwork");
+    var url = new URL(API_URL + "/library/addwork");
     url.searchParams.append("id", shelf.id);
 
     const response = await fetch(url, {
@@ -46,17 +47,8 @@
   let offsetWidth;
   let offsetHeight;
 
-  onMount(() => {
-    console.log("******************onMount shelf");
-    //souradnice();
-  });
-
-  $: {
-    $ordered_distributions;   
-    $ordered_shelves;  
-
-    if(element != undefined){
-    
+  const getElementLocation = () => {
+    if (element != undefined) {
       offsetTop = element.offsetTop;
       offsetLeft = element.offsetLeft;
       offsetWidth = element.offsetWidth;
@@ -64,6 +56,16 @@
       const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth, offsetHeight: offsetHeight };
       $shelves_locations[shelf.name] = location;
     }
+  };
+
+  afterUpdate(() => {
+    getElementLocation();
+  });
+
+  $: {
+    $ordered_distributions;
+    $ordered_shelves;
+    getElementLocation();
   }
 </script>
 

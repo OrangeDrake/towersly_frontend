@@ -2,6 +2,7 @@
   import Library from "$lib/components/Library.svelte";
   import Planning from "$lib/components/Planning.svelte";
   import Connection from "$lib/components/Connection.svelte";
+  import {API_URL} from "$lib/components/Constants.svelte";
 
   import { shelves } from "$lib/stores/libraryStore.js";
   import { distributions } from "$lib/stores/planningStore.js";
@@ -32,8 +33,8 @@
 
   const getShelves = async () => {
     const token_value = "Bearer " + $keycloak.token;
-
-    var response = await fetch("http://localhost:8090/library", {
+    console.log("URL" + API_URL);   
+    var response = await fetch(API_URL + "/library", {
       method: "GET",
       headers: {
         Authorization: token_value,
@@ -48,7 +49,7 @@
   const getDistributions = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
-    var response = await fetch("http://localhost:8090/planning", {
+    var response = await fetch(API_URL + "/planning", {
       method: "GET",
       headers: {
         Authorization: token_value,

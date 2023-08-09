@@ -1,11 +1,13 @@
 <script>
-  import { onMount } from "svelte";
+  import { afterUpdate } from "svelte";
   import { ordered_distributions, distributions_locations } from "$lib/stores/planningStore.js";
+  import { ordered_shelves_names } from "$lib/stores/libraryStore.js";
   import { ordered_shelves } from "$lib/stores/libraryStore.js";
 
   export let distribution;
 
-  let shelves_names;
+  let connectedShelvesNames;
+  let shelvesNamesToAdd;
 
   let color = "red";
 
@@ -13,10 +15,6 @@
   let offsetTop;
   let offsetLeft;
   let offsetWidth;
-
-  onMount(() => {
-    console.log("******************onMount ditribution");
-  });
 
   const selection = (c) => {
     color = c;
@@ -33,16 +31,32 @@
     }
   };
 
-  const getShelvesNames = () => {
-    shelves_names = distribution.connect.shelves_names;
+  const getConnectedShelvesNames = () => {
+    if (distribution.connection == null) {
+      connectedShelvesNames = [];
+    } else {
+      connectedShelvesNames = distribution.connection.shelves_names;
+    }
   };
+
+  afterUpdate(() => {
+    getElementLocation();
+  });
+
+  $: {
+    if ($ordered_shelves_names != null) {
+      console.log("@@@@@@@@@@*ordered_shelves for add: " + $ordered_shelves_names);
+      shelvesNamesToAdd = $ordered_shelves_names.filter((s) => !connectedShelvesNames.includes(s));
+      console.log("@@@@@@@@@@filtered ordered_shelves for add: " + shelvesNamesToAdd);
+    }
+  }
 
   $: {
     $ordered_distributions;
     $ordered_shelves;
 
     getElementLocation();
-    getShelvesNames();
+    getConnectedShelvesNames();
   }
 </script>
 
@@ -59,13 +73,39 @@
     </svg>
     <span class="font-bold">{distribution.name}</span>
   </div>
-  <div class="p-2 bg-slate-300">
-    <div class="text-stone-600">Connected Shelves</div>
-    {#each shelves_names as c}
-      <span class="m-1 chip {color === c ? 'variant-filled' : 'variant-soft'}" on:click={() => selection(c)} >
-        <!-- {#if color === c}<span>-</span>{/if} -->
-        <span>{c}</span>
-      </span>
-    {/each}
-  </div>
+
+  {#if shelvesNamesToAdd != null && shelvesNamesToAdd.length != 0}
+    <div class="p-1 m-1 bg-slate-300">
+      <select class="select p-1 m-1" size="1" value="0">
+        {#each shelvesNamesToAdd as shelfName, i}
+          <option value={i}>{shelfName} </option>
+        {/each}
+      </select>
+
+      <button
+        type="button"
+        class="btn btn-sm m-2 variant-filled bg-green-500"
+        on:click={() => {
+          addShelf();
+        }}
+      >
+        <svg class="inline-block p-1 w-5 h-5 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+        Connect Shelf</button
+      >
+    </div>
+  {/if}
+
+  {#if connectedShelvesNames != null && connectedShelvesNames.length != 0}
+    <div class="p-1 m-1 bg-slate-300">
+      <div class="text-stone-600">Connected Shelves</div>
+      {#each connectedShelvesNames as c}
+        <span class="m-1 chip {color === c ? 'variant-filled' : 'variant-soft'}" on:click={() => selection(c)}>
+          <!-- {#if color === c}<span>-</span>{/if} -->
+          <span>{c}</span>
+        </span>
+      {/each}
+    </div>
+  {/if}
 </div>

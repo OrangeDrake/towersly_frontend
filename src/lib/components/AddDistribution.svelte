@@ -1,11 +1,12 @@
 <script>
-    import { distributions } from "$lib/stores/planningStore.js";
     import { keycloak } from "$lib/stores/keycloakStore.js";
+    import {API_URL} from "$lib/components/Constants.svelte";
+    import { distributions } from "$lib/stores/planningStore.js";
     let name = "";
   
     const addDistribution = async () => {
       const token_value = "Bearer " + $keycloak.token;
-      const response = await fetch("http://localhost:8090/planning/adddistribution", {
+      const response = await fetch(API_URL + "/planning/adddistribution", {
         method: "POST",
         headers: {
           Authorization: token_value,
