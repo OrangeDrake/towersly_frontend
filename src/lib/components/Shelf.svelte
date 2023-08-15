@@ -1,11 +1,16 @@
 <script>
   import { afterUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
+  import { storePopup } from '@skeletonlabs/skeleton';
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
   import { ordered_distributions } from "$lib/stores/planningStore.js";
   import { ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
 
   export let shelf;
   let works = shelf.works;
@@ -13,19 +18,20 @@
   let work_name = "";
   let work_description = "";
   const targer_popup = "popup_" + shelf.id;
+  console.log(targer_popup);
 
   const popupFeatured = {
     event: "click",
     target: targer_popup,
-    placement: "bottom",
+    placement: "top",
   };
 
   const addWork = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
-    var parametr = { id: shelf.id };
+    //var parametr = { id: shelf.id };
     var url = new URL(API_URL + "/library/addwork");
-    url.searchParams.append("id", shelf.id);
+    //url.searchParams.append("id", shelf.id);
 
     const response = await fetch(url, {
       method: "POST",
@@ -33,7 +39,7 @@
         Authorization: token_value,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: work_name, description: work_description }),
+      body: JSON.stringify({ name: work_name, description: work_description, shelfId: shelf.id  }),
     });
 
     const n_work = await response.json();

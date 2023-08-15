@@ -44,7 +44,7 @@
   });
 
   $: {
-    if ($ordered_shelves_names != null) {
+    if ($ordered_shelves_names != null && connectedShelvesNames != null) {
       console.log("@@@@@@@@@@*ordered_shelves for add: " + $ordered_shelves_names);
       shelvesNamesToAdd = $ordered_shelves_names.filter((s) => !connectedShelvesNames.includes(s));
       console.log("@@@@@@@@@@filtered ordered_shelves for add: " + shelvesNamesToAdd);
@@ -86,7 +86,7 @@
         type="button"
         class="btn btn-sm m-2 variant-filled bg-green-500"
         on:click={() => {
-          addShelf();
+          addConnecedShelf();
         }}
       >
         <svg class="inline-block p-1 w-5 h-5 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
