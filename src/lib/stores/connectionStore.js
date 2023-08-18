@@ -25,7 +25,7 @@ export const curves = derived([ordered_distributions, distributions_locations, s
            
             const distribution = ordered_distributions[i];
 
-            if(distribution.connection == null){
+            if(distribution.connection == null || distribution.connection.shelves_names.lenght == 0){
                 continue;
             }
 
@@ -43,6 +43,9 @@ export const curves = derived([ordered_distributions, distributions_locations, s
                 const shelf_name = distribution_shelves_name[j];
 
                 const shelf_location = shelves_locations[shelf_name];
+                if(shelf_location == undefined){
+                    continue;
+                }
                 const shelf_x = shelf_location.offsetLeft + Math.floor(shelf_location.offsetWidth/2);
                 const shelf_y = shelf_location.offsetTop +shelf_location.offsetHeight;
                 const shelf_point = {x : shelf_x, y : shelf_y };

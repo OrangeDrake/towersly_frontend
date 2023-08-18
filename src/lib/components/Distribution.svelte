@@ -1,8 +1,12 @@
 <script>
-  import { afterUpdate } from "svelte";
-  import { ordered_distributions, distributions_locations } from "$lib/stores/planningStore.js";
+  import { afterUpdate, onMount } from "svelte";
+  import { keycloak } from "$lib/stores/keycloakStore.js";
+  import { ordered_distributions, distributions_locations, distributions } from "$lib/stores/planningStore.js";
   import { ordered_shelves_names } from "$lib/stores/libraryStore.js";
   import { ordered_shelves } from "$lib/stores/libraryStore.js";
+  import { API_URL } from "$lib/components/Constants.svelte";
+
+  import { curves } from "$lib/stores/connectionStore.js";
 
   export let distribution;
 
@@ -15,6 +19,8 @@
   let offsetTop;
   let offsetLeft;
   let offsetWidth;
+
+  let shelfNameToConnect;
 
   const selection = (c) => {
     color = c;
@@ -39,11 +45,45 @@
     }
   };
 
+  const addConnecedShelf = async () => {
+    const token_value = "Bearer " + $keycloak.token;
+
+    var url = new URL(API_URL + "/planning/addconnectedshelf");
+    url.searchParams.append("distributionId", distribution.id);
+    url.searchParams.append("shelfName", shelfNameToConnect);
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: token_value,
+        "Content-Type": "application/json",
+      }    
+    }); 
+
+    const connecton = await response.json();
+
+    if (connecton != null){
+      distribution.connection = connecton;
+      $distributions = $distributions;
+      getConnectedShelvesNames();
+    }
+    
+    
+  }
+
+  onMount (() => {
+    getConnectedShelvesNames();
+  });
+
+
   afterUpdate(() => {
     getElementLocation();
   });
 
+
   $: {
+    connectedShelvesNames;
+    console.log("!!!!!!!!!!!!!!!++++@@@@@@@@@@* in reactive block shalves names: " + $ordered_shelves_names + "connectedShelvesNames: " + connectedShelvesNames);
     if ($ordered_shelves_names != null && connectedShelvesNames != null) {
       console.log("@@@@@@@@@@*ordered_shelves for add: " + $ordered_shelves_names);
       shelvesNamesToAdd = $ordered_shelves_names.filter((s) => !connectedShelvesNames.includes(s));
@@ -54,9 +94,8 @@
   $: {
     $ordered_distributions;
     $ordered_shelves;
-
-    getElementLocation();
-    getConnectedShelvesNames();
+    console.log("****@@@@@@@@@@* in first reactive block ordered_distributions: " + $ordered_distributions + "ordered_shelves: " + $ordered_shelves);
+    getElementLocation();  
   }
 </script>
 
@@ -76,9 +115,11 @@
 
   {#if shelvesNamesToAdd != null && shelvesNamesToAdd.length != 0}
     <div class="p-1 m-1 bg-slate-300">
-      <select class="select p-1 m-1" size="1" value="0">
+      <select class="select p-1 m-1" size="1" bind:value={shelfNameToConnect}>
         {#each shelvesNamesToAdd as shelfName, i}
-          <option value={i}>{shelfName} </option>
+          <option value={shelfName}>{shelfName}</option>
+          <!-- <option value="0">Shelf0</option>
+          <option value="1">Shelf1 </option> -->
         {/each}
       </select>
 
