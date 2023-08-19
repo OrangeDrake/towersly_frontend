@@ -13,6 +13,9 @@
 
 
   export let shelf;
+
+
+
   let works = shelf.works;
 
   let work_name = "";
@@ -65,14 +68,19 @@
   };
 
   afterUpdate(() => {
+    console.log("shelf element updated, id: " + shelf.id)    
     getElementLocation();
+
   });
 
-  $: {
-    $ordered_distributions;
-    $ordered_shelves;
-    getElementLocation();
-  }
+
+
+
+  // $: {
+  //   $ordered_distributions;
+  //   $ordered_shelves;
+  //   getElementLocation();
+  // }
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72" bind:this={element}>

@@ -20,7 +20,7 @@
     };
   </script>
 
-<div class="card p-2 m-2 h-50 w-72 border-dotted border-2 border-orange-200">
+<div class="card p-2 m-2 h-50 w-72 border-dotted border-4 border-orange-200">
     <div class="card-header p-2 m-2 w-64">
       <label class="label">
         <svg class="inline-block w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">

@@ -20,6 +20,7 @@ export const curves = derived([ordered_distributions, distributions_locations, s
         if (ordered_distributions == null || Object.keys(distributions_locations).length != ordered_distributions.length || ordered_shelves == null || Object.keys(shelves_locations).length  != ordered_shelves.length){
             return null;
         }
+       
         const curves = [];      
         for (let i = 0; i < ordered_distributions.length; i++){
            

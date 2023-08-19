@@ -7,7 +7,7 @@
   }
 </script>
 
-<div class="m-0 h-8 bg-gradient-to-b from-sky-100 to-sky-200" />
+<div class="ml-2 h-8 bg-gradient-to-b from-sky-100 to-sky-200" />
 
 <div class="absolute">
   {#if $curves != null}

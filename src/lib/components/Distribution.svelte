@@ -1,11 +1,13 @@
 <script>
   import { afterUpdate, onMount } from "svelte";
+  import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { ordered_distributions, distributions_locations, distributions } from "$lib/stores/planningStore.js";
   import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
 
   import { curves } from "$lib/stores/connectionStore.js";
+  import Shelf from "./Shelf.svelte";
 
   export let distribution;
 
@@ -13,13 +15,16 @@
   let shelvesNamesToAdd;
 
   let shelfNameToRemove = "";
+  let shelfNameToConnect;
+  let typeMixingShelves;
+  if(distribution.connection !=null){
+  typeMixingShelves = distribution.connection.type;
+  }
 
   let element;
   let offsetTop;
   let offsetLeft;
   let offsetWidth;
-
-  let shelfNameToConnect;
 
   const selection = (c) => {
     shelfNameToRemove = c;
@@ -59,12 +64,15 @@
       },
     });
     const connecton = await response.json();
-
+    console.log(">>>>>>>>>>>>>>>>>>> " + connecton );
     if (connecton != null) {
       distribution.connection = connecton;
       $distributions = $distributions;
+      typeMixingShelves = connecton.type;
+      console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*." +  connecton.type );
       getConnectedShelvesNames();
     }
+    shelfNameToConnect = ""
   };
 
   const removeConnectedShelf = () => {
@@ -77,10 +85,26 @@
     }
     connectedShelvesNames.splice(index, 1);
     connectedShelvesNames = connectedShelvesNames;
+    $distributions = $distributions;
+
     const token_value = "Bearer " + $keycloak.token;
     const url = new URL(API_URL + "/planning/removeconnectedshelf");
     url.searchParams.append("distributionId", distribution.id);
     url.searchParams.append("shelfName", shelfNameToRemove);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        Authorization: token_value,
+        "Content-Type": "application/json",
+      },
+    });
+  };
+
+  const changeConnectingType = () => {
+    const token_value = "Bearer " + $keycloak.token;
+    const url = new URL(API_URL + "/planning/changeconnectingtype");
+    url.searchParams.append("distributionId", distribution.id);
+    url.searchParams.append("type", typeMixingShelves);
     fetch(url, {
       method: "GET",
       headers: {
@@ -105,7 +129,7 @@
   // });
 
   $: {
-    connectedShelvesNames;
+    //connectedShelvesNames;
     console.log("!!!!!!!!!!!!!!!++++@@@@@@@@@@* in reactive block shalves names: " + $ordered_shelves_names + "connectedShelvesNames: " + connectedShelvesNames);
     if ($ordered_shelves_names != null && connectedShelvesNames != null) {
       console.log("@@@@@@@@@@*ordered_shelves for add: " + $ordered_shelves_names);
@@ -114,12 +138,12 @@
     }
   }
 
-  $: {
-    $ordered_distributions;
-    $ordered_shelves;
-    console.log("****@@@@@@@@@@* in first reactive block ordered_distributions: " + $ordered_distributions + "ordered_shelves: " + $ordered_shelves);
-    getElementLocation();
-  }
+  // $: {
+  //   $ordered_distributions;
+  //   $ordered_shelves;
+  //   console.log("****@@@@@@@@@@* in first reactive block ordered_distributions: " + $ordered_distributions + "ordered_shelves: " + $ordered_shelves);
+  //   getElementLocation();
+  // }
 </script>
 
 <div class="card p-2 m-2 h-50 w-72" bind:this={element}>
@@ -161,6 +185,18 @@
     </div>
   {/if}
 
+  {#if connectedShelvesNames != null && connectedShelvesNames.length > 1}
+    <div class="p-1 m-1 bg-slate-300">
+      <div class="text-stone-600">Shelves Combination</div>
+      <RadioGroup>
+        <RadioItem bind:group={typeMixingShelves} value="concat" on:change={() => changeConnectingType()}>concat</RadioItem>
+        <RadioItem bind:group={typeMixingShelves} value="zip" on:change={() => changeConnectingType()}>zip</RadioItem>
+        <!-- <RadioItem bind:group={typeMixingShelves} value=0>concat</RadioItem>
+        <RadioItem bind:group={typeMixingShelves} value=1>zip</RadioItem> -->
+      </RadioGroup>
+    </div>
+  {/if}
+
   {#if connectedShelvesNames != null && connectedShelvesNames.length != 0}
     <div class="p-1 m-1 bg-slate-300">
       <div class="text-stone-600">Connected Shelves</div>
@@ -187,7 +223,7 @@
             d="M15.147 15.085a7.159 7.159 0 0 1-6.189 3.307A6.713 6.713 0 0 1 3.1 15.444c-2.679-4.513.287-8.737.888-9.548A4.373 4.373 0 0 0 5 1.608c1.287.953 6.445 3.218 5.537 10.5 1.5-1.122 2.706-3.01 2.853-6.14 1.433 1.049 3.993 5.395 1.757 9.117Z"
           />
         </svg>
-        Remove Shelf</button
+        Disconnect</button
       >
     </div>
   {/if}
