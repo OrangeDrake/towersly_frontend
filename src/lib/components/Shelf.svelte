@@ -1,5 +1,5 @@
 <script>
-  import { afterUpdate } from "svelte";
+  import { onMount, afterUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from '@skeletonlabs/skeleton';
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
