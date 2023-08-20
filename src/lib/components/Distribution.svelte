@@ -15,10 +15,10 @@
   let shelvesNamesToAdd;
 
   let shelfNameToRemove = "";
-  let shelfNameToConnect;
+  let shelfNameToConnect = "";
   let typeMixingShelves;
-  if(distribution.connection !=null){
-  typeMixingShelves = distribution.connection.type;
+  if (distribution.connection != null) {
+    typeMixingShelves = distribution.connection.type;
   }
 
   let element;
@@ -50,6 +50,10 @@
   };
 
   const addConnectedShelf = async () => {
+    if (shelfNameToConnect == "") {
+      return;
+    }
+
     const token_value = "Bearer " + $keycloak.token;
 
     var url = new URL(API_URL + "/planning/addconnectedshelf");
@@ -64,15 +68,15 @@
       },
     });
     const connecton = await response.json();
-    console.log(">>>>>>>>>>>>>>>>>>> " + connecton );
+    console.log(">>>>>>>>>>>>>>>>>>> " + connecton);
     if (connecton != null) {
       distribution.connection = connecton;
       $distributions = $distributions;
       typeMixingShelves = connecton.type;
-      console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*." +  connecton.type );
+      console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*." + connecton.type);
       getConnectedShelvesNames();
     }
-    shelfNameToConnect = ""
+    shelfNameToConnect = "";
   };
 
   const removeConnectedShelf = () => {
@@ -112,6 +116,10 @@
         "Content-Type": "application/json",
       },
     });
+  };
+
+  const addRule = () => {
+    console.log("rule added");
   };
 
   onMount(() => {
@@ -227,4 +235,17 @@
       >
     </div>
   {/if}
+
+  <div class="p-1 mt-2 m-1 bg-slate-400">
+    <button
+      type="button"
+      class="btn btn-sm m-2 variant-filled rounded"
+      on:click={() => {
+        addRule();
+      }}
+    >
+      Create Rule</button
+    >
+  </div>  
+
 </div>

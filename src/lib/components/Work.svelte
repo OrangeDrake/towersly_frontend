@@ -6,7 +6,7 @@
   import { storePopup } from "@skeletonlabs/skeleton";
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-  const targer_popup = "popup_" + work.id;
+  const targer_popup = "popup_work" + work.id;
   //const targer_popup = "popup";
   const popupHover = {
     event: "hover",

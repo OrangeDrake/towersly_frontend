@@ -20,7 +20,7 @@
 
   let work_name = "";
   let work_description = "";
-  const targer_popup = "popup_" + shelf.id;
+  const targer_popup = "popup_shelf_" + shelf.id;
   console.log(targer_popup);
 
   const popupFeatured = {

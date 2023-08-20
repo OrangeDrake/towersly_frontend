@@ -95,9 +95,13 @@
   <script src="leader-line.min.js"></script>
 </svelte:head> -->
 <div>{loginState}</div>
+
+<div class="w-max">
 <Library />
 <Connection />
 <Planning />
+</div>
+
 
 <div id="start" bind:this={start1}>start</div>
 <br />
