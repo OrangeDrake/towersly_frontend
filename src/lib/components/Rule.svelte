@@ -1,13 +1,15 @@
 <script>
   export let rule;
   export let index;
+  export let distributionId;
+
   import { popup } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { storePopup } from "@skeletonlabs/skeleton";
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   console.log("-------  in Rule")
-  const targer_popup = "popup_rule" + rule.id;
+  const targer_popup = "popup_rule" + distributionId + rule.name; // rules nemaji id pomoci id distribuce je zarusene ze se popupy ruznych distribuci nezamychaji
   //const targer_popup = "popup";
   const popupHover = {
     event: "hover",

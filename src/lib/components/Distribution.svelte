@@ -1,8 +1,8 @@
 <script>
   import { afterUpdate, onMount } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
-  import { storePopup } from '@skeletonlabs/skeleton';
-  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+  import { storePopup } from "@skeletonlabs/skeleton";
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { ordered_distributions, distributions_locations, distributions } from "$lib/stores/planningStore.js";
@@ -16,7 +16,7 @@
   export let rules;
 
   let projection = distribution.projection;
-  if(projection != null) {
+  if (projection != null) {
     rules = projection.rules;
   }
 
@@ -36,8 +36,14 @@
   let offsetWidth;
 
   let rule_name = "";
+  let rule_duratiom = "";
+  let rule_start = "";
+
+  let number_of_options = 0;
+  let rule_options = [""];
+
   const targer_popup = "popup_distribution_" + distribution.id;
- 
+
   const popupFeatured = {
     event: "click",
     target: targer_popup,
@@ -49,14 +55,14 @@
 
     var url = new URL(API_URL + "/planning/addrule");
     url.searchParams.append("distributionId", distribution.id);
-   
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
         Authorization: token_value,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: rule_name}),
+      body: JSON.stringify({ name: rule_name }),
     });
 
     const new_projection = await response.json();
@@ -157,6 +163,16 @@
     });
   };
 
+  const changeOfLastRuleOption = (index) => {
+    console.log("!!!!!!!!!!!!!!!! before option changed: " + rule_options + "|");
+    console.log("!!!!!!!!!!!!!!!! option changed");
+    if (rule_options[number_of_options] != "" && index == number_of_options) {
+      rule_options.push("");
+      number_of_options++;
+      console.log("!!!!!!!!!!!!!!!! after option changed in if: " + rule_options + "|");
+    }
+  };
+
   onMount(() => {
     getConnectedShelvesNames();
     getElementLocation();
@@ -175,7 +191,6 @@
       console.log("@@@@@@@@@@filtered ordered_shelves for add: " + shelvesNamesToAdd);
     }
   }
-
 </script>
 
 <div class="card p-2 m-2 h-50 w-72" bind:this={element}>
@@ -220,7 +235,7 @@
   {#if connectedShelvesNames != null && connectedShelvesNames.length > 1}
     <div class="p-1 m-1 bg-slate-300">
       <div class="text-stone-600">Shelves Combination</div>
-      <RadioGroup class="px-1 py-1" >
+      <RadioGroup class="px-1 py-1">
         <RadioItem bind:group={typeMixingShelves} value="concat" on:change={() => changeConnectingType()}>concat</RadioItem>
         <RadioItem bind:group={typeMixingShelves} value="zip" on:change={() => changeConnectingType()}>zip</RadioItem>
         <!-- <RadioItem bind:group={typeMixingShelves} value=0>concat</RadioItem>
@@ -261,24 +276,55 @@
   {/if}
 
   <div class="p-1 mt-2 m-1 bg-slate-500">
-
-   
     <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Rule</button>
 
     {#if rules != null}
       {#each Object.values(rules) as rule, j}
-        <Rule {rule} index={j} />
+        <Rule {rule} index={j} distributionId={distribution.id} />
       {/each}
     {/if}
-
-
-
-  </div>  
+  </div>
 
   <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>
     <label class="label">
       <span>Name</span>
       <input bind:value={rule_name} class="input rounded p-1" type="text" />
+    </label>
+    <label class="label">
+      <span>Duration (minutes)</span>
+      <input bind:value={rule_duratiom} class="input p-1 rounded" type="text" />
+    </label>
+    <label class="label">
+      <span>Start</span>
+      <input bind:value={rule_start} class="input p-1 rounded" type="time" />
+    </label>
+    {#each Array(number_of_options + 1) as _, index (index)}
+      <label class="label">
+        <span>If not possible then</span>
+        <select class="select p-1 m-1" size="1" bind:value={rule_options[index]} on:change={() => changeOfLastRuleOption(index)}>
+          {#if rule_options.indexOf("sl") == -1 || rule_options.indexOf("sl") == index}
+            <option value="sl">Same day later</option>
+          {/if}
+          {#if rule_options.indexOf("ss") == -1 || rule_options.indexOf("ss") == index}
+          <option value="ss">Same day sooner</option>
+          {/if}
+          {#if rule_options.indexOf("nl") == -1 || rule_options.indexOf("nl") == index}
+          <option value="nl">Next day exact or later</option>
+          {/if}
+          {#if rule_options.indexOf("ns") == -1 || rule_options.indexOf("ns") == index}
+          <option value="ns">Next day exact or sooner</option>
+          {/if}
+          {#if rule_options.indexOf("pl") == -1 || rule_options.indexOf("pl") == index}
+          <option value="pl">Previous day exact or later</option>
+          {/if}
+          {#if rule_options.indexOf("ps") == -1 || rule_options.indexOf("ps") == index}
+          <option value="ps">Previous day exact or sooner</option>
+          {/if}        
+          <option value="">No more options</option>         
+        </select>
+      </label>
+    {/each}
+
     <button
       type="button"
       class="btn btn-sm m-2 variant-filled bg-green-500"
@@ -292,8 +338,4 @@
       Add Rule</button
     >
   </div>
-
 </div>
-
-
-

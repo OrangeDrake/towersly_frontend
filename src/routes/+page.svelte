@@ -1,14 +1,18 @@
 <script>
-  import Library from "$lib/components/Library.svelte";
-  import Planning from "$lib/components/Planning.svelte";
-  import Connection from "$lib/components/Connection.svelte";
-  import {API_URL} from "$lib/components/Constants.svelte";
 
   import { shelves } from "$lib/stores/libraryStore.js";
   import { distributions } from "$lib/stores/planningStore.js";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import Keycloak from "keycloak-js";
   import { onMount } from "svelte";
+
+  import Library from "$lib/components/Library.svelte";
+  import Planning from "$lib/components/Planning.svelte";
+  import Connection from "$lib/components/Connection.svelte";
+  import Connection2 from "$lib/components/Connection2.svelte";
+  import Calendar from "../lib/components/Calendar.svelte";
+
+  import {API_URL} from "$lib/components/Constants.svelte";
 
   let start1;
   let end1;
@@ -100,6 +104,8 @@
 <Library />
 <Connection />
 <Planning />
+<Connection2 />
+<Calendar />
 </div>
 
 
