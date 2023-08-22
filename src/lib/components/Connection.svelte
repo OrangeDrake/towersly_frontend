@@ -26,6 +26,6 @@
     left: 0;
     width: 2000px;
     height: 1000px;
-    pointer-1events: none 
+    pointer-events: none 
   }
 </style>

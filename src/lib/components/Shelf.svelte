@@ -6,23 +6,21 @@
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
-  import { ordered_distributions } from "$lib/stores/planningStore.js";
   import { ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-
   export let shelf;
 
-
+  // console.log("***//*/*/**/*/Shelf: " + Object.values(shelf));
+  // console.log("***//*/*/**/*/Shelf name: " + Object.values(shelf.name));
 
   let works = shelf.works;
 
   let work_name = "";
   let work_description = "";
   const targer_popup = "popup_shelf_" + shelf.id;
-  console.log(targer_popup);
-
+ 
   const popupFeatured = {
     event: "click",
     target: targer_popup,
@@ -32,9 +30,7 @@
   const addWork = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
-    //var parametr = { id: shelf.id };
     var url = new URL(API_URL + "/library/addwork");
-    //url.searchParams.append("id", shelf.id);
 
     const response = await fetch(url, {
       method: "POST",
@@ -48,6 +44,8 @@
     const n_work = await response.json();
     works.push(n_work);
     works = works;
+    work_name = "";
+    work_description = "";
   };
 
   let element;
@@ -57,7 +55,7 @@
   let offsetHeight;
 
   const getElementLocation = () => {
-    if (element != undefined) {
+    if (element != null) {
       offsetTop = element.offsetTop;
       offsetLeft = element.offsetLeft;
       offsetWidth = element.offsetWidth;
@@ -70,17 +68,8 @@
   afterUpdate(() => {
     console.log("shelf element updated, id: " + shelf.id)    
     getElementLocation();
-
   });
 
-
-
-
-  // $: {
-  //   $ordered_distributions;
-  //   $ordered_shelves;
-  //   getElementLocation();
-  // }
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72" bind:this={element}>
@@ -105,7 +94,7 @@
     <p>...</p>
   {/if}
 
-  <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create work</button>
+  <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Work</button>
 
   <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>
     <label class="label">

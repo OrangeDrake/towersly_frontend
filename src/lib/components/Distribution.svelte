@@ -1,15 +1,24 @@
 <script>
   import { afterUpdate, onMount } from "svelte";
+  import { popup } from "@skeletonlabs/skeleton";
+  import { storePopup } from '@skeletonlabs/skeleton';
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { ordered_distributions, distributions_locations, distributions } from "$lib/stores/planningStore.js";
   import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
+  import Rule from "$lib/components/Rule.svelte";
 
-  import { curves } from "$lib/stores/connectionStore.js";
-  import Shelf from "./Shelf.svelte";
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   export let distribution;
+  export let rules;
+
+  let projection = distribution.projection;
+  if(projection != null) {
+    rules = projection.rules;
+  }
 
   let connectedShelvesNames;
   let shelvesNamesToAdd;
@@ -26,12 +35,42 @@
   let offsetLeft;
   let offsetWidth;
 
+  let rule_name = "";
+  const targer_popup = "popup_distribution_" + distribution.id;
+ 
+  const popupFeatured = {
+    event: "click",
+    target: targer_popup,
+    placement: "top",
+  };
+
+  const addRule = async () => {
+    const token_value = "Bearer " + $keycloak.token;
+
+    var url = new URL(API_URL + "/planning/addrule");
+    url.searchParams.append("distributionId", distribution.id);
+   
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: token_value,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: rule_name}),
+    });
+
+    const new_projection = await response.json();
+    projection = new_projection;
+    rules = projection.rules;
+    rule_name = "";
+  };
+
   const selection = (c) => {
     shelfNameToRemove = c;
   };
 
   const getElementLocation = () => {
-    if (element != undefined) {
+    if (element != null) {
       offsetTop = element.offsetTop;
       offsetLeft = element.offsetLeft;
       offsetWidth = element.offsetWidth;
@@ -118,10 +157,6 @@
     });
   };
 
-  const addRule = () => {
-    console.log("rule added");
-  };
-
   onMount(() => {
     getConnectedShelvesNames();
     getElementLocation();
@@ -132,12 +167,7 @@
     getElementLocation();
   }
 
-  // afterUpdate(() => {
-  //   getElementLocation();
-  // });
-
   $: {
-    //connectedShelvesNames;
     console.log("!!!!!!!!!!!!!!!++++@@@@@@@@@@* in reactive block shalves names: " + $ordered_shelves_names + "connectedShelvesNames: " + connectedShelvesNames);
     if ($ordered_shelves_names != null && connectedShelvesNames != null) {
       console.log("@@@@@@@@@@*ordered_shelves for add: " + $ordered_shelves_names);
@@ -146,12 +176,6 @@
     }
   }
 
-  // $: {
-  //   $ordered_distributions;
-  //   $ordered_shelves;
-  //   console.log("****@@@@@@@@@@* in first reactive block ordered_distributions: " + $ordered_distributions + "ordered_shelves: " + $ordered_shelves);
-  //   getElementLocation();
-  // }
 </script>
 
 <div class="card p-2 m-2 h-50 w-72" bind:this={element}>
@@ -196,7 +220,7 @@
   {#if connectedShelvesNames != null && connectedShelvesNames.length > 1}
     <div class="p-1 m-1 bg-slate-300">
       <div class="text-stone-600">Shelves Combination</div>
-      <RadioGroup>
+      <RadioGroup class="px-1 py-1" >
         <RadioItem bind:group={typeMixingShelves} value="concat" on:change={() => changeConnectingType()}>concat</RadioItem>
         <RadioItem bind:group={typeMixingShelves} value="zip" on:change={() => changeConnectingType()}>zip</RadioItem>
         <!-- <RadioItem bind:group={typeMixingShelves} value=0>concat</RadioItem>
@@ -236,16 +260,40 @@
     </div>
   {/if}
 
-  <div class="p-1 mt-2 m-1 bg-slate-400">
+  <div class="p-1 mt-2 m-1 bg-slate-500">
+
+   
+    <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Rule</button>
+
+    {#if rules != null}
+      {#each Object.values(rules) as rule, j}
+        <Rule {rule} index={j} />
+      {/each}
+    {/if}
+
+
+
+  </div>  
+
+  <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>
+    <label class="label">
+      <span>Name</span>
+      <input bind:value={rule_name} class="input rounded p-1" type="text" />
     <button
       type="button"
-      class="btn btn-sm m-2 variant-filled rounded"
+      class="btn btn-sm m-2 variant-filled bg-green-500"
       on:click={() => {
         addRule();
       }}
     >
-      Create Rule</button
+      <svg class="p-1 w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+      Add Rule</button
     >
-  </div>  
+  </div>
 
 </div>
+
+
+
