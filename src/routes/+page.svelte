@@ -1,5 +1,6 @@
 <script>
 
+  import { afterUpdate } from "svelte";
   import { shelves } from "$lib/stores/libraryStore.js";
   import { distributions } from "$lib/stores/planningStore.js";
   import { keycloak } from "$lib/stores/keycloakStore.js";
@@ -14,6 +15,11 @@
 
   import {API_URL} from "$lib/components/Constants.svelte";
 
+  afterUpdate(() => {
+    console.log("************page updated*******")    
+   
+  });
+  
   let start1;
   let end1;
   let end2;

@@ -1,12 +1,13 @@
 <script>
-  import { afterUpdate, onMount } from "svelte";
+  import { afterUpdate, onMount, beforeUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
-  import { ordered_distributions, distributions_locations, distributions } from "$lib/stores/planningStore.js";
+  import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
   import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+  import { calculateCurves } from "$lib/stores/connectionStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Rule from "$lib/components/Rule.svelte";
 
@@ -82,7 +83,7 @@
       offsetWidth = element.offsetWidth;
       const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
       console.log("distribution: offsetTop2: " + offsetTop);
-      $distributions_locations[distribution.name] = location;
+      addToDistributionsLocations(distribution.name, location);
     }
   };
 
@@ -173,14 +174,26 @@
     }
   };
 
-  onMount(() => {
+  afterUpdate(() => {
     getConnectedShelvesNames();
-    getElementLocation();
+    // getElementLocation();
   });
 
   $: {
-    $shelves_locations;
-    getElementLocation();
+    if (element != null) {
+      if ($ordered_shelves != null) {
+        console.log("$shelves_locations.keys().length: " + Object.keys($shelves_locations).length + "$ordered_shelves.length: " + $ordered_shelves.length);
+        if (Object.keys($shelves_locations).length == $ordered_shelves.length) {
+          getElementLocation();
+          console.log("distribution " + distribution.id + " location got");
+          console.log("try to calulate cureves");
+          console.log("$distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "$ordered_distributions.length: " + $ordered_distributions.length);
+          if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
+            calculateCurves();
+          }
+        }
+      }
+    }
   }
 
   $: {
@@ -306,21 +319,21 @@
             <option value="sl">Same day later</option>
           {/if}
           {#if rule_options.indexOf("ss") == -1 || rule_options.indexOf("ss") == index}
-          <option value="ss">Same day sooner</option>
+            <option value="ss">Same day sooner</option>
           {/if}
           {#if rule_options.indexOf("nl") == -1 || rule_options.indexOf("nl") == index}
-          <option value="nl">Next day exact or later</option>
+            <option value="nl">Next day exact or later</option>
           {/if}
           {#if rule_options.indexOf("ns") == -1 || rule_options.indexOf("ns") == index}
-          <option value="ns">Next day exact or sooner</option>
+            <option value="ns">Next day exact or sooner</option>
           {/if}
           {#if rule_options.indexOf("pl") == -1 || rule_options.indexOf("pl") == index}
-          <option value="pl">Previous day exact or later</option>
+            <option value="pl">Previous day exact or later</option>
           {/if}
           {#if rule_options.indexOf("ps") == -1 || rule_options.indexOf("ps") == index}
-          <option value="ps">Previous day exact or sooner</option>
-          {/if}        
-          <option value="">No more options</option>         
+            <option value="ps">Previous day exact or sooner</option>
+          {/if}
+          <option value="">No more options</option>
         </select>
       </label>
     {/each}

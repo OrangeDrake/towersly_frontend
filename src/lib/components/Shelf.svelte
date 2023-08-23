@@ -1,12 +1,13 @@
 <script>
-  import { onMount, afterUpdate } from "svelte";
+  import { onMount, afterUpdate, beforeUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from '@skeletonlabs/skeleton';
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
-  import { ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+  import { ordered_shelves, shelves_locations, addTohShelvesLocations } from "$lib/stores/libraryStore.js";
+  import { calculateCurves } from "$lib/stores/connectionStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -61,13 +62,15 @@
       offsetWidth = element.offsetWidth;
       offsetHeight = element.offsetHeight;
       const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth, offsetHeight: offsetHeight };
-      $shelves_locations[shelf.name] = location;
+      addTohShelvesLocations(shelf.name, location);
     }
   };
 
   afterUpdate(() => {
     console.log("shelf element updated, id: " + shelf.id)    
     getElementLocation();
+
+    // calculateCurves();
   });
 
 </script>

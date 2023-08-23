@@ -11,7 +11,16 @@ export const ordered_shelves = derived(shelves, (shelves) => {
   });
 });
 
+const shelves_locations_map = {}
+
 export const shelves_locations = writable({});
+
+export const addTohShelvesLocations = (shelfName, newLocation) => {
+  shelves_locations_map[shelfName] = newLocation;
+  shelves_locations.set(shelves_locations_map);
+} 
+
+// export const shelves_location_number = derived(shelves_locations, (shelves_locations) => shelves_locations.lenghth)
 
 
 export const ordered_shelves_names = derived(ordered_shelves, (ordered_shelves) =>{
