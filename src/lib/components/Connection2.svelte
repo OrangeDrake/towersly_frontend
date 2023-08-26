@@ -7,7 +7,7 @@
   // }
 </script>
 
-<div class="ml-2 h-8 bg-gradient-to-b from-sky-200 to-sky-300 flex" >
+<div class="ml-2 h-12 bg-gradient-to-b from-sky-200 to-sky-100 flex" >
 
   <div>-</div>
   <div>-</div>

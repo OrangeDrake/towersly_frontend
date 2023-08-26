@@ -3,6 +3,7 @@ import { ordered_distributions, distributions_locations } from "$lib/stores/plan
 import { ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
 
 export const curvesToDraw = writable(null);
+export const reDrawCurves = writable(null);
 
 export const calculateCurves = () => {
 

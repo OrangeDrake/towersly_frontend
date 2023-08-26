@@ -10,10 +10,12 @@
   import Library from "$lib/components/Library.svelte";
   import Planning from "$lib/components/Planning.svelte";
   import Connection from "$lib/components/Connection.svelte";
+  import ConnectionBackground from "$lib/components/ConnectionBackground.svelte";
   import Connection2 from "$lib/components/Connection2.svelte";
-  import Calendar from "../lib/components/Calendar.svelte";
+  import Calendar from "$lib/components/Calendar.svelte";
 
   import {API_URL} from "$lib/components/Constants.svelte";
+  import { reDrawCurves } from "$lib/stores/connectionStore.js";
 
   afterUpdate(() => {
     console.log("************page updated*******")    
@@ -106,13 +108,18 @@
 </svelte:head> -->
 <div>{loginState}</div>
 
+{#key $reDrawCurves}
 <div class="w-max">
-<Library />
-<Connection />
+
+  <Connection /> musí být první aby nepřekrýval popupy
+  <Library />
+  <ConnectionBackground />
+
 <Planning />
 <Connection2 />
 <Calendar />
 </div>
+{/key}
 
 
 <div id="start" bind:this={start1}>start</div>

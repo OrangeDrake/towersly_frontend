@@ -7,7 +7,7 @@
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
   import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
-  import { calculateCurves } from "$lib/stores/connectionStore.js";
+  import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Rule from "$lib/components/Rule.svelte";
 
@@ -42,6 +42,9 @@
 
   let number_of_options = 0;
   let rule_options = [""];
+  let rule_days = new Array(7).fill(false);
+  console.log("rule_days: " + rule_days);
+  let bool_test = true;
 
   const targer_popup = "popup_distribution_" + distribution.id;
 
@@ -122,7 +125,9 @@
       console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*." + connecton.type);
       getConnectedShelvesNames();
     }
-    shelfNameToConnect = "";
+    $reDrawCurves = "add" + shelfNameToConnect + distribution.id;
+    shelfNameToConnect = "";    
+    
   };
 
   const removeConnectedShelf = () => {
@@ -148,6 +153,7 @@
         "Content-Type": "application/json",
       },
     });
+    $reDrawCurves = "remove" + shelfNameToRemove + distribution.id; //kdybychom odstanily 2 stejne shelfName z ruznych distribuci k redraw by nedoslo
   };
 
   const changeConnectingType = () => {
@@ -304,13 +310,45 @@
       <input bind:value={rule_name} class="input rounded p-1" type="text" />
     </label>
     <label class="label">
-      <span>Duration (minutes)</span>
-      <input bind:value={rule_duratiom} class="input p-1 rounded" type="text" />
+      <span>Duration</span>
+      <input bind:value={rule_duratiom} class="input p-1 rounded" type="time" />
     </label>
     <label class="label">
       <span>Start</span>
       <input bind:value={rule_start} class="input p-1 rounded" type="time" />
     </label>
+
+    <label class="label">
+      <input bind:checked={rule_days[0]} type="checkbox" />
+      <span>Monday</span>
+    </label>
+    <label class="label">
+      <input bind:checked={rule_days[1]} type="checkbox" />
+      <span>Tuesday</span>
+    </label>
+    <label class="label">
+      <input bind:checked={rule_days[2]} type="checkbox" />
+      <span>Wednesday</span>
+    </label>
+    <label class="label">
+      <input bind:checked={rule_days[3]} type="checkbox" />
+      <span>Thursday</span>
+    </label>
+    <label class="label">
+      <input bind:checked={rule_days[4]} type="checkbox" />
+      <span>Friday</span>
+    </label>
+    <label class="label">
+      <input bind:checked={rule_days[5]} type="checkbox" />
+      <span>Saturday</span>
+    </label>
+    <label class="label">
+      <input bind:checked={rule_days[6]} type="checkbox" />
+      <span>Sunday</span>
+    </label>
+
+    <br />
+
     {#each Array(number_of_options + 1) as _, index (index)}
       <label class="label">
         <span>If not possible then</span>
@@ -322,16 +360,16 @@
             <option value="ss">Same day sooner</option>
           {/if}
           {#if rule_options.indexOf("nl") == -1 || rule_options.indexOf("nl") == index}
-            <option value="nl">Next day exact or later</option>
+            <option value="nl">Next days exact or later</option>
           {/if}
           {#if rule_options.indexOf("ns") == -1 || rule_options.indexOf("ns") == index}
-            <option value="ns">Next day exact or sooner</option>
+            <option value="ns">Next days exact or sooner</option>
           {/if}
           {#if rule_options.indexOf("pl") == -1 || rule_options.indexOf("pl") == index}
-            <option value="pl">Previous day exact or later</option>
+            <option value="pl">Previous days exact or later</option>
           {/if}
           {#if rule_options.indexOf("ps") == -1 || rule_options.indexOf("ps") == index}
-            <option value="ps">Previous day exact or sooner</option>
+            <option value="ps">Previous days exact or sooner</option>
           {/if}
           <option value="">No more options</option>
         </select>
