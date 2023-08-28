@@ -46,6 +46,8 @@
 </script>
 
 <div class="ml-2 p-2 pb-10 bg-sky-100">
+
+<div class="card m-2 p-2 pb-10 bg-slate-300 w-min">
   <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
     <path
       fill="currentColor"
@@ -67,9 +69,10 @@
     {/each}
 
     {#each $slots as slot, i}
-      <rect x={dayToXCoordinate(slot.day)} y={timeToYCoordinate(slot.time)} width={daysWidth} height={durationToLength(slot.duration)} style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)" />
+      <rect x={dayToXCoordinate(slot.day)} y={timeToYCoordinate(slot.time)}  rx="10" ry="10" width={daysWidth} height={durationToLength(slot.duration)} style="fill:rgb(100,116,139);stroke-width:3;stroke:rgb(255,255,255)" />
     {/each}
   </svg>
+</div>
 </div>
 
 <style>
