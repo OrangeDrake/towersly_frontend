@@ -92,6 +92,32 @@
     return false;
   }
 
+  const daysBooleansToNames = () => {
+    const rule_days_names = new Array(0);
+    if (rule_days[0]){
+      rule_days_names.push("mo");
+    }
+    if (rule_days[1]){
+      rule_days_names.push("tu");
+    }
+    if (rule_days[2]){
+      rule_days_names.push("we");
+    }
+    if (rule_days[3]){
+      rule_days_names.push("th");
+    }
+    if (rule_days[4]){
+      rule_days_names.push("fr");
+    }
+    if (rule_days[5]){
+      rule_days_names.push("sa");
+    }
+    if (rule_days[6]){
+      rule_days_names.push("su");
+    }
+    return rule_days_names;
+  }
+
   const addRule = async () => {
     toastRuleAddad.background = "bg-yellow-200";
     if (rule_name == "") {
@@ -111,6 +137,14 @@
     }
     if (rule_start == "") {
       toastRuleAddad.message = "Rule start time missing.";
+      toastStore.trigger(toastRuleAddad);
+      return;
+    }
+
+    const rule_days_names = daysBooleansToNames();
+
+    if (rule_days_names.length == 0) {
+      toastRuleAddad.message = "No day has been selected.";
       toastStore.trigger(toastRuleAddad);
       return;
     }
@@ -137,6 +171,7 @@
     toastRuleAddad.message = "Rule " + rule_name + " added";
     toastRuleAddad.background = "bg-green-500", 
     toastStore.trigger(toastRuleAddad);
+    resetRule();
   };
 
   const selection = (c) => {
