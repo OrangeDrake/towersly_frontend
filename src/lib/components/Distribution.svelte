@@ -4,6 +4,10 @@
   import { storePopup } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
+
+  // import { getToastStore } from '@skeletonlabs/skeleton';
+  import { toastStore } from "@skeletonlabs/skeleton";
+
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
   import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
@@ -12,6 +16,7 @@
   import Rule from "$lib/components/Rule.svelte";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+  // const toastStore = getToastStore();
 
   export let distribution;
   export let rules;
@@ -37,7 +42,7 @@
   let offsetWidth;
 
   let rule_name = "";
-  let rule_duratiom = "";
+  let rule_duration = "";
   let rule_start = "";
 
   let number_of_options = 0;
@@ -54,7 +59,62 @@
     placement: "top",
   };
 
+  let toastRuleAddad = {
+    message: "",
+    hideDismiss: true,
+    timeout: 10000,
+    background: "bg-green-500",
+    position: "r",
+    padding: "p-4",
+
+    // callback: (response) => {
+    // console.log(response.id);
+    // // if (response.status === 'queued') console.log('Toast was queued!');
+    // // if (response.status === 'closed') console.log('Toast was closed!');
+    // }
+  };
+
+  const resetRule = () => {
+    rule_name = "";
+    rule_duration = "";
+    rule_start = "";
+    rule_options = [""];
+    rule_days = new Array(7).fill(false);
+  };
+
+  const isNameTaken = (name) => {
+    for (let i = 0; i < rules.length; i++){
+      if (rules[i].name == name){
+        // console.log(rule.name)
+        return true;
+      }      
+    };
+    return false;
+  }
+
   const addRule = async () => {
+    toastRuleAddad.background = "bg-yellow-200";
+    if (rule_name == "") {
+      toastRuleAddad.message = "Rule name missing.";
+      toastStore.trigger(toastRuleAddad);
+      return;
+    }
+    if (isNameTaken(rule_name)) {
+      toastRuleAddad.message = "Rule name is taken.";
+      toastStore.trigger(toastRuleAddad);
+      return;
+    }
+    if (rule_duration == "") {
+      toastRuleAddad.message = "Rule duration missing.";
+      toastStore.trigger(toastRuleAddad);
+      return;
+    }
+    if (rule_start == "") {
+      toastRuleAddad.message = "Rule start time missing.";
+      toastStore.trigger(toastRuleAddad);
+      return;
+    }
+
     const token_value = "Bearer " + $keycloak.token;
 
     var url = new URL(API_URL + "/planning/addrule");
@@ -66,13 +126,17 @@
         Authorization: token_value,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: rule_name }),
+      body: JSON.stringify({ name: rule_name, time: rule_start, duration: rule_duration }),
     });
 
     const new_projection = await response.json();
+
     projection = new_projection;
     rules = projection.rules;
-    rule_name = "";
+
+    toastRuleAddad.message = "Rule " + rule_name + " added";
+    toastRuleAddad.background = "bg-green-500", 
+    toastStore.trigger(toastRuleAddad);
   };
 
   const selection = (c) => {
@@ -126,8 +190,7 @@
       getConnectedShelvesNames();
     }
     $reDrawCurves = "add" + shelfNameToConnect + distribution.id;
-    shelfNameToConnect = "";    
-    
+    shelfNameToConnect = "";
   };
 
   const removeConnectedShelf = () => {
@@ -311,7 +374,7 @@
     </label>
     <label class="label">
       <span>Duration</span>
-      <input bind:value={rule_duratiom} class="input p-1 rounded" type="time" />
+      <input bind:value={rule_duration} class="input p-1 rounded" type="time" />
     </label>
     <label class="label">
       <span>Start</span>
@@ -347,8 +410,6 @@
       <span>Sunday</span>
     </label>
 
-    <br />
-
     {#each Array(number_of_options + 1) as _, index (index)}
       <label class="label">
         <span>If not possible then</span>
@@ -375,6 +436,19 @@
         </select>
       </label>
     {/each}
+
+    <button
+      type="button"
+      class="btn btn-sm m-2 variant-filled bg-amber-800"
+      on:click={() => {
+        resetRule();
+      }}
+    >
+      <svg class="p-1 w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+      </svg>
+      Close Rule</button
+    >
 
     <button
       type="button"
