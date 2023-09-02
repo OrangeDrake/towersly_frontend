@@ -1,8 +1,10 @@
 <script>
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { storePopup } from "@skeletonlabs/skeleton";
+  import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { popup } from "@skeletonlabs/skeleton";
+  import { API_URL } from "$lib/components/Constants.svelte";
   import Rule from "$lib/components/Rule.svelte";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -52,6 +54,9 @@
   };
 
   const isNameTaken = (name) => {
+    if (rules == null) {
+        return false;
+    }
     for (let i = 0; i < rules.length; i++) {
       if (rules[i].name == name) {
         // console.log(rule.name)
@@ -90,7 +95,7 @@
   const addRule = async () => {
     toastRuleAddad.background = "bg-yellow-200";
     if (rule_name == "") {
-      toastRuleAddad.message = "Rule name missing.";
+      toastRuleAddad.message = "Rule name is missing.";
       toastStore.trigger(toastRuleAddad);
       return;
     }
@@ -123,17 +128,20 @@
     var url = new URL(API_URL + "/planning/addrule");
     url.searchParams.append("distributionId", distribution.id);
 
+    rule_options.pop();
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
         Authorization: token_value,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: rule_name, time: rule_start, duration: rule_duration }),
+      body: JSON.stringify({ name: rule_name, start: rule_start, duration: rule_duration, days: rule_days_names, options: rule_options }),
     });
 
     const new_projection = await response.json();
 
+    distribution.projection = new_projection;
     projection = new_projection;
     rules = projection.rules;
 
@@ -151,6 +159,7 @@
       console.log("!!!!!!!!!!!!!!!! after option changed in if: " + rule_options + "|");
     }
   };
+  
 </script>
 
 <div class="p-1 mt-2 m-1 bg-slate-500">
