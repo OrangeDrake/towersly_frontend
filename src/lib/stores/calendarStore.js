@@ -91,6 +91,23 @@ const placeLater = (day, slotToPlace, generatedPlan) => {
   return false;
 };
 
+const applyOption =(day, slotToPlace, generatedPlan, options) => {
+    for (let i = 0; i < options.length ; i++){
+        const option = options[i];
+        switch (option) {
+            case "sl":
+                const placed = placeLater (day, slotToPlace, generatedPlan);
+                console.log("in apply option");
+                if(placed){
+                    return true;
+                }
+                break;
+        }       
+      
+
+    }
+}
+
 export const generatePlan = () => {
   clearPlan();
   const generatedPlan = {};
@@ -117,7 +134,10 @@ export const generatePlan = () => {
         const slotToPlace = { distribution: ordered_distributions_value[i].name, rule: rules[j].name, start: startInMinutes, duration: durationInMinutes };
         const day = days[k];
 
-        placeExact(day, slotToPlace, generatedPlan);
+        const placed = placeExact(day, slotToPlace, generatedPlan);
+        if (!placed){
+            applyOption(day, slotToPlace, generatedPlan, rules[j].options);
+        }
       }
     }
   }
