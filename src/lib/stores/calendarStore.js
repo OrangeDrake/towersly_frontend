@@ -97,14 +97,12 @@ const applyOption =(day, slotToPlace, generatedPlan, options) => {
         switch (option) {
             case "sl":
                 const placed = placeLater (day, slotToPlace, generatedPlan);
-                console.log("in apply option");
+                // console.log("in apply option");
                 if(placed){
                     return true;
                 }
                 break;
-        }       
-      
-
+        }        
     }
 }
 
@@ -134,10 +132,11 @@ export const generatePlan = () => {
         const slotToPlace = { distribution: ordered_distributions_value[i].name, rule: rules[j].name, start: startInMinutes, duration: durationInMinutes };
         const day = days[k];
 
-        const placed = placeExact(day, slotToPlace, generatedPlan);
+        let placed = placeExact(day, slotToPlace, generatedPlan);
         if (!placed){
-            applyOption(day, slotToPlace, generatedPlan, rules[j].options);
+            placed = applyOption(day, slotToPlace, generatedPlan, rules[j].options);
         }
+        // tady se rozhone jestli ruse umistilo den př 0/5 -> 1/5
       }
     }
   }
