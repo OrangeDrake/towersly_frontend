@@ -1,5 +1,22 @@
 <script>
-  import { plan, generatePlan } from "$lib/stores/calendarStore.js";
+  import { createSlot, plan, generatePlan } from "$lib/stores/calendarStore.js";
+  import { popup } from "@skeletonlabs/skeleton";
+  import { storePopup } from "@skeletonlabs/skeleton";
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
+
+  storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+  const targer_popup = "calendar";
+
+  const popupFeatured = {
+    event: "click",
+    target: targer_popup,
+    placement: "top",
+  };
+
+  let slot_start = "";
+  let slot_duration = "";
+  let slot_day = "mo";
 
   const gapLinesLeft = 25;
   const hoursLinesCount = 24;
@@ -17,6 +34,10 @@
   const gapHoursNumberLeft = 20;
 
   const minutesInDay = 1440;
+
+  const addSlot = () => {
+    createSlot(slot_day, slot_start, slot_duration);
+  };
 
   const dayToXCoordinate = (day) => {
     switch (day) {
@@ -47,7 +68,6 @@
 </script>
 
 <div class="ml-2 p-2 pb-10 bg-sky-100">
-
   <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
     <path
       fill="currentColor"
@@ -56,26 +76,33 @@
   </svg>
   <span class="text-stone-600 text-lg font-bold">Calendar</span>
 
-  <div>
-    <button
-      type="button"
-      class="btn btn-sm m-2 variant-filled bg-green-500"
-      on:click={() => {
-        generatePlan();
-      }}
-    >
-      Fill Calendar Disconnect</button
-    >
+  <div class="flex flex-nowrap">
+
+    <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Custom Slot</button>
+
+    <div>
+      <button
+        type="button"
+        class="btn btn-sm m-2 variant-filled bg-green-500"
+        on:click={() => {
+          generatePlan();
+        }}
+      >
+        <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97" />
+        </svg>
+
+        <span class="text-black text-lg">Implements rules</span></button
+      >
+    </div>
   </div>
 
   <div class="card m-2 p-2 pb-10 bg-white w-min">
-
-
     <svg height={daysLinesHeight + gapBottom} width={hoursLinesWidth + gapRight}>
       <!-- <text x="0" y={gapTop} textLength="100px" lengthAdjust="spacingAndGlyphs"> neco</text> -->
 
       {#each Array(hoursLinesCount) as _, index (index)}
-        <text x={gapHoursNumberLeft} y={hoursHeight * (index + 1)  + 5 + gapTop} class="small">{index}</text>
+        <text x={gapHoursNumberLeft} y={hoursHeight * (index + 1) + 5 + gapTop} class="small">{index}</text>
         <line x1={gapLinesLeft} y1={hoursHeight * (index + 1) + gapTop} x2={hoursLinesWidth} y2={hoursHeight * (index + 1) + gapTop} style="stroke:rgb(0,0,0);stroke-width:0.25" />
       {/each}
 
@@ -86,17 +113,51 @@
       {#each Object.entries($plan) as [day, slots], index (day)}
         {#each slots as slot, i}
           <rect
-            x={dayToXCoordinate(day)+1}
-            y={timeToYCoordinate(slot.start)+1}
+            x={dayToXCoordinate(day) + 1}
+            y={timeToYCoordinate(slot.start) + 1}
             rx="3"
             ry="3"
-            width={daysWidth-10}
-            height={durationToLength(slot.duration)-2}
+            width={daysWidth - 10}
+            height={durationToLength(slot.duration) - 2}
             style="fill:rgb(100,116,139);stroke:rgb(255,255,255)"
           />
         {/each}
       {/each}
     </svg>
+  </div>
+
+  <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>
+    <select class="select p-1 m-1" size="1" bind:value={slot_day}>
+      <option value="mo">Monday</option>
+      <option value="tu">Tuesday</option>
+      <option value="we">Wednesday</option>
+      <option value="th">Thursday</option>
+      <option value="fr">Friday</option>
+      <option value="sa">Saturday</option>
+      <option value="su">Sunday</option>
+    </select>
+
+    <label class="label">
+      <span>Start</span>
+      <input bind:value={slot_start} class="input p-1 rounded" type="time" />
+    </label>
+
+    <label class="label">
+      <span>Duration</span>
+      <input bind:value={slot_duration} class="input p-1 rounded" type="time" />
+    </label>
+    <button
+      type="button"
+      class="btn btn-sm m-2 variant-filled bg-green-500"
+      on:click={() => {
+        addSlot();
+      }}
+    >
+      <svg class="p-1 w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+      </svg>
+      Add Slot</button
+    >
   </div>
 </div>
 

@@ -24,7 +24,7 @@
 
 
 
-<h1 use:action>Layout TOP</h1>
+<h1 use:action>Layout TOP &#E2;</h1>
 <slot />
 <h1>Layout BOTTOM</h1>
 <Toast />

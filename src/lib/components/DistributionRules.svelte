@@ -178,13 +178,15 @@
     <input bind:value={rule_name} class="input rounded p-1" type="text" />
   </label>
   <label class="label">
-    <span>Duration</span>
-    <input bind:value={rule_duration} class="input p-1 rounded" type="time" />
-  </label>
-  <label class="label">
     <span>Start</span>
     <input bind:value={rule_start} class="input p-1 rounded" type="time" />
   </label>
+
+  <label class="label">
+    <span>Duration</span>
+    <input bind:value={rule_duration} class="input p-1 rounded" type="time" />
+  </label>
+
 
   <label class="label">
     <input bind:checked={rule_days[0]} type="checkbox" />

@@ -1,13 +1,31 @@
 import { get, derived, writable } from "svelte/store";
 import { ordered_distributions, distributions } from "$lib/stores/planningStore.js";
 
-export const plan = writable({
-  mo: [
-    { distribution: "dis1", start: 0, duration: 60 },
-    { distribution: "dis1", start: 500, duration: 90 },
-  ],
-  su: [{ distribution: "dis1", start: 1100, duration: 30 }],
-});
+// export const plan = writable({
+//   mo: [
+//     { distribution: "dis1", start: 0, duration: 60 },
+//     { distribution: "dis1", start: 500, duration: 90 },
+//   ],
+//   su: [{ distribution: "dis1", start: 1100, duration: 30 }],
+// });
+
+export const plan = writable({});
+export const createdSlots = writable({});
+
+export const createSlot = (day, start, duration) => {
+  const startInMinutes = hoursWithMinutesToMinutes(start);
+  const durationInMinutes = hoursWithMinutesToMinutes(duration);
+
+  let createdSlotsValue = get(createdSlots);
+  let planValue = get(plan);
+
+  // console.log('createdSlotsValue:'  + JSON.stringify(createdSlotsValue, null,2))
+  const slotToPlace = { start: startInMinutes, duration: durationInMinutes, isGenerated: false };
+  console.log("slotToPlace:" + JSON.stringify(slotToPlace, null, 2));
+  placeExact(day, slotToPlace, planValue);
+  // console.log('createdSlotsValue:'  + JSON.stringify(createdSlotsValue, null,2))
+  plan.set(planValue);
+};
 
 const clearPlan = () => {
   plan.set([]);
@@ -21,30 +39,20 @@ const hoursWithMinutesToMinutes = (time) => {
 };
 
 const placeExact = (day, slotToPlace, generatedPlan) => {
-  console.log("-------------slotToPlace: " + Object.values(slotToPlace));
   if (slotToPlace.start + slotToPlace.duration > 1440) {
     // bude NAHRAZENO MAXIMALNIM CASEM
-    console.log("-------out og day------slotToPlace: " + Object.values(slotToPlace));
     return false;
   }
-  console.log("-******1------------slotToPlace: " + Object.values(slotToPlace));
   const slots = generatedPlan[day];
-  console.log("-******2------------slotToPlace: " + Object.values(slotToPlace));
   if (slots == null) {
-    console.log("-------first slot------slotToPlace: " + Object.values(slotToPlace));
     generatedPlan[day] = [slotToPlace];
     return true;
   }
-  console.log("-******3------------slotToPlace: " + Object.values(slotToPlace));
   console.log(Object.values(slots));
   for (let i = 0; i < slots.length; i++) {
-    console.log("-------in cycle------slotToPlace: " + Object.values(slotToPlace));
     const slot = slots[i];
 
     if (slotToPlace.start + slotToPlace.duration <= slot.start) {
-      // let slotsTest = JSON.parse([{distribution: "dis1", start: 0, duration: 60 }, {distribution: "dis1", start: 500, duration: 90 }]);
-      // slotsTest.
-      console.log("-------in insert------slotToPlace: " + Object.values(slotToPlace));
       generatedPlan[day] = [...slots.slice(0, i), slotToPlace, ...slots.slice(i)];
       return true;
     }
@@ -52,14 +60,13 @@ const placeExact = (day, slotToPlace, generatedPlan) => {
       return false;
     }
   }
-  console.log("-------pushed------slotToPlace: " + Object.values(slotToPlace));
   slots.push(slotToPlace);
   return true;
 };
 
 const placeLater = (day, slotToPlace, generatedPlan) => {
   let slots = generatedPlan[day];
-  
+
   if (slots == null) {
     slots = [];
   }
@@ -77,10 +84,10 @@ const placeLater = (day, slotToPlace, generatedPlan) => {
       return true;
     }
   }
-  
+
   if (slots.length != 0) {
     nStart = slots[slots.length - 1].start + slots[slots.length - 1].duration;
-  }  
+  }
   maxEnd = 1440;
 
   if (nStart + slotToPlace.duration <= maxEnd) {
@@ -91,24 +98,25 @@ const placeLater = (day, slotToPlace, generatedPlan) => {
   return false;
 };
 
-const applyOption =(day, slotToPlace, generatedPlan, options) => {
-    for (let i = 0; i < options.length ; i++){
-        const option = options[i];
-        switch (option) {
-            case "sl":
-                const placed = placeLater (day, slotToPlace, generatedPlan);
-                // console.log("in apply option");
-                if(placed){
-                    return true;
-                }
-                break;
-        }        
+const applyOption = (day, slotToPlace, generatedPlan, options) => {
+  for (let i = 0; i < options.length; i++) {
+    const option = options[i];
+    switch (option) {
+      case "sl":
+        const placed = placeLater(day, slotToPlace, generatedPlan);
+        // console.log("in apply option");
+        if (placed) {
+          return true;
+        }
+        break;
     }
-}
+  }
+};
 
 export const generatePlan = () => {
-  clearPlan();
-  const generatedPlan = {};
+  //   clearPlan();
+  //   let generatedPlan = {};
+  let generatedPlan = get(plan);
   const ordered_distributions_value = get(ordered_distributions);
 
   console.log("in generate slot: " + ordered_distributions_value);
@@ -129,12 +137,12 @@ export const generatePlan = () => {
       for (let k = 0; k < days.length; k++) {
         const startInMinutes = hoursWithMinutesToMinutes(rules[j].start);
         const durationInMinutes = hoursWithMinutesToMinutes(rules[j].duration);
-        const slotToPlace = { distribution: ordered_distributions_value[i].name, rule: rules[j].name, start: startInMinutes, duration: durationInMinutes };
+        const slotToPlace = { distribution: ordered_distributions_value[i].name, rule: rules[j].name, start: startInMinutes, duration: durationInMinutes, isGenerated: true };
         const day = days[k];
 
         let placed = placeExact(day, slotToPlace, generatedPlan);
-        if (!placed){
-            placed = applyOption(day, slotToPlace, generatedPlan, rules[j].options);
+        if (!placed) {
+          placed = applyOption(day, slotToPlace, generatedPlan, rules[j].options);
         }
         // tady se rozhone jestli ruse umistilo den př 0/5 -> 1/5
       }
