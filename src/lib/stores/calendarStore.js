@@ -10,13 +10,13 @@ import { ordered_distributions, distributions } from "$lib/stores/planningStore.
 // });
 
 export const plan = writable({});
-export const createdSlots = writable({});
+// export const createdSlots = writable({});
 
 export const createSlot = (day, start, duration) => {
   const startInMinutes = hoursWithMinutesToMinutes(start);
   const durationInMinutes = hoursWithMinutesToMinutes(duration);
 
-  let createdSlotsValue = get(createdSlots);
+  //   let createdSlotsValue = get(createdSlots);
   let planValue = get(plan);
 
   // console.log('createdSlotsValue:'  + JSON.stringify(createdSlotsValue, null,2))
@@ -31,6 +31,28 @@ const clearPlan = () => {
   plan.set([]);
 };
 
+const clearGenerated = () => {
+  console.log("loop generetated");
+  const planValue = get(plan);
+  for (const day in planValue) {
+    console.log("in loop");
+    console.log(`${day}: ${planValue[day]}`);
+    const slotsInDay = planValue[day];
+    let isDeleted = true;
+    while (isDeleted) {
+      isDeleted = false;
+      for (let i = 0; i < slotsInDay.length; i++) {
+        const slot = slotsInDay[i];
+        if (slot.isGenerated) {
+          slotsInDay.splice(i);
+          isDeleted = true;
+          break;
+        }
+      }
+    }
+  }
+};
+
 const hoursWithMinutesToMinutes = (time) => {
   const hoursAndMinutes = time.split(":");
   const hours = parseInt(hoursAndMinutes[0]);
@@ -38,14 +60,14 @@ const hoursWithMinutesToMinutes = (time) => {
   return hours * 60 + minutes;
 };
 
-const placeExact = (day, slotToPlace, generatedPlan) => {
+const placeExact = (day, slotToPlace, plan) => {
   if (slotToPlace.start + slotToPlace.duration > 1440) {
     // bude NAHRAZENO MAXIMALNIM CASEM
     return false;
   }
-  const slots = generatedPlan[day];
+  const slots = plan[day];
   if (slots == null) {
-    generatedPlan[day] = [slotToPlace];
+    plan[day] = [slotToPlace];
     return true;
   }
   console.log(Object.values(slots));
@@ -53,7 +75,10 @@ const placeExact = (day, slotToPlace, generatedPlan) => {
     const slot = slots[i];
 
     if (slotToPlace.start + slotToPlace.duration <= slot.start) {
-      generatedPlan[day] = [...slots.slice(0, i), slotToPlace, ...slots.slice(i)];
+      console.log("****1 plan:" + JSON.stringify(plan, null, 2));
+       //plan[day] = [...slots.slice(0, i), slotToPlace, ...slots.slice(i)];
+    slots.splice(i, 0, slotToPlace);
+      console.log("****2 plan:" + JSON.stringify(plan, null, 2));
       return true;
     }
     if (slotToPlace.start < slot.start + slot.duration) {
@@ -64,28 +89,42 @@ const placeExact = (day, slotToPlace, generatedPlan) => {
   return true;
 };
 
-const placeLater = (day, slotToPlace, generatedPlan) => {
-  let slots = generatedPlan[day];
+const placeLater = (day, slotToPlace, plan) => {
+  let slots = plan[day];
 
   if (slots == null) {
     slots = [];
   }
 
   let nStart = slotToPlace.start;
-  let maxEnd = 1440;
+  let maxEnd;
+
+  if (slots.length != 0) {
+    // zkusit dat presne na zacatek
+    maxEnd = slots[0].start;
+  }
+
+  if (nStart + slotToPlace.duration <= maxEnd) {
+    slotToPlace.start = nStart;
+    slots.unshift(slotToPlace);
+    return true;
+  }
 
   for (let i = 0; i < slots.length - 1; i++) {
     nStart = slots[i].start + slots[i].duration;
     maxEnd = slots[i + 1].start;
 
     if (nStart + slotToPlace.duration <= maxEnd) {
+      // zkusit dat mezi 2 sloty
       slotToPlace.start = nStart;
-      generatedPlan[day] = [...slots.slice(0, i), slotToPlace, ...slots.slice(i)];
+      //plan[day] = [...slots.slice(0, i), slotToPlace, ...slots.slice(i)];
+      slots.splice(i, 0, slotToPlace);
       return true;
     }
   }
 
   if (slots.length != 0) {
+    // zkusit dat na konec
     nStart = slots[slots.length - 1].start + slots[slots.length - 1].duration;
   }
   maxEnd = 1440;
@@ -116,7 +155,8 @@ const applyOption = (day, slotToPlace, generatedPlan, options) => {
 export const generatePlan = () => {
   //   clearPlan();
   //   let generatedPlan = {};
-  let generatedPlan = get(plan);
+  clearGenerated();
+  let planValue = get(plan);
   const ordered_distributions_value = get(ordered_distributions);
 
   console.log("in generate slot: " + ordered_distributions_value);
@@ -140,13 +180,13 @@ export const generatePlan = () => {
         const slotToPlace = { distribution: ordered_distributions_value[i].name, rule: rules[j].name, start: startInMinutes, duration: durationInMinutes, isGenerated: true };
         const day = days[k];
 
-        let placed = placeExact(day, slotToPlace, generatedPlan);
+        let placed = placeExact(day, slotToPlace, planValue);
         if (!placed) {
-          placed = applyOption(day, slotToPlace, generatedPlan, rules[j].options);
+          placed = applyOption(day, slotToPlace, planValue, rules[j].options);
         }
         // tady se rozhone jestli ruse umistilo den př 0/5 -> 1/5
       }
     }
   }
-  plan.set(generatedPlan);
+  plan.set(planValue);
 };
