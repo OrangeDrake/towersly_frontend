@@ -44,8 +44,11 @@ const clearGenerated = () => {
       for (let i = 0; i < slotsInDay.length; i++) {
         const slot = slotsInDay[i];
         if (slot.isGenerated) {
-          slotsInDay.splice(i);
+         console.log("***deleting:" + JSON.stringify(planValue, null, 2));
+          slotsInDay.splice(i,1);
+          console.log("***after deleting:" + JSON.stringify(planValue, null, 2));
           isDeleted = true;
+          
           break;
         }
       }
@@ -85,7 +88,9 @@ const placeExact = (day, slotToPlace, plan) => {
       return false;
     }
   }
+  console.log("****3 plan:" + JSON.stringify(plan, null, 2));
   slots.push(slotToPlace);
+  console.log("****4 plan:" + JSON.stringify(plan, null, 2));
   return true;
 };
 
