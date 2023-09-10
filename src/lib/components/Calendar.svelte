@@ -119,7 +119,7 @@
             ry="3"
             width={daysWidth - 10}
             height={durationToLength(slot.duration) - 2}
-            style="fill:rgb(100,116,139);stroke:rgb(255,255,255)"
+            style={slot.isGenerated? "fill:rgb(100,116,139);stroke:rgb(255,255,255)" : "fill:rgb(50,50,50);stroke:rgb(255,255,255)"} 
           />
         {/each}
       {/each}
