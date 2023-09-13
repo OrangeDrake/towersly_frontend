@@ -7,6 +7,7 @@
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
   import { ordered_shelves, shelves_locations, addTohShelvesLocations } from "$lib/stores/libraryStore.js";
+  import { toastStore } from "@skeletonlabs/skeleton";
   import { calculateCurves } from "$lib/stores/connectionStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });

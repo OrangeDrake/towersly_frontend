@@ -2,9 +2,19 @@
   import { createSlot, plan, generatePlan } from "$lib/stores/calendarStore.js";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
+  import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+  let toastRuleAddad = {
+    message: "",
+    hideDismiss: true,
+    timeout: 10000,
+    background: "bg-green-500",
+    position: "r",
+    padding: "p-4",
+  };
 
   const targer_popup = "calendar";
 
@@ -36,7 +46,18 @@
   const minutesInDay = 1440;
 
   const addSlot = () => {
-    createSlot(slot_day, slot_start, slot_duration);
+    let isPLaced = createSlot(slot_day, slot_start, slot_duration);
+
+    if (!isPLaced) {
+      toastRuleAddad.background = "bg-yellow-200";
+      toastRuleAddad.message = "Position is occupied.";
+      toastStore.trigger(toastRuleAddad);
+      return;
+    }
+
+    toastRuleAddad.background = "bg-green-500";
+    toastRuleAddad.message = "Custom slot Added";
+    toastStore.trigger(toastRuleAddad);   
   };
 
   const dayToXCoordinate = (day) => {
@@ -77,22 +98,21 @@
   <span class="text-stone-600 text-lg font-bold">Calendar</span>
 
   <div class="flex flex-nowrap">
-
     <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Custom Slot</button>
 
     <div>
       <button
         type="button"
-        class="btn btn-sm m-2 variant-filled bg-green-500"
+        class="btn btn-sm m-2 variant-filled rounded"
         on:click={() => {
           generatePlan();
         }}
       >
-        <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+        <svg class="inline-block w-7 h-7 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97" />
         </svg>
 
-        <span class="text-black text-lg">Implements rules</span></button
+        <span class="text-lg">Implements rules</span></button
       >
     </div>
   </div>
@@ -119,7 +139,7 @@
             ry="3"
             width={daysWidth - 10}
             height={durationToLength(slot.duration) - 2}
-            style={slot.isGenerated? "fill:rgb(100,116,139);stroke:rgb(255,255,255)" : "fill:rgb(50,50,50);stroke:rgb(255,255,255)"} 
+            style={slot.isGenerated ? "fill:rgb(100,116,139);stroke:rgb(255,255,255)" : "fill:rgb(50,50,50);stroke:rgb(255,255,255)"}
           />
         {/each}
       {/each}

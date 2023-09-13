@@ -22,9 +22,10 @@ export const createSlot = (day, start, duration) => {
   // console.log('createdSlotsValue:'  + JSON.stringify(createdSlotsValue, null,2))
   const slotToPlace = { start: startInMinutes, duration: durationInMinutes, isGenerated: false };
   console.log("slotToPlace:" + JSON.stringify(slotToPlace, null, 2));
-  placeExact(day, slotToPlace, planValue);
+  let isPlaced = placeExact(day, slotToPlace, planValue);
   // console.log('createdSlotsValue:'  + JSON.stringify(createdSlotsValue, null,2))
   plan.set(planValue);
+  return isPlaced;
 };
 
 const clearPlan = () => {
@@ -44,11 +45,10 @@ const clearGenerated = () => {
       for (let i = 0; i < slotsInDay.length; i++) {
         const slot = slotsInDay[i];
         if (slot.isGenerated) {
-         console.log("***deleting:" + JSON.stringify(planValue, null, 2));
-          slotsInDay.splice(i,1);
+          console.log("***deleting:" + JSON.stringify(planValue, null, 2));
+          slotsInDay.splice(i, 1);
           console.log("***after deleting:" + JSON.stringify(planValue, null, 2));
           isDeleted = true;
-          
           break;
         }
       }
@@ -79,8 +79,8 @@ const placeExact = (day, slotToPlace, plan) => {
 
     if (slotToPlace.start + slotToPlace.duration <= slot.start) {
       console.log("****1 plan:" + JSON.stringify(plan, null, 2));
-       //plan[day] = [...slots.slice(0, i), slotToPlace, ...slots.slice(i)];
-    slots.splice(i, 0, slotToPlace);
+      //plan[day] = [...slots.slice(0, i), slotToPlace, ...slots.slice(i)];
+      slots.splice(i, 0, slotToPlace);
       console.log("****2 plan:" + JSON.stringify(plan, null, 2));
       return true;
     }
@@ -92,6 +92,66 @@ const placeExact = (day, slotToPlace, plan) => {
   slots.push(slotToPlace);
   console.log("****4 plan:" + JSON.stringify(plan, null, 2));
   return true;
+};
+
+const placeSooner = (day, slotToPlace, plan) => {
+  // prochazime od zadu
+  let slots = plan[day];
+
+  if (slots == null) {
+    slots = [];
+  }
+
+  let nEnd = slotToPlace.start + slotToPlace.duration;
+  let nStart = slotToPlace.start
+  let minStart;
+
+  if (slots.length != 0) {
+    // zkusit dat presne na konec
+    minStart = slots[slots.length-1].start + slotToPlace.duration;
+  }
+
+  if (nEnd > 1440) {
+    return false;
+  }
+
+  if (minStart <= nStart) {
+    slots.push(slotToPlace);
+    return true;
+  }
+
+  for (let i = slots.length - 2; i >= 0; i--) {
+    minStart = slots[i].start + slots[i].duration;
+    console.log("in cycle condition continue");
+
+    if (slotToPlace.start < minStart) {
+      continue;
+    }
+
+    nEnd = slots[i + 1].start;
+
+    console.log("in cycle: minStart: " + minStart, ",nEnd: " + nEnd); 
+
+    if (nEnd - slotToPlace.duration >= minStart) {
+      slotToPlace.start = nEnd - slotToPlace.duration;
+      slots.splice(i + 1, 0, slotToPlace);
+      return true;
+    }
+  }
+
+  if (slots.length != 0) {
+    // zkusit dat na zacatek
+    nEnd = slots[0].start;
+  }
+  minStart = 0;
+
+  if (nEnd - slotToPlace.duration >= minStart) {
+    slotToPlace.start = nEnd - slotToPlace.duration;
+    slots.unshift(slotToPlace);
+    return true;
+  }
+
+  return false;
 };
 
 const placeLater = (day, slotToPlace, plan) => {
@@ -117,6 +177,11 @@ const placeLater = (day, slotToPlace, plan) => {
 
   for (let i = 0; i < slots.length - 1; i++) {
     nStart = slots[i].start + slots[i].duration;
+
+    if (slotToPlace.start > nStart) {
+      continue;
+    }
+
     maxEnd = slots[i + 1].start;
 
     if (nStart + slotToPlace.duration <= maxEnd) {
@@ -147,14 +212,18 @@ const applyOption = (day, slotToPlace, generatedPlan, options) => {
     const option = options[i];
     switch (option) {
       case "sl":
-        const placed = placeLater(day, slotToPlace, generatedPlan);
-        // console.log("in apply option");
-        if (placed) {
+        if(placeLater(day, slotToPlace, generatedPlan)) {
+          return true;
+        }
+        break;
+      case "ss":
+        if(placeSooner(day, slotToPlace, generatedPlan)) {
           return true;
         }
         break;
     }
   }
+  return false;
 };
 
 export const generatePlan = () => {

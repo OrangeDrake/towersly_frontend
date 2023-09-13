@@ -9,6 +9,15 @@
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
+  let toastRuleAddad = {
+    message: "",
+    hideDismiss: true,
+    timeout: 10000,
+    background: "bg-green-500",
+    position: "r",
+    padding: "p-4",
+  };
+
   export let distribution;
 
   let rules;
@@ -36,20 +45,13 @@
     placement: "top",
   };
 
-  let toastRuleAddad = {
-    message: "",
-    hideDismiss: true,
-    timeout: 10000,
-    background: "bg-green-500",
-    position: "r",
-    padding: "p-4",
-  };
-
   const resetRule = () => {
+    console.log("rule reseted");
     rule_name = "";
     rule_duration = "";
     rule_start = "";
     rule_options = [""];
+    number_of_options = 0;
     rule_days = new Array(7).fill(false);
   };
 
