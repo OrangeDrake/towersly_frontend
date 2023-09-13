@@ -153,6 +153,13 @@
   };
 
   const changeOfLastRuleOption = (index) => {
+
+    if (rule_options[index] == ""){
+      rule_options.splice(index,1);
+      number_of_options--;
+      return;
+    }
+
     console.log("!!!!!!!!!!!!!!!! before option changed: " + rule_options + "|");
     console.log("!!!!!!!!!!!!!!!! option changed");
     if (rule_options[number_of_options] != "" && index == number_of_options) {
@@ -229,17 +236,30 @@
         {#if rule_options.indexOf("ss") == -1 || rule_options.indexOf("ss") == index}
           <option value="ss">Same day sooner</option>
         {/if}
-        {#if rule_options.indexOf("nl") == -1 || rule_options.indexOf("nl") == index}
-          <option value="nl">Next days exact or later</option>
+
+
+        {#if rule_options.indexOf("ne") == -1 || rule_options.indexOf("ne") == index}
+          <option value="ne">Next days exact</option>
         {/if}
+        
+        {#if rule_options.indexOf("pe") == -1 || rule_options.indexOf("pe") == index}
+          <option value="pe">Previus days exact</option>
+        {/if}
+
+
+
+        {#if rule_options.indexOf("nl") == -1 || rule_options.indexOf("nl") == index}
+          <option value="nl">Next days later</option>
+        {/if}
+        
         {#if rule_options.indexOf("ns") == -1 || rule_options.indexOf("ns") == index}
-          <option value="ns">Next days exact or sooner</option>
+          <option value="ns">Next days sooner</option>
         {/if}
         {#if rule_options.indexOf("pl") == -1 || rule_options.indexOf("pl") == index}
-          <option value="pl">Previous days exact or later</option>
+          <option value="pl">Previous days later</option>
         {/if}
         {#if rule_options.indexOf("ps") == -1 || rule_options.indexOf("ps") == index}
-          <option value="ps">Previous days exact or sooner</option>
+          <option value="ps">Previous days sooner</option>
         {/if}
         <option value="">No more options</option>
       </select>

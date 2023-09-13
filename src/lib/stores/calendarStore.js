@@ -1,16 +1,9 @@
 import { get, derived, writable } from "svelte/store";
 import { ordered_distributions, distributions } from "$lib/stores/planningStore.js";
 
-// export const plan = writable({
-//   mo: [
-//     { distribution: "dis1", start: 0, duration: 60 },
-//     { distribution: "dis1", start: 500, duration: 90 },
-//   ],
-//   su: [{ distribution: "dis1", start: 1100, duration: 30 }],
-// });
+const DAYS = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 
 export const plan = writable({});
-// export const createdSlots = writable({});
 
 export const createSlot = (day, start, duration) => {
   const startInMinutes = hoursWithMinutesToMinutes(start);
@@ -94,6 +87,18 @@ const placeExact = (day, slotToPlace, plan) => {
   return true;
 };
 
+const placeNextDaysExact = (day, slotToPlace, plan) => {
+  const currentDayIndex = DAYS.indexOf(day);
+
+  for (let i = currentDayIndex; i < DAYS.length; i++) {
+    const nextDay = DAYS[i];
+    if (placeExact(nextDay, slotToPlace, plan)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const placeSooner = (day, slotToPlace, plan) => {
   // prochazime od zadu
   let slots = plan[day];
@@ -103,12 +108,12 @@ const placeSooner = (day, slotToPlace, plan) => {
   }
 
   let nEnd = slotToPlace.start + slotToPlace.duration;
-  let nStart = slotToPlace.start
+  let nStart = slotToPlace.start;
   let minStart;
 
   if (slots.length != 0) {
     // zkusit dat presne na konec
-    minStart = slots[slots.length-1].start + slotToPlace.duration;
+    minStart = slots[slots.length - 1].start + slotToPlace.duration;
   }
 
   if (nEnd > 1440) {
@@ -130,7 +135,7 @@ const placeSooner = (day, slotToPlace, plan) => {
 
     nEnd = slots[i + 1].start;
 
-    console.log("in cycle: minStart: " + minStart, ",nEnd: " + nEnd); 
+    console.log("in cycle: minStart: " + minStart, ",nEnd: " + nEnd);
 
     if (nEnd - slotToPlace.duration >= minStart) {
       slotToPlace.start = nEnd - slotToPlace.duration;
@@ -212,12 +217,17 @@ const applyOption = (day, slotToPlace, generatedPlan, options) => {
     const option = options[i];
     switch (option) {
       case "sl":
-        if(placeLater(day, slotToPlace, generatedPlan)) {
+        if (placeLater(day, slotToPlace, generatedPlan)) {
           return true;
         }
         break;
       case "ss":
-        if(placeSooner(day, slotToPlace, generatedPlan)) {
+        if (placeSooner(day, slotToPlace, generatedPlan)) {
+          return true;
+        }
+        break;
+      case "ne":
+        if (placeNextDaysExact(day, slotToPlace, generatedPlan)) {
           return true;
         }
         break;
