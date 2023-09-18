@@ -131,8 +131,9 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
           getElementLocation();
           console.log("distribution " + distribution.id + " location got");
           console.log("try to calulate cureves");
-          console.log("$distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "$ordered_distributions.length: " + $ordered_distributions.length);
+          console.log("$distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "$ordered_distributions.length: " + $ordered_distributions.length);         
           if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************")
             calculateCurves();
           }
         }

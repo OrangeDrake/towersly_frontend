@@ -1,5 +1,5 @@
 <script>
-  import { createSlot, plan, generatePlan } from "$lib/stores/calendarStore.js";
+  import { createSlot, plan, generatePlan, clearGeneratedAndRefresh } from "$lib/stores/calendarStore.js";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
   import { toastStore } from "@skeletonlabs/skeleton";
@@ -57,7 +57,7 @@
 
     toastRuleAddad.background = "bg-green-500";
     toastRuleAddad.message = "Custom slot Added";
-    toastStore.trigger(toastRuleAddad);   
+    toastStore.trigger(toastRuleAddad);
   };
 
   const dayToXCoordinate = (day) => {
@@ -100,21 +100,32 @@
   <div class="flex flex-nowrap">
     <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Custom Slot</button>
 
-    <div>
-      <button
-        type="button"
-        class="btn btn-sm m-2 variant-filled rounded"
-        on:click={() => {
-          generatePlan();
-        }}
-      >
-        <svg class="inline-block w-7 h-7 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97" />
-        </svg>
+    <button
+      type="button"
+      class="btn btn-sm m-2 variant-filled bg-amber-800"
+      on:click={() => {
+        clearGeneratedAndRefresh();
+      }}
+    >
+      <svg class="p-1 w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+      </svg>
+      Drop Generated Slots</button
+    >
 
-        <span class="text-lg">Implements rules</span></button
-      >
-    </div>
+    <button
+      type="button"
+      class="btn btn-sm m-2 variant-filled rounded"
+      on:click={() => {
+        generatePlan();
+      }}
+    >
+      <svg class="inline-block w-7 h-7 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97" />
+      </svg>
+
+      <span class="text-lg">Implements rules</span></button
+    >
   </div>
 
   <div class="card m-2 p-2 pb-10 bg-white w-min">

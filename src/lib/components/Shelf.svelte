@@ -1,14 +1,13 @@
 <script>
   import { onMount, afterUpdate, beforeUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
-  import { storePopup } from '@skeletonlabs/skeleton';
-  import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+  import { storePopup } from "@skeletonlabs/skeleton";
+  import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
-  import { ordered_shelves, shelves_locations, addTohShelvesLocations } from "$lib/stores/libraryStore.js";
-  import { toastStore } from "@skeletonlabs/skeleton";
-  import { calculateCurves } from "$lib/stores/connectionStore.js";
+  import { addTohShelvesLocations, shelves } from "$lib/stores/libraryStore.js";
+
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -21,16 +20,27 @@
 
   let work_name = "";
   let work_description = "";
+  // let work_actual_duration_hours = 0;
+  // let work_actual_duration_minutes = 0;
+  let work_expected_duration_hours = 0;
+  let work_expected_duration_minutes = 0;
+  let work_expected_duration = "";
+
   const targer_popup = "popup_shelf_" + shelf.id;
- 
+
   const popupFeatured = {
     event: "click",
     target: targer_popup,
     placement: "top",
   };
 
+  const hoursAndMinutesToMinutes = (hours, minutes) => {
+    return hours * 60 + minutes;
+  };
+
   const addWork = async () => {
     const token_value = "Bearer " + $keycloak.token;
+    const expectedDurationInMinutes = hoursAndMinutesToMinutes(work_expected_duration_hours, work_expected_duration_minutes);
 
     var url = new URL(API_URL + "/library/addwork");
 
@@ -40,12 +50,13 @@
         Authorization: token_value,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: work_name, description: work_description, shelfId: shelf.id  }),
+      body: JSON.stringify({ name: work_name, description: work_description, shelfId: shelf.id, expectedTime: expectedDurationInMinutes }),
     });
 
     const n_work = await response.json();
     works.push(n_work);
     works = works;
+    $shelves = $shelves;
     work_name = "";
     work_description = "";
   };
@@ -68,12 +79,11 @@
   };
 
   afterUpdate(() => {
-    console.log("shelf element updated, id: " + shelf.id)    
+    console.log("shelf element updated, id: " + shelf.id);
     getElementLocation();
 
     // calculateCurves();
   });
-
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72" bind:this={element}>
@@ -105,10 +115,30 @@
       <span>Name</span>
       <input bind:value={work_name} class="input rounded p-1" type="text" />
     </label>
+
     <label class="label">
       <span>Description</span>
-      <input bind:value={work_description} class="input p-1 rounded" type="text" />
+      <input bind:value={work_description} class="input rounded p-1" type="text" />
     </label>
+
+    <!-- <label class="label">
+      <span>Actual Duration</span>
+      <div class="flex">
+        <span class="flex-initial w-24"><input bind:value={work_actual_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
+        <span class="flex-initial w-4	text-center">:</span>
+        <span class="flex-initial w-24"><input bind:value={work_actual_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+      </div>
+    </label> -->
+
+    <label class="label">
+      <span>Expected Duration</span>
+      <div class="flex">
+        <span class="flex-initial w-24"><input bind:value={work_expected_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
+        <span class="flex-initial w-4 text-center">:</span>
+        <span class="flex-initial w-24"><input bind:value={work_expected_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+      </div>
+    </label>
+
     <button
       type="button"
       class="btn btn-sm m-2 variant-filled bg-green-500"
@@ -123,3 +153,9 @@
     >
   </div>
 </div>
+<!-- 
+<style>
+  .time-span input {
+    display: flex;
+  }
+</style> -->

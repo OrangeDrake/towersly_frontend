@@ -38,14 +38,14 @@
     {rule.name}
   </div>
 
-  <div class="text-stone-600">Duration:</div>
-  <div>
-    {rule.duration}
-  </div>
-
   <div class="text-stone-600">Start:</div>
   <div>
     {rule.start}
+  </div>
+
+  <div class="text-stone-600">Duration:</div>
+  <div>
+    {rule.duration}
   </div>
 
   <div class="text-stone-600">Days:</div>

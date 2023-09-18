@@ -14,6 +14,12 @@
     placement: "top",
   };
 
+  const MinutesToHoursAndMinutesText = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const minutesPart = minutes % 60;
+
+    return hours + ":" + minutesPart;
+  };
 </script>
 
 <div class="px-2 bordel-solid border-2 bg-slate-300 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-100" use:popup={popupHover}>
@@ -43,8 +49,21 @@
   <div>
     {work.name}
   </div>
+
   <div class="text-stone-600">Description:</div>
   <div>
     {work.description}
+  </div>
+
+  <div class="text-stone-600">Actual Duration:</div>
+  <div>
+    <!-- {work.actualDuration} -->
+    {work.actualTime}
+  </div>
+
+  <div class="text-stone-600">Planed Duration:</div>
+  <div>
+    <!-- {work.expectedDuration} -->
+    {MinutesToHoursAndMinutesText(work.expectedTime)}
   </div>
 </div>

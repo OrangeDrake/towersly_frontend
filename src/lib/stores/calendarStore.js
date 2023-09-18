@@ -21,6 +21,12 @@ export const createSlot = (day, start, duration) => {
   return isPlaced;
 };
 
+export const clearGeneratedAndRefresh = () => {
+  clearGenerated();
+  const planValue = get(plan);
+  plan.set(planValue);
+}
+
 const clearPlan = () => {
   plan.set([]);
 };
