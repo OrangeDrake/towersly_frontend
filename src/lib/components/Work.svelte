@@ -22,7 +22,7 @@
   };
 </script>
 
-<div class="px-2 bordel-solid border-2 bg-slate-300 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-100" use:popup={popupHover}>
+<div class="px-2 bordel-solid border-2 bg-slate-100 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover}>
   <div class="truncate">
     <span class="text-stone-600">
       {index + 1}

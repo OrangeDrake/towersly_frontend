@@ -63,7 +63,8 @@
 
 </script>
 
-<div class="ml-2 p-2 pb-10 bg-sky-100">
+<div class="ml-2 p-2 pb-10 bg-white">
+  <!-- <div class="ml-2 p-2 pb-10"> -->
   <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
     <path
       stroke="currentColor"

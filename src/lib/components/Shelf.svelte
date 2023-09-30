@@ -86,7 +86,7 @@
   });
 </script>
 
-<div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72" bind:this={element}>
+<div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 " bind:this={element}>
   <div class="card-header w-64 p-2 m-2">
     <svg class="inline-block w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
       <path

@@ -88,7 +88,8 @@
   };
 </script>
 
-<div class="ml-2 p-2 pb-10 bg-sky-100">
+<div class="ml-2 p-2 pb-10 bg-white">
+  <!-- <div class="ml-2 p-2 pb-10"> -->
   <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
     <path
       fill="currentColor"
@@ -128,7 +129,7 @@
     >
   </div>
 
-  <div class="card m-2 p-2 pb-10 bg-white w-min">
+  <div class="card m-2 p-2 m-2S pb-10 w-min">
     <svg height={daysLinesHeight + gapBottom} width={hoursLinesWidth + gapRight}>
       <!-- <text x="0" y={gapTop} textLength="100px" lengthAdjust="spacingAndGlyphs"> neco</text> -->
 
