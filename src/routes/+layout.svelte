@@ -17,9 +17,14 @@
     console.log("******************action layout");
   };
 
-  onMount(() => {
+	onMount(() => {
     console.log("******************onMount layout");
+    
+		window.onunhandledrejection = (e) => {
+    console.log("+++++++++++++++error");
+    }
   });
+
 </script>
 
 <h1 use:action>Layout TOP &#E2;</h1>

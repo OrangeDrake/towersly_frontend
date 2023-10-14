@@ -26,13 +26,13 @@
     selected_wok = work;
   };
 
-  const t = {
-    message: "Message contains a unique action." + elapsed,
-    autohide: false,
-    action: {
-      label: "Greeting",
-      response: () => alert("Hello, Skeleton"),
-    },
+  let t = {
+    message: "time meassure started",
+    hideDismiss: true,
+    timeout: 10000,
+    background: "bg-green-500",
+    position: "r",
+    padding: "p-4",
   };
 
   const startTimer = () => {

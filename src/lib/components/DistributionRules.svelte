@@ -9,7 +9,7 @@
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-  let toastRuleAddad = {
+  let toastRuleAdded = {
     message: "",
     hideDismiss: true,
     timeout: 10000,
@@ -95,33 +95,33 @@
   };
 
   const addRule = async () => {
-    toastRuleAddad.background = "bg-yellow-200";
+    toastRuleAdded.background = "bg-yellow-200";
     if (rule_name == "") {
-      toastRuleAddad.message = "Rule name is missing.";
-      toastStore.trigger(toastRuleAddad);
+      toastRuleAdded.message = "Rule name is missing.";
+      toastStore.trigger(toastRuleAdded);
       return;
     }
     if (isNameTaken(rule_name)) {
-      toastRuleAddad.message = "Rule name is taken.";
-      toastStore.trigger(toastRuleAddad);
+      toastRuleAdded.message = "Rule name is taken.";
+      toastStore.trigger(toastRuleAdded);
       return;
     }
     if (rule_duration == "") {
-      toastRuleAddad.message = "Rule duration missing.";
-      toastStore.trigger(toastRuleAddad);
+      toastRuleAdded.message = "Rule duration missing.";
+      toastStore.trigger(toastRuleAdded);
       return;
     }
     if (rule_start == "") {
-      toastRuleAddad.message = "Rule start time missing.";
-      toastStore.trigger(toastRuleAddad);
+      toastRuleAdded.message = "Rule start time missing.";
+      toastStore.trigger(toastRuleAdded);
       return;
     }
 
     const rule_days_names = daysBooleansToNames();
 
     if (rule_days_names.length == 0) {
-      toastRuleAddad.message = "No day has been selected.";
-      toastStore.trigger(toastRuleAddad);
+      toastRuleAdded.message = "No day has been selected.";
+      toastStore.trigger(toastRuleAdded);
       return;
     }
 
@@ -147,8 +147,8 @@
     projection = new_projection;
     rules = projection.rules;
 
-    toastRuleAddad.message = "Rule " + rule_name + " added";
-    (toastRuleAddad.background = "bg-green-500"), toastStore.trigger(toastRuleAddad);
+    toastRuleAdded.message = "Rule " + rule_name + " added";
+    (toastRuleAdded.background = "bg-green-500"), toastStore.trigger(toastRuleAdded);
     resetRule();
   };
 
