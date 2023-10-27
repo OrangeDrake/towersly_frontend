@@ -14,11 +14,8 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
   let shelfNameToConnect = "";
   let typeMixingShelves;
 
-  export let element;
   export let distribution;
-  let offsetTop;
-  let offsetLeft;
-  let offsetWidth;
+
 
   if (distribution.connection != null) {
     typeMixingShelves = distribution.connection.type;
@@ -26,17 +23,6 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
 
   const selection = (c) => {
     shelfNameToRemove = c;
-  };
-
-  const getElementLocation = () => {
-    if (element != null) {
-      offsetTop = element.offsetTop;
-      offsetLeft = element.offsetLeft;
-      offsetWidth = element.offsetWidth;
-      const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
-      console.log("distribution: offsetTop2: " + offsetTop);
-      addToDistributionsLocations(distribution.name, location);
-    }
   };
 
   const getConnectedShelvesNames = () => {
@@ -123,23 +109,7 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     // getElementLocation();
   });
 
-  $: {
-    if (element != null) {
-      if ($ordered_shelves != null) {
-        console.log("$shelves_locations.keys().length: " + Object.keys($shelves_locations).length + "$ordered_shelves.length: " + $ordered_shelves.length);
-        if (Object.keys($shelves_locations).length == $ordered_shelves.length) {
-          getElementLocation();
-          console.log("distribution " + distribution.id + " location got");
-          console.log("try to calulate cureves");
-          console.log("$distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "$ordered_distributions.length: " + $ordered_distributions.length);         
-          if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************")
-            calculateCurves();
-          }
-        }
-      }
-    }
-  }
+
 
   $: {
     console.log("!!!!!!!!!!!!!!!++++@@@@@@@@@@* in reactive block shalves names: " + $ordered_shelves_names + "connectedShelvesNames: " + connectedShelvesNames);

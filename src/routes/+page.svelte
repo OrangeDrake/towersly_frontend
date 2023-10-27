@@ -17,6 +17,8 @@
   import {API_URL} from "$lib/components/Constants.svelte";
   import { reDrawCurves } from "$lib/stores/connectionStore.js";
 
+  import {tracking} from "$lib/stores/timeTrackingStore.js";
+
   afterUpdate(() => {
     console.log("************page updated*******")    
    
@@ -72,6 +74,22 @@
 
     $distributions = data;
   };
+
+  getTracking = async () => {
+    const token_value = "Bearer " + $keycloak.token;
+
+    var response = await fetch(API_URL + "/planning", {
+      method: "GET",
+      headers: {
+        Authorization: token_value,
+      },
+    });
+
+    const data = await response.json();
+
+    $distributions = data;
+  };
+
 
   function initKeycloak() {
     $keycloak = new Keycloak({

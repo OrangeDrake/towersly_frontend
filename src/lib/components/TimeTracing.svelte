@@ -1,18 +1,17 @@
 <script>
+  import { tick } from "svelte"
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { ordered_shelves } from "$lib/stores/libraryStore.js";
   import { toastStore } from "@skeletonlabs/skeleton";
+  import {reDrawCurves} from "$lib/stores/connectionStore.js";
+  import {isTrackingActive, elapsed, trackTime} from "$lib/stores/timeTrackingStore.js";
+
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-  let elapsed = 0;
   let selected_wok = null;
-
-  let time;
-  let last_time;
-  let frame;
 
   const targer_popup = "popup_time_tracing";
 
@@ -27,7 +26,6 @@
   };
 
   let t = {
-    message: "time meassure started",
     hideDismiss: true,
     timeout: 10000,
     background: "bg-green-500",
@@ -35,16 +33,15 @@
     padding: "p-4",
   };
 
-  const startTimer = () => {
-    time = window.performance.now();
+  const startTimer = async () => {
+    $isTrackingActive = true;
+    t.message =  "time meassure started: " + selected_wok.name;
 
-    (function update() {
-      frame = requestAnimationFrame(update);
-
-      elapsed = Math.floor((window.performance.now() - time) / 1000);
-    })();
+    trackTime();
 
     toastStore.trigger(t);
+    await tick();
+    $reDrawCurves = "selected work: " + selected_wok;
   };
 </script>
 
@@ -56,7 +53,10 @@
 
     <span class="text-lg">Select work to Track</span></button
   >
-  <div>{elapsed}</div>
+  {#if $isTrackingActive}
+  <div class="inline-block">{$elapsed}</div>
+  <div>{selected_wok.name}</div>
+  {/if}
 
   <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>
     {#if $ordered_shelves != null && $ordered_shelves.length != 0}

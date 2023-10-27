@@ -1,11 +1,55 @@
 <script>
-
+  import { onMount, afterUpdate, beforeUpdate } from "svelte";
   import DistributionConnections from "$lib/components/DistributionConnections.svelte";
   import DistributionRules from "$lib/components/DistributionRules.svelte";
+  import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+  import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
+  import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
 
   let element;
 
+  let offsetTop;
+  let offsetLeft;
+  let offsetWidth;
+
   export let distribution;
+
+  const getElementLocation = () => {
+    if (element != null) {
+      offsetTop = element.offsetTop;
+      offsetLeft = element.offsetLeft;
+      offsetWidth = element.offsetWidth;
+      const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
+      console.log("distribution: offsetTop2: " + offsetTop);
+      addToDistributionsLocations(distribution.name, location);
+    }
+  };
+
+  $: {
+    //getElementLocation();
+    if (element != null) {
+      if ($ordered_shelves != null) {
+        console.log("$shelves_locations.keys().length: " + Object.keys($shelves_locations).length + "$ordered_shelves.length: " + $ordered_shelves.length);
+        if (Object.keys($shelves_locations).length == $ordered_shelves.length) {
+          getElementLocation();
+          console.log("distribution " + distribution.id + " location got");
+          console.log("try to calulate cureves");
+          console.log("$distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "$ordered_distributions.length: " + $ordered_distributions.length);
+          if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************");
+            calculateCurves();
+          }
+        }
+      }
+    }
+  }
+
+  afterUpdate(() => {
+    console.log("distribution element updated, id: " + distribution.id);
+    getElementLocation();
+
+    // calculateCurves();
+  });
 </script>
 
 <div class="card p-2 m-2 h-50 w-72" bind:this={element}>
@@ -21,6 +65,6 @@
     </svg>
     <span class="font-bold">{distribution.name}</span>
   </div>
-  <DistributionConnections {distribution} {element} />
+  <DistributionConnections {distribution} />
   <DistributionRules {distribution} />
 </div>

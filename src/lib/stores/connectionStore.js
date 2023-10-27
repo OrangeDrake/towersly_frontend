@@ -72,11 +72,12 @@ export const calculateCurves = () => {
 };
 
 const resetLocations = () => {
+  console.log("------locations reseted /**/*/*/*/*/-------------------@@@@@")
   shelves_locations.set({});
   distributions_locations.set({});
 };
 
-export const totalNumberOfShelves = writable(0);
-export const calculatedNumberOfShelves = writable(0);
-export const totalNumberOfDistributions = writable(0);
-export const calculatedNumberOfDistributions = writable(0);
+// export const totalNumberOfShelves = writable(0);
+// export const calculatedNumberOfShelves = writable(0);
+// export const totalNumberOfDistributions = writable(0);
+// export const calculatedNumberOfDistributions = writable(0);
