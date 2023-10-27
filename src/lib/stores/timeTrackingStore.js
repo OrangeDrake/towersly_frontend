@@ -1,9 +1,6 @@
 import { get, derived, writable } from "svelte/store";
 
-export const isTrackingActive = writable(false);
 export const elapsed = writable(0);
-
-
 export const tracking = writable(false);
 
 let time;

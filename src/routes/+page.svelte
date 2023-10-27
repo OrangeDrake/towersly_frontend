@@ -75,7 +75,7 @@
     $distributions = data;
   };
 
-  getTracking = async () => {
+  getTimeTracking = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
     var response = await fetch(API_URL + "/planning", {
@@ -87,7 +87,7 @@
 
     const data = await response.json();
 
-    $distributions = data;
+    $tracking = data;
   };
 
 
@@ -106,6 +106,7 @@
           loginState = "logged in";
           getShelves();
           getDistributions();
+          getTimeTracking();
         }
       })
       .catch(function () {

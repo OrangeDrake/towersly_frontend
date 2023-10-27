@@ -6,7 +6,7 @@
   import { ordered_shelves } from "$lib/stores/libraryStore.js";
   import { toastStore } from "@skeletonlabs/skeleton";
   import {reDrawCurves} from "$lib/stores/connectionStore.js";
-  import {isTrackingActive, elapsed, trackTime} from "$lib/stores/timeTrackingStore.js";
+  import {tracking, elapsed, trackTime} from "$lib/stores/timeTrackingStore.js";
 
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -53,7 +53,7 @@
 
     <span class="text-lg">Select work to Track</span></button
   >
-  {#if $isTrackingActive}
+  {#if $tracking}
   <div class="inline-block">{$elapsed}</div>
   <div>{selected_wok.name}</div>
   {/if}
