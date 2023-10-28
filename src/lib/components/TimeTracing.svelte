@@ -1,13 +1,14 @@
 <script>
-  import { tick } from "svelte"
+  import { tick } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { ordered_shelves } from "$lib/stores/libraryStore.js";
   import { toastStore } from "@skeletonlabs/skeleton";
-  import {reDrawCurves} from "$lib/stores/connectionStore.js";
-  import {tracking, elapsed, trackTime} from "$lib/stores/timeTrackingStore.js";
-
+  import { keycloak } from "$lib/stores/keycloakStore.js";
+  import { API_URL } from "$lib/components/Constants.svelte";
+  import { reDrawCurves } from "$lib/stores/connectionStore.js";
+  import { tracking, elapsed, trackTime } from "$lib/stores/timeTrackingStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -34,18 +35,33 @@
   };
 
   const startTimer = async () => {
-    $isTrackingActive = true;
-    t.message =  "time meassure started: " + selected_wok.name;
+    //trackTime();
+    const selected_wok_workId = selected_wok.id;
+    // console.log("selected_wok: " + JSON.stringify(selected_wok) )
+    // console.log("selected_wok_workId: " + selected_wok_workId )
+    $tracking = { start: Date.now(), workId: selected_wok_workId };
 
-    trackTime();
+    const token_value = "Bearer " + $keycloak.token;
+    const response = await fetch(API_URL + "/profile/startTracking", {
+      method: "POST",
+      headers: {
+        Authorization: token_value,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify($tracking),
+    });
 
+    t.message = "time meassure started: " + selected_wok.name;
     toastStore.trigger(t);
-    await tick();
-    $reDrawCurves = "selected work: " + selected_wok;
+    //await tick();
+    trackTime();
+    $reDrawCurves = "time tracking: " + selected_wok;
   };
 </script>
 
 <div>
+
+  {#if $tracking == null}
   <button type="button" class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>
     <svg class="w-7 h-7 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
       <path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M10 6v4l3.276 3.276M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -53,9 +69,11 @@
 
     <span class="text-lg">Select work to Track</span></button
   >
-  {#if $tracking}
-  <div class="inline-block">{$elapsed}</div>
-  <div>{selected_wok.name}</div>
+  {/if}
+
+  {#if $tracking != null}
+    <div class="inline-block">{$elapsed}</div>
+    <div>{$tracking.workId}</div>
   {/if}
 
   <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>

@@ -1,5 +1,4 @@
 <script>
-
   import { afterUpdate } from "svelte";
   import { shelves } from "$lib/stores/libraryStore.js";
   import { distributions } from "$lib/stores/planningStore.js";
@@ -14,16 +13,15 @@
   import Connection2 from "$lib/components/Connection2.svelte";
   import Calendar from "$lib/components/Calendar.svelte";
 
-  import {API_URL} from "$lib/components/Constants.svelte";
+  import { API_URL } from "$lib/components/Constants.svelte";
   import { reDrawCurves } from "$lib/stores/connectionStore.js";
 
-  import {tracking} from "$lib/stores/timeTrackingStore.js";
+  import { tracking, trackTime } from "$lib/stores/timeTrackingStore.js";
 
   afterUpdate(() => {
-    console.log("************page updated*******")    
-   
+    console.log("************page updated*******");
   });
-  
+
   let start1;
   let end1;
   let end2;
@@ -47,7 +45,7 @@
 
   const getShelves = async () => {
     const token_value = "Bearer " + $keycloak.token;
-    console.log("URL" + API_URL);   
+    console.log("URL" + API_URL);
     var response = await fetch(API_URL + "/library", {
       method: "GET",
       headers: {
@@ -75,21 +73,40 @@
     $distributions = data;
   };
 
-  getTimeTracking = async () => {
+  const getTimeTracking = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
-    var response = await fetch(API_URL + "/planning", {
+    var response = await fetch(API_URL + "/profile/tracking", {
       method: "GET",
       headers: {
         Authorization: token_value,
       },
     });
 
+    console.log("##########response: " + JSON.stringify(response));
+
+    // if (!Object.keys(response.body).length) {
+    //   console.log("##########tracking empty ");
+    //   $tracking = null;
+    //   return;
+    // }
+
     const data = await response.json();
+     console.log("##########tracking: " + JSON.stringify($tracking));
+
+       if (!Object.keys(data).length) {
+      console.log("##########tracking empty ");
+      return;
+    }
 
     $tracking = data;
-  };
+    trackTime();
 
+  //   if (tracking != null) {
+  //     console.log("#######tracking started");
+  //     trackTime();
+  //   }
+  };
 
   function initKeycloak() {
     $keycloak = new Keycloak({
@@ -128,18 +145,16 @@
 <div>{loginState}</div>
 
 {#key $reDrawCurves}
-<div class="w-max">
+  <div class="w-max">
+    <Connection /> musí být první aby nepřekrýval popupy
+    <Library />
+    <ConnectionBackground />
 
-  <Connection /> musí být první aby nepřekrýval popupy
-  <Library />
-  <ConnectionBackground />
-
-<Planning />
-<Connection2 />
-<Calendar />
-</div>
+    <Planning />
+    <Connection2 />
+    <Calendar />
+  </div>
 {/key}
-
 
 <div id="start" bind:this={start1}>start</div>
 <br />
