@@ -14,7 +14,7 @@
 
   let selected_wok = null;
 
-  const targer_popup = "popup_time_tracing";
+  const targer_popup = "popup_time_tracing" + new Date();
 
   const popupFeatured = {
     event: "click",
@@ -37,9 +37,10 @@
   const startTimer = async () => {
     //trackTime();
     const selected_wok_workId = selected_wok.id;
+    const selected_wok_name = selected_wok.name;
+    $tracking = { start: Date.now(), workName: selected_wok_name, workId: selected_wok_workId };
     // console.log("selected_wok: " + JSON.stringify(selected_wok) )
     // console.log("selected_wok_workId: " + selected_wok_workId )
-    $tracking = { start: Date.now(), workId: selected_wok_workId };
 
     const token_value = "Bearer " + $keycloak.token;
     const response = await fetch(API_URL + "/profile/startTracking", {
@@ -55,13 +56,33 @@
     toastStore.trigger(t);
     //await tick();
     trackTime();
-    $reDrawCurves = "time tracking: " + selected_wok;
+  
+    $reDrawCurves = "time tracking start: " + selected_wok;
   };
+
+  const stopTimer = async () => {
+
+    const token_value = "Bearer " + $keycloak.token;
+    const response = await fetch(API_URL + "/profile/stopTracking", {
+      method: "POST",
+      headers: {
+        Authorization: token_value,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({stop: Date.now()}),
+    });
+
+    t.message = "time meassure stop : " + $tracking.workName;
+    toastStore.trigger(t);
+    $reDrawCurves = "time tracking stop: " + $tracking.workName;
+    $tracking = null;
+  };
+
 </script>
 
 <div>
 
-  {#if $tracking == null}
+  <!-- {#if $tracking == null} -->
   <button type="button" class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>
     <svg class="w-7 h-7 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
       <path stroke="currentColor" stroke-linejoin="round" stroke-width="2" d="M10 6v4l3.276 3.276M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -69,11 +90,25 @@
 
     <span class="text-lg">Select work to Track</span></button
   >
-  {/if}
+  <!-- {/if} -->
 
   {#if $tracking != null}
     <div class="inline-block">{$elapsed}</div>
     <div>{$tracking.workId}</div>
+
+    <button
+    type="button"
+    class="btn btn-sm m-2 variant-filled  bg-green-500"
+    on:click={() => {
+      stopTimer();
+    }}
+  >
+  <svg class="w-4 h-4 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5"/>
+  </svg>
+    Stop</button
+  >
+    
   {/if}
 
   <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>

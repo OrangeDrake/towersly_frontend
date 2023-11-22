@@ -92,9 +92,9 @@
     // }
 
     const data = await response.json();
-     console.log("##########tracking: " + JSON.stringify($tracking));
+    console.log("##########tracking: " + JSON.stringify($tracking));
 
-       if (!Object.keys(data).length) {
+    if (!Object.keys(data).length) {
       console.log("##########tracking empty ");
       return;
     }
@@ -102,13 +102,13 @@
     $tracking = data;
     trackTime();
 
-  //   if (tracking != null) {
-  //     console.log("#######tracking started");
-  //     trackTime();
-  //   }
+    //   if (tracking != null) {
+    //     console.log("#######tracking started");
+    //     trackTime();
+    //   }
   };
 
-  function initKeycloak() {
+  async function initKeycloak() {
     $keycloak = new Keycloak({
       url: "http://localhost:8080",
       realm: "master",
@@ -129,6 +129,13 @@
       .catch(function () {
         alert("failed to initialize");
       });
+
+    // try {
+    //   const authenticated = await $keycloak.init();
+    //   console.log(`User is ${authenticated ? "authenticated" : "not authenticated"}`);
+    // } catch (error) {
+    //   console.error("Failed to initialize adapter:", error);
+    // }
   }
 
   onMount(() => {

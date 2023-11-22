@@ -17,7 +17,9 @@
   // console.log("***//*/*/**/*/Shelf: " + Object.values(shelf));
   // console.log("***//*/*/**/*/Shelf name: " + Object.values(shelf.name));
 
-  let works = shelf.works;
+  let works = shelf.works.sort((a, b) => {
+    return a.rank - b.rank;
+  });  
 
   let work_name = "";
   let work_description = "";

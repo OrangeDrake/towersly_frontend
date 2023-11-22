@@ -68,13 +68,6 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     if (shelfNameToRemove == "") {
       return;
     }
-    const index = connectedShelvesNames.indexOf(shelfNameToRemove);
-    if (index === -1) {
-      return;
-    }
-    connectedShelvesNames.splice(index, 1);
-    connectedShelvesNames = connectedShelvesNames;
-    $distributions = $distributions;
 
     const token_value = "Bearer " + $keycloak.token;
     const url = new URL(API_URL + "/planning/removeconnectedshelf");
@@ -87,6 +80,19 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
         "Content-Type": "application/json",
       },
     });
+
+    if (!response.ok) {
+      return;
+    }
+
+    const index = connectedShelvesNames.indexOf(shelfNameToRemove);
+    if (index === -1) {
+      return;
+    }
+    connectedShelvesNames.splice(index, 1);
+    connectedShelvesNames = connectedShelvesNames;
+    $distributions = $distributions;
+
     $reDrawCurves = "remove" + shelfNameToRemove + distribution.id; //kdybychom odstanily 2 stejne shelfName z ruznych distribuci k redraw by nedoslo
   };
 
