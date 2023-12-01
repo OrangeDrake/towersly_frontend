@@ -13,6 +13,7 @@
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   let selected_wok = null;
+  let selected_shelf = null;
 
   const targer_popup = "popup_time_tracing" + new Date();
 
@@ -22,8 +23,9 @@
     placement: "top",
   };
 
-  const selection = (work) => {
+  const selection = (work, shelf) => {
     selected_wok = work;
+    selected_shelf = shelf;
   };
 
   let t = {
@@ -38,7 +40,7 @@
     //trackTime();
     const selected_wok_workId = selected_wok.id;
     const selected_wok_name = selected_wok.name;
-    $tracking = { start: Date.now(), workName: selected_wok_name, workId: selected_wok_workId };
+    $tracking = { start: Date.now(), workName: selected_wok_name, workId: selected_wok_workId, shelfId: selected_shelf.id };
     // console.log("selected_wok: " + JSON.stringify(selected_wok) )
     // console.log("selected_wok_workId: " + selected_wok_workId )
 
@@ -115,7 +117,7 @@
     {#if $ordered_shelves != null && $ordered_shelves.length != 0}
       {#each $ordered_shelves as shelf}
         {#if shelf.works.length != 0}
-          <span class="m-1 chip {selected_wok === shelf.works[0] ? 'variant-filled' : 'variant-soft'}" on:click={() => selection(shelf.works[0])}>
+          <span class="m-1 chip {selected_wok === shelf.works[0] ? 'variant-filled' : 'variant-soft'}" on:click={() => selection(shelf.works[0], shelf)}>
             <span>{shelf.works[0].name}</span>
           </span>
         {/if}
