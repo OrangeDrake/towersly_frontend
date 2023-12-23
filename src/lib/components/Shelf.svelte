@@ -1,5 +1,5 @@
 <script>
-  import { onMount, afterUpdate, beforeUpdate } from "svelte";
+  import { afterUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
@@ -13,9 +13,6 @@
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   export let shelf;
-
-  // console.log("***//*/*/**/*/Shelf: " + Object.values(shelf));
-  // console.log("***//*/*/**/*/Shelf name: " + Object.values(shelf.name));
 
   let works = shelf.works.sort((a, b) => {
     return a.rank - b.rank;

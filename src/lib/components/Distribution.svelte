@@ -4,13 +4,17 @@
   import DistributionRules from "$lib/components/DistributionRules.svelte";
   import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
-  import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
+  import { generateButton_location} from "$lib/stores/calendarStore.js";
+
+  import { resetLocations, calculateCurves } from "$lib/stores/connectionStore.js";
+  import { resetLocations2, calculateCurves2 } from "$lib/stores/connectionStore2.js";
 
   let element;
 
   let offsetTop;
   let offsetLeft;
   let offsetWidth;
+  let offsetHeight;
 
   export let distribution;
 
@@ -19,27 +23,25 @@
       offsetTop = element.offsetTop;
       offsetLeft = element.offsetLeft;
       offsetWidth = element.offsetWidth;
-      const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth };
+      offsetHeight = element.offsetHeight;
+      const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth, offsetHeight: offsetHeight};
       console.log("distribution: offsetTop2: " + offsetTop);
       addToDistributionsLocations(distribution.name, location);
     }
   };
 
+
   $: {
-    //getElementLocation();
-    if (element != null) {
-      if ($ordered_shelves != null) {
-        console.log("$shelves_locations.keys().length: " + Object.keys($shelves_locations).length + "$ordered_shelves.length: " + $ordered_shelves.length);
-        if (Object.keys($shelves_locations).length == $ordered_shelves.length) {
-          getElementLocation();
-          console.log("distribution " + distribution.id + " location got");
-          console.log("try to calulate cureves");
-          console.log("$distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "$ordered_distributions.length: " + $ordered_distributions.length);
-          if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
-            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************");
-            calculateCurves();
-          }
-        }
+    console.log("try to calulate cureves");
+    // console.log("shelves_locations.keys().length: " + Object.keys($shelves_locations).length + "ordered_shelves.length: " + $ordered_shelves.length);
+    console.log("element: " + element)
+    if (element != null && $ordered_shelves != null && Object.keys($shelves_locations).length == $ordered_shelves.length) {
+      getElementLocation();
+      console.log("distribution " + distribution.id + " location got");
+      console.log("distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "ordered_distributions.length: " + $ordered_distributions.length);
+      if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************");
+        calculateCurves();
       }
     }
   }
@@ -47,8 +49,6 @@
   afterUpdate(() => {
     console.log("distribution element updated, id: " + distribution.id);
     getElementLocation();
-
-    // calculateCurves();
   });
 </script>
 

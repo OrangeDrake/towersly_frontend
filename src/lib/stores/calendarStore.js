@@ -4,6 +4,7 @@ import { ordered_distributions, distributions } from "$lib/stores/planningStore.
 const DAYS = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 
 export const plan = writable({});
+export const generateButton_location = writable(null);
 
 export const createSlot = (day, start, duration) => {
   const startInMinutes = hoursWithMinutesToMinutes(start);

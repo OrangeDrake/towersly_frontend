@@ -6,6 +6,7 @@
   import { popup } from "@skeletonlabs/skeleton";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Rule from "$lib/components/Rule.svelte";
+  import {reDrawCurves} from "$lib/stores/connectionStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -149,7 +150,9 @@
 
     toastRuleAdded.message = "Rule " + rule_name + " added";
     (toastRuleAdded.background = "bg-green-500"), toastStore.trigger(toastRuleAdded);
+    $reDrawCurves = "rule added: " + rule_name;
     resetRule();
+    
   };
 
   const changeOfLastRuleOption = (index) => {

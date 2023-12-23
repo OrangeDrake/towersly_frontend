@@ -67,11 +67,11 @@ export const calculateCurves = () => {
     }
   }
 
-  resetLocations();
+  //resetLocations();
   curvesToDraw.set(curves);
 };
 
-const resetLocations = () => {
+export const resetLocations = () => {
   console.log("------locations reseted /**/*/*/*/*/-------------------@@@@@")
   shelves_locations.set({});
   distributions_locations.set({});

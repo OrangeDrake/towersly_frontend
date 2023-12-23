@@ -1,5 +1,5 @@
 <script>
-  import { afterUpdate } from "svelte";
+  import { afterUpdate, tick } from "svelte";
 
   import Library from "$lib/components/Library.svelte";
   import Planning from "$lib/components/Planning.svelte";
@@ -23,13 +23,12 @@
 {#key $reDrawCurves}
   <div class="w-max">
 
-
-    <Connection /> musí být první aby nepřekrýval popupy
+    <!-- musí být první aby nepřekrýval popupy -->
+    <Connection /> 
+    <Connection2 />
     <Library />
     <ConnectionBackground />
-
-    <Planning />
-    <Connection2 />
+    <Planning />    
     <Calendar />
   </div>
 {/key}

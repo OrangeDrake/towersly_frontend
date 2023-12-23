@@ -56,12 +56,6 @@
 
     console.log("##########response: " + JSON.stringify(response));
 
-    // if (!Object.keys(response.body).length) {
-    //   console.log("##########tracking empty ");
-    //   $tracking = null;
-    //   return;
-    // }
-
     const data = await response.json();
     console.log("##########tracking: " + JSON.stringify($tracking));
 
@@ -72,11 +66,6 @@
 
     $tracking = data;
     trackTime();
-
-    //   if (tracking != null) {
-    //     console.log("#######tracking started");
-    //     trackTime();
-    //   }
   };
 
   async function initKeycloak() {
@@ -115,8 +104,21 @@
   });
 </script>
 
-<div>{loginState}</div>
-<slot />
+<div class = "font-semibold">
+  <div class="flex flex-nowrap bg-gray-800">
+    <div class="w-1/4 text-white p-4">
+      <h2 class="text-xl mb-4">Menu</h2>
+    </div>
 
-<h1>Layout BOTTOM</h1>
+    <div class="flex-1 p-4 pr-10">
+      <div class="text-right">
+        <p class="text-xl text-white">{loginState}</p>
+      </div>
+    </div>
+  </div>
+
+  <slot />
+
+  <h1>Layout BOTTOM</h1>
+</div>
 <Toast position="t" />

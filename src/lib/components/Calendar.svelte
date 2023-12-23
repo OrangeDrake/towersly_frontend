@@ -1,11 +1,19 @@
 <script>
-  import { createSlot, plan, generatePlan, clearGeneratedAndRefresh } from "$lib/stores/calendarStore.js";
+  import { afterUpdate } from "svelte";
+  import { createSlot, plan, generatePlan, clearGeneratedAndRefresh, generateButton_location } from "$lib/stores/calendarStore.js";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
   import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
+  import { resetLocations, calculateCurves } from "$lib/stores/connectionStore.js";
+  import { resetLocations2, calculateCurves2 } from "$lib/stores/connectionStore2.js";
+  import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
+  import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+  import { tick } from 'svelte';
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+  let element;
 
   let toastRuleAddad = {
     message: "",
@@ -44,6 +52,24 @@
   const gapHoursNumberLeft = 20;
 
   const minutesInDay = 1440;
+
+  let generateButtonElement;
+  let offsetTop;
+  let offsetLeft;
+  let offsetWidth;
+  let offsetHeight;
+
+  const getElementLocation = () => {
+    if (generateButtonElement != null) {
+      offsetTop = generateButtonElement.offsetTop;
+      offsetLeft = generateButtonElement.offsetLeft;
+      offsetWidth = generateButtonElement.offsetWidth;
+      offsetHeight = generateButtonElement.offsetHeight;
+      const location = { offsetTop: offsetTop, offsetLeft: offsetLeft, offsetWidth: offsetWidth, offsetHeight: offsetHeight };
+      console.log("*+*+*+*+*++*+**+*+location got: " + JSON.stringify(location));
+      $generateButton_location = location;
+    }
+  };
 
   const addSlot = () => {
     let isPLaced = createSlot(slot_day, slot_start, slot_duration);
@@ -86,9 +112,46 @@
   const durationToLength = (time) => {
     return (time / 60) * hoursHeight;
   };
+
+  // $ :  {
+  //   if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
+  //   getElementLocation();
+  //   }
+  // }
+
+  $: {
+    $ordered_shelves;
+    if (element != null && $ordered_distributions != null && Object.keys($distributions_locations).length == $ordered_distributions.length) {
+        getElementLocation();
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves2 calculated******************************");
+        calculateCurves2();
+        resetLocations();
+        resetLocations2();      
+    }
+  }
+
+  // const culculateCurves = async () => {
+
+  //       await tick();
+  //       if (element == null){
+  //           return;
+  //       }
+  //       getElementLocation();
+  //       calculateCurves2();
+  //       resetLocations();
+  //       resetLocations2(); 
+  // }
+
+  //culculateCurves();
+
+  // afterUpdate(() => {
+  //   getElementLocation();
+  // });
 </script>
 
-<div class="ml-2 p-2 pb-10 bg-white">
+<div class="ml-2 m-0 mt-0 p-5 bg-white"></div>
+
+<div class="ml-2 p-2 pb-10 bg-white" bind:this={element}>
   <!-- <div class="ml-2 p-2 pb-10"> -->
   <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
     <path
@@ -115,6 +178,7 @@
     >
 
     <button
+      bind:this={generateButtonElement}
       type="button"
       class="btn btn-sm m-2 variant-filled rounded"
       on:click={() => {

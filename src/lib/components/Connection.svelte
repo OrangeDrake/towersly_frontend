@@ -15,7 +15,7 @@
   // }
 
   $: {
-    console.log("curves2");
+    console.log("curves-first");
     console.log($curvesToDraw);
   }
 

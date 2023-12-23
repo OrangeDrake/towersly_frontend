@@ -64,7 +64,7 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     shelfNameToConnect = "";
   };
 
-  const removeConnectedShelf = () => {
+  const removeConnectedShelf = async () => {
     if (shelfNameToRemove == "") {
       return;
     }
@@ -73,7 +73,7 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     const url = new URL(API_URL + "/planning/removeconnectedshelf");
     url.searchParams.append("distributionId", distribution.id);
     url.searchParams.append("shelfName", shelfNameToRemove);
-    fetch(url, {
+    const response = await fetch(url, {
       method: "GET",
       headers: {
         Authorization: token_value,
@@ -82,6 +82,8 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     });
 
     if (!response.ok) {
+      console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*. rreturned" + shelfNameToRemove);
+      console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*. response" + response);
       return;
     }
 
@@ -93,6 +95,7 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     connectedShelvesNames = connectedShelvesNames;
     $distributions = $distributions;
 
+    console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*." + shelfNameToRemove);
     $reDrawCurves = "remove" + shelfNameToRemove + distribution.id; //kdybychom odstanily 2 stejne shelfName z ruznych distribuci k redraw by nedoslo
   };
 

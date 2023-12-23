@@ -15,7 +15,7 @@ export const updateTrackedWorkActualTime = (actualTime) => {
   //log shelves with values in object
   console.log("shelves: " + JSON.stringify(shelves_value));
 
-  const shelf = shelves.find((s) => s.id === shelfId);
+  const shelf = shelves_value.find((s) => s.id === shelfId);
   const work = shelf.works.find((w) => w.id === workId);
   work.actualTime = actualTime;
 };
