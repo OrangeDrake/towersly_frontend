@@ -12,6 +12,7 @@
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
+
   let selected_wok = null;
   let selected_shelf = null;
 
@@ -75,7 +76,7 @@
     });
 
     if (response.status != 200) {
-      toastRuleAdded.background = "bg-yellow-200";
+      t.background = "bg-yellow-200";
       t.message = "time meassure stop error: " + $tracking.workName;
       toastStore.trigger(t);
       $reDrawCurves = "time tracking stop error: " + $tracking.workName;
@@ -86,7 +87,7 @@
     const data = await response.json();
 
     if(data == 0){
-      toastRuleAdded.background = "bg-yellow-200";
+      t.background = "bg-yellow-200";
       t.message = "time meassure stop error: " + $tracking.workName;
       toastStore.trigger(t);
       $reDrawCurves = "time tracking stop error: " + $tracking.workName;

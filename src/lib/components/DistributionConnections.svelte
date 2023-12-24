@@ -15,6 +15,7 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
   let typeMixingShelves;
 
   export let distribution;
+  // export let toggle = () => {};
 
 
   if (distribution.connection != null) {
@@ -113,10 +114,12 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     });
   };
 
-  afterUpdate(() => {
-    getConnectedShelvesNames();
-    // getElementLocation();
-  });
+  getConnectedShelvesNames();
+
+  // afterUpdate(() => {
+  //   getConnectedShelvesNames();
+  //   toggle();
+  // });
 
 
 

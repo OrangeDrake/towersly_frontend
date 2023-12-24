@@ -37,22 +37,22 @@
     console.log("element: " + element)
     if (element != null && $ordered_shelves != null && Object.keys($shelves_locations).length == $ordered_shelves.length) {
       getElementLocation();
-      console.log("distribution " + distribution.id + " location got");
+      console.log("##@@distribution " + distribution.id + " location got");
       console.log("distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "ordered_distributions.length: " + $ordered_distributions.length);
       if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************");
-        calculateCurves();
+        //calculateCurves();
       }
     }
   }
 
-  afterUpdate(() => {
-    console.log("distribution element updated, id: " + distribution.id);
-    getElementLocation();
-  });
+  // afterUpdate(() => {
+  //   console.log("distribution element updated, id: " + distribution.id);
+  //   getElementLocation();
+  // });
 </script>
 
-<div class="card p-2 m-2 h-50 w-72" bind:this={element}>
+<div class="card p-2 m-2 h-50 w-72" bind:this={element} >
   <div class="card-header w-64 p-2 m-2">
     <svg class="inline-block w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
       <path

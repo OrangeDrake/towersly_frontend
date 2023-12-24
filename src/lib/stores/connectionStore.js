@@ -47,6 +47,7 @@ export const calculateCurves = () => {
     const distribution_shelves_name = distribution.connection.shelves_names;
 
     const distribution_location = distributions_locations_value[distribution_name];
+    console.log("///!!!!!!!!!!!!!!!!!!distribution_location connection Store1:" + JSON.stringify(distribution_location))
     const distribution_x = distribution_location.offsetLeft + Math.floor(distribution_location.offsetWidth / 2);
     const distribution_y = distribution_location.offsetTop;
     const distribution_point = { x: distribution_x, y: distribution_y };

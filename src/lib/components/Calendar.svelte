@@ -119,11 +119,11 @@
   //   }
   // }
 
-  $: {
-    $ordered_shelves;
-    if (element != null && $ordered_distributions != null && Object.keys($distributions_locations).length == $ordered_distributions.length) {
+  $: {    
+    if (element != null && $ordered_distributions != null && $ordered_shelves != null && Object.keys($distributions_locations).length == $ordered_distributions.length && Object.keys($shelves_locations).length == $ordered_shelves.length) {
         getElementLocation();
         console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves2 calculated******************************");
+        calculateCurves();
         calculateCurves2();
         resetLocations();
         resetLocations2();      
@@ -144,9 +144,9 @@
 
   //culculateCurves();
 
-  // afterUpdate(() => {
-  //   getElementLocation();
-  // });
+  afterUpdate(() => {
+    getElementLocation();
+  });
 </script>
 
 <div class="ml-2 m-0 mt-0 p-5 bg-white"></div>

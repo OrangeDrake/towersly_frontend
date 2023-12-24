@@ -8,6 +8,8 @@
   import Work from "$lib/components/Work.svelte";
   import { addTohShelvesLocations, shelves } from "$lib/stores/libraryStore.js";
   import {reDrawCurves} from "$lib/stores/connectionStore.js";
+  import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
+  import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
 
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -79,6 +81,13 @@
       addTohShelvesLocations(shelf.name, location);
     }
   };
+
+  // $: {   
+  // if (element != null && $ordered_distributions != null && $ordered_shelves != null && Object.keys($distributions_locations).length == $ordered_distributions.length && Object.keys($shelves_locations).length == $ordered_shelves.length) {
+  //       getElementLocation();
+    
+  //   }
+  // }
 
   afterUpdate(() => {
     console.log("shelf element updated, id: " + shelf.id);
