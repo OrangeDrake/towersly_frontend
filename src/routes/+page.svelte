@@ -16,16 +16,16 @@
 
   let start1;
   let end1;
-  let end2;
+  let element;
 
 </script>
 
 {#key $reDrawCurves}
-  <div class="w-max">
+  <div class="w-max" bind:this={element}>
 
     <!-- musí být první aby nepřekrýval popupy -->
-    <Connection /> 
-    <Connection2 />
+    <Connection  page ={element}/> 
+    <Connection2 page ={element} />
     <Library />
     <ConnectionBackground />
     <Planning />    

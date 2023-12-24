@@ -2,7 +2,7 @@ import { get, derived, writable } from "svelte/store";
 import { ordered_distributions, distributions_locations } from "$lib/stores/planningStore.js";
 import { generateButton_location } from "$lib/stores/calendarStore.js";
 
-export const curvesToDraw = writable(null);
+export const curvesToDraw2 = writable(null);
 export const reDrawCurves = writable(null);
 
 export const calculateCurves2 = () => {
@@ -58,7 +58,7 @@ export const calculateCurves2 = () => {
   }
 
   //resetLocations();
-  curvesToDraw.set(curves);
+  curvesToDraw2.set(curves);
 };
 
 export const resetLocations2 = () => {

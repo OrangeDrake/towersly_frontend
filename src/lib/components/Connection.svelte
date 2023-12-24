@@ -20,15 +20,20 @@
   }
 
   const strokes = ["0,16,39", "60,76,99", "100,116,139", "150,166,189"];
+  export let page;
 
+  $: {    
+    page;
+    console.log("```````````" + JSON.stringify(page));
+  }
 
 </script>
 
 <!-- <div class="ml-2 h-8 bg-gradient-to-b from-sky-100 to-sky-200" /> -->
 
 <div class="absolute">
-  {#if $curvesToDraw != null}
-    <svg height="1000" width="2000">
+  {#if $curvesToDraw != null && page != null}
+    <svg height="100%" width={page.offsetWidth}>
       {#each Object.values($curvesToDraw) as curve, i}
         <!-- <line x1={curve.shelf_point.x} y1={curve.shelf_point.y} x2={curve.distribution_point.x} y2={curve.distribution_point.y} style="stroke:rgb(100,116,139);stroke-width:2" /> -->
         <path

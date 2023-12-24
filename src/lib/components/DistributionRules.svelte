@@ -240,7 +240,6 @@
           <option value="ss">Same day sooner</option>
         {/if}
 
-
         {#if rule_options.indexOf("ne") == -1 || rule_options.indexOf("ne") == index}
           <option value="ne">Next days exact</option>
         {/if}
@@ -248,8 +247,6 @@
         {#if rule_options.indexOf("pe") == -1 || rule_options.indexOf("pe") == index}
           <option value="pe">Previus days exact</option>
         {/if}
-
-
 
         {#if rule_options.indexOf("nl") == -1 || rule_options.indexOf("nl") == index}
           <option value="nl">Next days later</option>

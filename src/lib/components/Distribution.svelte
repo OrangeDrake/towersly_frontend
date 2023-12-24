@@ -39,10 +39,10 @@
       getElementLocation();
       console.log("##@@distribution " + distribution.id + " location got");
       console.log("distributions_locations.keys().length: " + Object.keys($distributions_locations).length + "ordered_distributions.length: " + $ordered_distributions.length);
-      if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************");
-        //calculateCurves();
-      }
+      // if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
+      //   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>curves calculated******************************");
+      //   //calculateCurves();
+      // }
     }
   }
 
