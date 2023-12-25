@@ -29,7 +29,7 @@
             Q{curve.distribution_point.x} {curve.generateButton_point_point.y} {(curve.distribution_point.x + curve.generateButton_point_point.x) / 2} {(curve.distribution_point.y + curve.generateButton_point_point.y) / 2}       
             T{curve.generateButton_point_point.x} {curve.generateButton_point_point.y}"
           stroke="rgb({strokes[i % strokes.length]})"
-          stroke-width="3"
+          stroke-width="2"
           fill="none"
         />
       {/each}

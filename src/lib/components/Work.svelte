@@ -22,7 +22,7 @@
   };
 </script>
 
-<div class="px-2 bordel-solid border-2 bg-slate-100 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover}>
+<div class="card px-2 bordel-solid border-2 bg-slate-200 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover}>
   <div class="truncate">
     <span class="text-stone-600">
       {index + 1}
@@ -44,7 +44,7 @@
   </div>
 </div>
 
-<div class="border-solid border-2 bg-slate-400 p-4 m-1 border-solid border-2 bg-purple-200 break-words w-72" data-popup={targer_popup}>
+<div class="card border-solid border-2 bg-slate-400 p-4 m-1 border-solid border-2 bg-purple-200 break-words w-72" data-popup={targer_popup}>
   <div class="text-stone-600">Name:</div>
   <div>
     {work.name}

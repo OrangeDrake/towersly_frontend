@@ -9,7 +9,7 @@
   import { addTohShelvesLocations, shelves } from "$lib/stores/libraryStore.js";
   import {reDrawCurves} from "$lib/stores/connectionStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
-  import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+  import {allConnectedShelvesNames, ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
 
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -97,7 +97,7 @@
   });
 </script>
 
-<div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 " bind:this={element}>
+<div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 bg-slate-300 {$allConnectedShelvesNames.has(shelf.name)? 'bordel-solid border-2 border-black':''} " bind:this={element}>
   <div class="card-header w-64 p-2 m-2">
     <svg class="inline-block w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
       <path
@@ -109,6 +109,7 @@
       />
     </svg>
     <span class="font-bold">{shelf.name}</span>
+    <hr>
   </div>
   <div>
     {#each Object.values(works).slice(0, 4) as work, j}

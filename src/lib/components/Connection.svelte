@@ -41,7 +41,7 @@
             Q{curve.shelf_point.x} {curve.distribution_point.y} {(curve.shelf_point.x + curve.distribution_point.x) / 2 } {(curve.shelf_point.y +curve.distribution_point.y) /2  }       
             T{curve.distribution_point.x} {curve.distribution_point.y}"
           stroke="rgb({strokes[i%strokes.length]})"
-          stroke-width="3"
+          stroke-width="2"
           fill="none"
         />
       {/each}

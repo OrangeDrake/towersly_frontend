@@ -2,7 +2,7 @@
   import { onMount, afterUpdate, beforeUpdate } from "svelte";
   import DistributionConnections from "$lib/components/DistributionConnections.svelte";
   import DistributionRules from "$lib/components/DistributionRules.svelte";
-  import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+  import {  ordered_shelves, shelves_locations, ordered_shelves_names } from "$lib/stores/libraryStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
   import { generateButton_location} from "$lib/stores/calendarStore.js";
 
@@ -32,6 +32,7 @@
 
 
   $: {
+
     console.log("try to calulate cureves");
     // console.log("shelves_locations.keys().length: " + Object.keys($shelves_locations).length + "ordered_shelves.length: " + $ordered_shelves.length);
     console.log("element: " + element)
@@ -52,7 +53,8 @@
   // });
 </script>
 
-<div class="card p-2 m-2 h-50 w-72" bind:this={element} >
+<div class="card p-2 m-2 h-50 w-72 {distribution.projection != null? 'bordel-solid border-2 border-black':''}" bind:this={element} >
+  <!-- <div class="card px-2 bordel-solid border-2 border-black bg-slate-200 p-1 m-1" bind:this={element} > -->
   <div class="card-header w-64 p-2 m-2">
     <svg class="inline-block w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
       <path
@@ -64,6 +66,7 @@
       />
     </svg>
     <span class="font-bold">{distribution.name}</span>
+    <hr>
   </div>
   <DistributionConnections {distribution} />
   <DistributionRules {distribution} />

@@ -4,9 +4,9 @@ import { afterUpdate, onMount, beforeUpdate } from "svelte";
 import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
 import { keycloak } from "$lib/stores/keycloakStore.js";
 import { API_URL } from "$lib/components/Constants.svelte";
-import { ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+import {allConnectedShelvesNames, ordered_shelves, resetAllConnectedShelvesNames, ordered_shelves_names, addToAllConnectedShelvesNames, removeFromAllConnectedShelvesNames} from "$lib/stores/libraryStore.js";
 import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
-import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
+import { reDrawCurves } from "$lib/stores/connectionStore.js";
 
   let connectedShelvesNames;
   let shelvesNamesToAdd;
@@ -31,6 +31,9 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
       connectedShelvesNames = [];
     } else {
       connectedShelvesNames = distribution.connection.shelves_names;
+
+      addToAllConnectedShelvesNames(connectedShelvesNames)
+      console.log("-*-*-allConnectedShelvesNames: " +  Array(...$allConnectedShelvesNames).join(' '));
     }
   };
 
@@ -96,6 +99,9 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     connectedShelvesNames = connectedShelvesNames;
     $distributions = $distributions;
 
+    //removeFromAllConnectedShelvesNames(shelfNameToRemove);
+    resetAllConnectedShelvesNames();
+
     console.log(">>>>>>>>>>>>>>>>>>>*.*.*.*.*.*." + shelfNameToRemove);
     $reDrawCurves = "remove" + shelfNameToRemove + distribution.id; //kdybychom odstanily 2 stejne shelfName z ruznych distribuci k redraw by nedoslo
   };
@@ -114,15 +120,6 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
     });
   };
 
-  getConnectedShelvesNames();
-
-  // afterUpdate(() => {
-  //   getConnectedShelvesNames();
-  //   toggle();
-  // });
-
-
-
   $: {
     console.log("!!!!!!!!!!!!!!!++++@@@@@@@@@@* in reactive block shalves names: " + $ordered_shelves_names + "connectedShelvesNames: " + connectedShelvesNames);
     if ($ordered_shelves_names != null && connectedShelvesNames != null) {
@@ -131,8 +128,10 @@ import { calculateCurves, reDrawCurves } from "$lib/stores/connectionStore.js";
       console.log("@@@@@@@@@@filtered ordered_shelves for add: " + shelvesNamesToAdd);
     }
   }
- </script>
- 
+
+  getConnectedShelvesNames();
+
+ </script> 
  
  {#if shelvesNamesToAdd != null && shelvesNamesToAdd.length != 0}
     <div class="p-1 m-1 bg-slate-300">
