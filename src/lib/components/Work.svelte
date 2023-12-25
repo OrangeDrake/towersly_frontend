@@ -6,11 +6,19 @@
   import { storePopup } from "@skeletonlabs/skeleton";
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-  const targer_popup = "popup_work" + work.id;
+  const info_targer_popup = "info_popup_work" + work.id;
   //const targer_popup = "popup";
   const popupHover = {
     event: "hover",
-    target: targer_popup,
+    target: info_targer_popup,
+    placement: "top",
+  };
+
+  const edit_targer_popup = "edit_popup_work" + work.id;
+  //const targer_popup = "popup";
+  const popupFeatured = {
+    event: "click",
+    target: edit_targer_popup,
     placement: "top",
   };
 
@@ -20,9 +28,32 @@
 
     return hours + ":" + minutesPart;
   };
+
+  const saveWork = async () => {
+    // const token_value = "Bearer " + $keycloak.token;
+    // const actualDurationInMinutes = hoursAndMinutesToMinutes(work_actual_duration_hours, work_actual_duration_minutes);
+    // const expectedDurationInMinutes = hoursAndMinutesToMinutes(work_expected_duration_hours, work_expected_duration_minutes);
+    // var url = new URL(API_URL + "/library/updatework");
+    // const response = await fetch(url, {
+    //   method: "POST",
+    //   headers: {
+    //     Authorization: token_value,
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({ id: work.id, name: work.name, description: work.description, actualTime: actualDurationInMinutes, expectedTime: expectedDurationInMinutes }),
+    // });
+    // const n_work = await response.json();
+    // work = n_work;
+  };
+
+  let work_actual_duration_minutes = work.actualTime % 60;
+  let work_actual_duration_hours = Math.floor(work.actualTime / 60);
+  let work_expected_duration_minutes = work.expectedTime % 60;
+  let work_expected_duration_hours = Math.floor(work.expectedTime / 60);
 </script>
 
-<div class="card px-2 bordel-solid border-2 bg-slate-200 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover}>
+<!-- <div class="card px-2 bordel-solid border-2 bg-slate-200 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover}> -->
+<div class="card px-2 bordel-solid border-2 bg-slate-200 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover} use:popup={popupFeatured}>
   <div class="truncate">
     <span class="text-stone-600">
       {index + 1}
@@ -44,7 +75,7 @@
   </div>
 </div>
 
-<div class="card border-solid border-2 bg-slate-400 p-4 m-1 border-solid border-2 bg-purple-200 break-words w-72" data-popup={targer_popup}>
+<div class="card border-solid border-2 bg-slate-400 p-4 m-1 border-solid border-2 bg-purple-200 break-words w-72" data-popup={info_targer_popup}>
   <div class="text-stone-600">Name:</div>
   <div>
     {work.name}
@@ -57,8 +88,7 @@
 
   <div class="text-stone-600">Actual Duration:</div>
   <div>
-    <!-- {work.actualDuration} -->
-    {work.actualTime}
+    {MinutesToHoursAndMinutesText(work.actualTime)}
   </div>
 
   <div class="text-stone-600">Planed Duration:</div>
@@ -66,4 +96,49 @@
     <!-- {work.expectedDuration} -->
     {MinutesToHoursAndMinutesText(work.expectedTime)}
   </div>
+</div>
+
+<div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={edit_targer_popup}>
+  <label class="label">
+    <span>Name</span>
+    <input bind:value={work.name} class="input rounded p-1" type="text" />
+  </label>
+
+  <label class="label">
+    <span>Description</span>
+    <input bind:value={work.description} class="input rounded p-1" type="text" />
+  </label>
+
+  <label class="label">
+    <span>Actual Duration</span>
+    <div class="flex">
+      <span class="flex-initial w-16"><input bind:value={work_actual_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
+      <span class="flex-initial w-8 text-lesft pl-1 text-lg">h :</span>
+      <span class="flex-initial w-16"><input bind:value={work_actual_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+      <span class="flex-initial w-8 text-left pl-1 text-lg">s</span>
+    </div>
+  </label>
+
+  <label class="label">
+    <span>Expected Duration</span>
+    <div class="flex">
+      <span class="flex-initial w-16"><input bind:value={work_expected_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
+      <span class="flex-initial w-8 text-lesft pl-1 text-lg">h :</span>
+      <span class="flex-initial w-16"><input bind:value={work_expected_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+      <span class="flex-initial w-8 text-left pl-1 text-lg">s</span>
+    </div>
+  </label>
+
+  <button
+    type="button"
+    class="btn btn-sm m-2 variant-filled bg-green-500"
+    on:click={() => {
+      saveWork();
+    }}
+  >
+  <svg class="w-5 h-5 p-1 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5.917 5.724 10.5 15 1.5" />
+  </svg>
+    Save Work</button
+  >
 </div>
