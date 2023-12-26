@@ -2,31 +2,40 @@
   import { afterUpdate } from "svelte";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
+  import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
   import { addTohShelvesLocations, shelves } from "$lib/stores/libraryStore.js";
-  import {reDrawCurves} from "$lib/stores/connectionStore.js";
+  import { reDrawCurves } from "$lib/stores/connectionStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
-  import {allConnectedShelvesNames, ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
-
+  import { allConnectedShelvesNames, ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
+  let toastWorkCreated = {
+    message: "",
+    hideDismiss: true,
+    timeout: 10000,
+    background: "bg-green-500",
+    position: "r",
+    padding: "p-4",
+  };
+
   export let shelf;
 
-  let works = shelf.works.sort((a, b) => {
-    return a.rank - b.rank;
-  });  
+  let element;
+  let offsetTop;
+  let offsetLeft;
+  let offsetWidth;
+  let offsetHeight;
 
   let work_name = "";
   let work_description = "";
-  // let work_actual_duration_hours = 0;
-  // let work_actual_duration_minutes = 0;
   let work_expected_duration_hours = 0;
   let work_expected_duration_minutes = 0;
-  let work_expected_duration = "";
+  //let work_expected_duration = "";
 
   const targer_popup = "popup_shelf_" + shelf.id;
 
@@ -35,6 +44,10 @@
     target: targer_popup,
     placement: "top",
   };
+
+  let works = shelf.works.sort((a, b) => {
+    return a.rank - b.rank;
+  });
 
   const hoursAndMinutesToMinutes = (hours, minutes) => {
     return hours * 60 + minutes;
@@ -55,21 +68,32 @@
       body: JSON.stringify({ name: work_name, description: work_description, shelfId: shelf.id, expectedTime: expectedDurationInMinutes }),
     });
 
+    if (!response.ok) {
+      toastWorkCreated.background = "bg-yellow-200";
+      toastWorkCreated.message = "Work " + work_name + " create failed";
+      toastStore.trigger(toastWorkCreated);
+      return;
+    }
+
+    toastWorkCreated.background = "bg-green-500";
+    toastWorkCreated.message = "Work " + work_name + " created";
+    toastStore.trigger(toastWorkCreated);
+
     const n_work = await response.json();
     works.push(n_work);
     works = works;
     $shelves = $shelves;
-    work_name = "";
-    work_description = "";
-    //resetLocations();
+    resetWork();
+
     $reDrawCurves = "work added: " + work_name;
   };
 
-  let element;
-  let offsetTop;
-  let offsetLeft;
-  let offsetWidth;
-  let offsetHeight;
+  const resetWork = () => {
+    work_name = "";
+    work_description = "";
+    work_expected_duration_hours = 0;
+    work_expected_duration_minutes = 0;
+  };
 
   const getElementLocation = () => {
     if (element != null) {
@@ -82,10 +106,10 @@
     }
   };
 
-  // $: {   
+  // $: {
   // if (element != null && $ordered_distributions != null && $ordered_shelves != null && Object.keys($distributions_locations).length == $ordered_distributions.length && Object.keys($shelves_locations).length == $ordered_shelves.length) {
   //       getElementLocation();
-    
+
   //   }
   // }
 
@@ -97,7 +121,7 @@
   });
 </script>
 
-<div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 bg-slate-300 {$allConnectedShelvesNames.has(shelf.name)? 'bordel-solid border-2 border-black':''} " bind:this={element}>
+<div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 bg-slate-300 {$allConnectedShelvesNames.has(shelf.name) ? 'bordel-solid border-2 border-black' : ''} " bind:this={element}>
   <div class="card-header w-64 p-2 m-2">
     <svg class="inline-block w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
       <path
@@ -109,7 +133,7 @@
       />
     </svg>
     <span class="font-bold">{shelf.name}</span>
-    <hr>
+    <hr />
   </div>
   <div>
     {#each Object.values(works).slice(0, 4) as work, j}
@@ -145,11 +169,25 @@
     <label class="label">
       <span>Expected Duration</span>
       <div class="flex">
-        <span class="flex-initial w-24"><input bind:value={work_expected_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
-        <span class="flex-initial w-4 text-center">:</span>
-        <span class="flex-initial w-24"><input bind:value={work_expected_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+        <span class="flex-initial w-16"><input bind:value={work_expected_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
+        <span class="flex-initial w-8 text-lesft pl-1 text-lg">h :</span>
+        <span class="flex-initial w-16"><input bind:value={work_expected_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+        <span class="flex-initial w-8 text-left pl-1 text-lg">m</span>
       </div>
     </label>
+
+    <button
+      type="button"
+      class="btn btn-sm m-2 variant-filled bg-amber-800"
+      on:click={() => {
+        resetWork();
+      }}
+    >
+      <svg class="p-1 w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+      </svg>
+      Close</button
+    >
 
     <button
       type="button"

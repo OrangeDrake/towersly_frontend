@@ -21,6 +21,14 @@
     padding: "p-4",
   };
 
+  let work_actual_duration_seconds_edit = work.actualTime % 60;
+  let work_actual_duration_minutes_edit = Math.floor((work.actualTime / 60) % 60);
+  let work_actual_duration_hours_edit = Math.floor(work.actualTime / 60 / 60);
+  let work_expected_duration_minutes_edit = Math.floor((work.expectedTime / 60) % 60);
+  let work_expected_duration_hours_edit = Math.floor(work.expectedTime / 60 / 60);
+  let work_name_edit = work.name;
+  let work_description_edit = work.description;
+
   const info_targer_popup = "info_popup_work" + work.id;
   //const targer_popup = "popup";
   const popupHover = {
@@ -99,13 +107,6 @@
     work_description_edit = work.description;
   };
 
-  let work_actual_duration_seconds_edit = work.actualTime % 60;
-  let work_actual_duration_minutes_edit = Math.floor((work.actualTime / 60) % 60);
-  let work_actual_duration_hours_edit = Math.floor(work.actualTime / 60 / 60);
-  let work_expected_duration_minutes_edit = Math.floor((work.expectedTime / 60) % 60);
-  let work_expected_duration_hours_edit = Math.floor(work.expectedTime / 60 / 60);
-  let work_name_edit = work.name;
-  let work_description_edit = work.description;
 </script>
 
 <!-- <div class="card px-2 bordel-solid border-2 bg-slate-200 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover}> -->
