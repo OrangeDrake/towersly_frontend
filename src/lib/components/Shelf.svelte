@@ -113,7 +113,7 @@
   </div>
   <div>
     {#each Object.values(works).slice(0, 4) as work, j}
-      <Work {work} index={j} />
+      <Work {work} index={j} {shelf} />
     {/each}
   </div>
   {#if works.length > 5}

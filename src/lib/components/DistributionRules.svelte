@@ -149,7 +149,8 @@
     rules = projection.rules;
 
     toastRuleAdded.message = "Rule " + rule_name + " added";
-    (toastRuleAdded.background = "bg-green-500"), toastStore.trigger(toastRuleAdded);
+    toastRuleAdded.background = "bg-green-500";
+    toastStore.trigger(toastRuleAdded);
     $reDrawCurves = "rule added: " + rule_name;
     resetRule();
     
