@@ -22,34 +22,36 @@
     placement: "top",
   };
 
-  const MinutesToHoursAndMinutesText = (minutes) => {
-    const hours = Math.floor(minutes / 60);
-    const minutesPart = minutes % 60;
+  // const MinutesToHoursAndMinutesText = (minutes) => {
+  //   const hours = Math.floor(minutes / 60);
+  //   const minutesPart = minutes % 60;
 
-    return hours + ":" + minutesPart;
+  //   return hours + ":" + minutesPart;
+  // };
+
+  const secondsToHoursAndMinutesAndSecondsText = (seconds) => {
+    const secondsPart = seconds % 60;
+    const minutes = Math.floor(seconds / 60);
+    const minutesPart = Math.floor(minutes % 60);
+    const hours = Math.floor(minutes / 60);
+    
+
+    return hours.toString().padStart(2, '0') + ":" + minutesPart.toString().padStart(2, '0') + ":" + secondsPart.toString().padStart(2, '0');
   };
+
 
   const saveWork = async () => {
-    // const token_value = "Bearer " + $keycloak.token;
-    // const actualDurationInMinutes = hoursAndMinutesToMinutes(work_actual_duration_hours, work_actual_duration_minutes);
-    // const expectedDurationInMinutes = hoursAndMinutesToMinutes(work_expected_duration_hours, work_expected_duration_minutes);
-    // var url = new URL(API_URL + "/library/updatework");
-    // const response = await fetch(url, {
-    //   method: "POST",
-    //   headers: {
-    //     Authorization: token_value,
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({ id: work.id, name: work.name, description: work.description, actualTime: actualDurationInMinutes, expectedTime: expectedDurationInMinutes }),
-    // });
-    // const n_work = await response.json();
-    // work = n_work;
+
   };
 
-  let work_actual_duration_minutes = work.actualTime % 60;
-  let work_actual_duration_hours = Math.floor(work.actualTime / 60);
-  let work_expected_duration_minutes = work.expectedTime % 60;
-  let work_expected_duration_hours = Math.floor(work.expectedTime / 60);
+  let work_actual_duration_seconds_edit = work.actualTime % 60;
+  let work_actual_duration_minutes_edit = Math.floor(work.actualTime/60 % 60);
+  let work_actual_duration_hours_edit = Math.floor(work.actualTime/60 / 60);
+  let work_expected_duration_minutes_edit = Math.floor(work.expectedTime/60 % 60);
+  let work_expected_duration_hours_edit = Math.floor(work.expectedTime/60 / 60);
+  let work_name_edit = work.name;
+  let work_description_edit = work.description;
+
 </script>
 
 <!-- <div class="card px-2 bordel-solid border-2 bg-slate-200 p-1 m-1 [&>*]:pointer-events-none border-solid border-slate-600" use:popup={popupHover}> -->
@@ -88,33 +90,35 @@
 
   <div class="text-stone-600">Actual Duration:</div>
   <div>
-    {MinutesToHoursAndMinutesText(work.actualTime)}
+    {secondsToHoursAndMinutesAndSecondsText(work.actualTime)}
   </div>
 
   <div class="text-stone-600">Planed Duration:</div>
   <div>
     <!-- {work.expectedDuration} -->
-    {MinutesToHoursAndMinutesText(work.expectedTime)}
+    {secondsToHoursAndMinutesAndSecondsText(work.expectedTime)}
   </div>
 </div>
 
 <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={edit_targer_popup}>
   <label class="label">
     <span>Name</span>
-    <input bind:value={work.name} class="input rounded p-1" type="text" />
+    <input bind:value={work_name_edit} class="input rounded p-1" type="text" />
   </label>
 
   <label class="label">
     <span>Description</span>
-    <input bind:value={work.description} class="input rounded p-1" type="text" />
+    <input bind:value={work_description_edit} class="input rounded p-1" type="text" />
   </label>
 
   <label class="label">
     <span>Actual Duration</span>
     <div class="flex">
-      <span class="flex-initial w-16"><input bind:value={work_actual_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
+      <span class="flex-initial w-16"><input bind:value={work_actual_duration_hours_edit} class="input rounded p-1" type="number" min="0" step="1" /></span>
       <span class="flex-initial w-8 text-lesft pl-1 text-lg">h :</span>
-      <span class="flex-initial w-16"><input bind:value={work_actual_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+      <span class="flex-initial w-16"><input bind:value={work_actual_duration_minutes_edit} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+      <span class="flex-initial w-8 text-left pl-1 text-lg">m</span>
+      <span class="flex-initial w-16"><input bind:value={work_actual_duration_seconds_edit} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
       <span class="flex-initial w-8 text-left pl-1 text-lg">s</span>
     </div>
   </label>
@@ -122,12 +126,14 @@
   <label class="label">
     <span>Expected Duration</span>
     <div class="flex">
-      <span class="flex-initial w-16"><input bind:value={work_expected_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
+      <span class="flex-initial w-16"><input bind:value={work_expected_duration_hours_edit} class="input rounded p-1" type="number" min="0" step="1" /></span>
       <span class="flex-initial w-8 text-lesft pl-1 text-lg">h :</span>
-      <span class="flex-initial w-16"><input bind:value={work_expected_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
-      <span class="flex-initial w-8 text-left pl-1 text-lg">s</span>
+      <span class="flex-initial w-16"><input bind:value={work_expected_duration_minutes_edit} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
+      <span class="flex-initial w-8 text-left pl-1 text-lg">m</span>   
     </div>
   </label>
+
+
 
   <button
     type="button"
