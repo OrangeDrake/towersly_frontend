@@ -5,6 +5,9 @@
   import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { keycloak } from "$lib/stores/keycloakStore.js";
+  //import {flip} from "svelte/animate";
+  import { dndzone } from "svelte-dnd-action";
+
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
   import { addTohShelvesLocations, shelves } from "$lib/stores/libraryStore.js";
@@ -13,6 +16,15 @@
   import { allConnectedShelvesNames, ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+
+  const flipDurationMs = 300;
+
+  // let items = [
+  //   { id: 129, name: "Ukol0", description: "fdf", rank: 6, expectedTime: 0 },
+  //   { id: 130, name: "Ukol1", description: "fdf", rank: 6, expectedTime: 0 },
+  //   { id: 131, name: "Ukol2", description: "fdf", rank: 6, expectedTime: 0 },
+  //   { id: 132, name: "Ukol3", description: "fdf", rank: 6, expectedTime: 0 },
+  // ];
 
   let toastWorkCreated = {
     message: "",
@@ -45,9 +57,13 @@
     placement: "top",
   };
 
-  let works = shelf.works.sort((a, b) => {
-    return a.rank - b.rank;
-  });
+  // let works = shelf.works.sort((a, b) => {
+  //   return a.rank - b.rank;
+  // });
+
+  let works = shelf.works;
+
+  let slicedWorks = works.slice(0, 4);
 
   const hoursAndMinutesToMinutes = (hours, minutes) => {
     return hours * 60 + minutes;
@@ -119,6 +135,21 @@
 
     // calculateCurves();
   });
+  //   console.log("shelh")
+  // console.log(shelf);
+  // console.log("slicedWorks")
+  // console.log(works);
+  // console.log("items")
+  // console.log(items);
+
+  function handleDndConsider(e) {
+    slicedWorks = e.detail.items;
+  }
+  function handleDndFinalize(e) {
+    slicedWorks = e.detail.items;
+    //nahrat nove poradi do db
+    //$reDrawCurves = "work moved: " + new Date().getTime();
+  }
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 bg-slate-300 {$allConnectedShelvesNames.has(shelf.name) ? 'bordel-solid border-2 border-black' : ''} " bind:this={element}>
@@ -135,11 +166,26 @@
     <span class="font-bold">{shelf.name}</span>
     <hr />
   </div>
-  <div>
-    {#each Object.values(works).slice(0, 4) as work, j}
-      <Work {work} index={j} {shelf} />
+  <!-- {#if slicedWorks.length != 0} -->
+
+  <!-- <section use:dndzone={{items:slicedWorks}}>
+    {#each slicedWorks as item(item.id)}
+      <div animate:flip={{ duration: flipDurationMs }}>{item.name}</div>
     {/each}
-  </div>
+  </section> -->
+  <!-- {/if} -->
+
+  <section use:dndzone="{{ items: slicedWorks, flipDurationMs }}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
+    <!-- <section > -->
+    {#each slicedWorks as work, j (work.id)}
+      <div animate:flip={{ duration: flipDurationMs }}>
+        <Work {work} index={j} {shelf} />
+      </div>
+    {/each}
+    {#if works.length == 0}
+      <div>no  works yet</div>
+    {/if}
+  </section>
   {#if works.length > 5}
     <p>...</p>
   {/if}

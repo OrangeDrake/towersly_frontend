@@ -15,6 +15,7 @@
   let loginState = "waiting for login...";
 
   const getShelves = async () => {
+    console.log("--------------------getShelves")
     const token_value = "Bearer " + $keycloak.token;
     console.log("URL" + API_URL);
     var response = await fetch(API_URL + "/library", {
