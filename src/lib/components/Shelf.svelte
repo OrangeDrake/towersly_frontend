@@ -57,13 +57,13 @@
     placement: "top",
   };
 
-  // let works = shelf.works.sort((a, b) => {
-  //   return a.rank - b.rank;
-  // });
+  let works = shelf.works.sort((a, b) => {
+    return a.rank - b.rank;
+  });
 
-  let works = shelf.works;
+  // let works = shelf.works;
 
-  let slicedWorks = works.slice(0, 4);
+  let slicedWorks = works.slice(0, 5);
 
   const hoursAndMinutesToMinutes = (hours, minutes) => {
     return hours * 60 + minutes;
@@ -137,18 +137,129 @@
   });
   //   console.log("shelh")
   // console.log(shelf);
-  // console.log("slicedWorks")
-  // console.log(works);
-  // console.log("items")
+  console.log("Works");
+  console.log(works);
+  // console.log("items")slicedWslicedWorks
   // console.log(items);
 
   function handleDndConsider(e) {
     slicedWorks = e.detail.items;
-  }
-  function handleDndFinalize(e) {
-    slicedWorks = e.detail.items;
-    //nahrat nove poradi do db
     //$reDrawCurves = "work moved: " + new Date().getTime();
+  }
+
+  function handleDndFinalize(e) {
+
+    console.log("pred razenim: " + JSON.stringify(works));
+
+    let currentIndex = 0;
+    let lastRank = 0;
+    let wasMovedDeleted = false;
+    let wasMovedInserted = false;
+    let movedWork = null;
+    let newMovedRank = -1;
+
+    while (currentIndex < e.detail.items.length) {// novy rank pro presunutou praci a zaroven posouvani ranku vsech nasledujicich prvku ale jenom ve SlicedWorks     
+      if (works[currentIndex].id == e.detail.info.id) {
+        // pokud je presouvany v puvodnim poradi
+        movedWork = works[currentIndex];
+        //works.splice(currentIndex, 1); // smazat prvek z pole
+        wasMovedDeleted = true;
+      } else if (e.detail.items[currentIndex].id == e.detail.info.id) {
+        //pokud je presouvany v novem poradi
+        if (wasMovedDeleted) {
+          let nextRank = works[currentIndex + 1].rank; // bude problem, pokud currentIndex je posledni
+          console.log("next rank : " + nextRank);
+          console.log("lastRank : " + lastRank);
+          newMovedRank = Math.ceil((works[currentIndex].rank + nextRank) / 2);
+          console.log("if newMovedRank: " + newMovedRank);
+          currentIndex++;
+        } else {
+          newMovedRank = Math.ceil((lastRank + works[currentIndex].rank) / 2);
+          console.log("else newMovedRank: " + newMovedRank);
+        }
+        lastRank = newMovedRank;
+        wasMovedInserted = true;
+      }
+
+      if (wasMovedInserted && works[currentIndex].rank <= lastRank) {
+        works[currentIndex].rank = lastRank + 1;
+      }
+
+      lastRank = works[currentIndex].rank;
+
+      currentIndex++;
+    }
+
+    //if (wasMovedDeleted) {
+      movedWork.rank = newMovedRank;
+    //}
+
+    console.log("Po razeni: " + JSON.stringify(works));
+    //nahrat nove poradi do db
+    //
+    //kdyz uspech
+    shelf.works = works;
+    $reDrawCurves = "work moved: " + new Date().getTime();
+  }
+
+  function handleDndFinalize2(e) {
+    console.log("pred razenim: " + JSON.stringify(works));
+    if (e.detail.items.length == slicedWorks.length) {
+      // razeni v ramci shelfu nemeni pocet se pocet prvku, neni tedy mozne, aby bylo nutne navysit nextShelfRank v databazi
+      let moveAtIndex = 0;
+      let lastRank = 0;
+
+      // while (e.detail.items[moveAtIndex].id == works[moveAtIndex].id) {
+      //   moveAtIndex++;
+      //   if (moveAtIndex == e.detail.items.length) {
+      //     console.log("prvky jsou na stejnych mistech");
+      //     slicedWorks = e.detail.items;
+      //     return;
+      //   }
+      //   lastRank = works[moveAtIndex].rank;
+      // }
+
+      while (moveAtIndex < slicedWorks.length) {
+        moveAtIndex++;
+        if (works[moveAtIndex].id == e.detail.info.id) {
+          console.log("nalezeni presunute prace: " + JSON.stringify(works[moveAtIndex]));
+          break;
+        }
+        lastRank = works[moveAtIndex].rank;
+      }
+
+      let actualRank = works[moveAtIndex].rank;
+      let newRankMoved = Math.ceil((lastRank + actualRank) / 2);
+      console.log("newRankMoved: " + newRankMoved);
+      let WorkIdMoved = e.detail.items[moveAtIndex].id;
+
+      // pokud byla mezera mezi indexy, tak taky algoritmus konci
+
+      let actualIndex = moveAtIndex;
+      lastRank = newRankMoved;
+
+      while (actualIndex < works.length) {
+        // cyklus sesouva vesechny ranky a zaroven najde posunutou praci s novym posunutym rankem
+        console.log("behem razeni: " + JSON.stringify(works));
+        if (works[actualIndex].id == WorkIdMoved) {
+          works[actualIndex].rank = newRankMoved;
+        } else if (works[actualIndex].rank <= lastRank) {
+          works[actualIndex].rank = lastRank + 1;
+        }
+        lastRank = works[actualIndex].rank;
+        actualIndex++;
+        //break
+        //console.log("works[actualIndex].rank: " + Object.values(works[actualIndex]));
+        //lastRank = works[actualIndex].rank;
+      }
+      console.log("po razeni: " + JSON.stringify(works));
+    }
+
+    //nahrat nove poradi do db
+    //
+    //kdyz uspech
+    shelf.works = works;
+    $reDrawCurves = "work moved: " + new Date().getTime();
   }
 </script>
 
@@ -175,7 +286,7 @@
   </section> -->
   <!-- {/if} -->
 
-  <section use:dndzone="{{ items: slicedWorks, flipDurationMs }}" on:consider="{handleDndConsider}" on:finalize="{handleDndFinalize}">
+  <section use:dndzone={{ items: slicedWorks, flipDurationMs }} on:consider={handleDndConsider} on:finalize={handleDndFinalize}>
     <!-- <section > -->
     {#each slicedWorks as work, j (work.id)}
       <div animate:flip={{ duration: flipDurationMs }}>
@@ -183,7 +294,7 @@
       </div>
     {/each}
     {#if works.length == 0}
-      <div>no  works yet</div>
+      <div>no works yet</div>
     {/if}
   </section>
   {#if works.length > 5}
