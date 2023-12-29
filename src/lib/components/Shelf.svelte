@@ -149,6 +149,12 @@
 
   function handleDndFinalize(e) {
 
+    const update_info = {
+      shelfId: shelf.id,
+      works: [],
+      maxRank: 0
+    };
+
     console.log("pred razenim: " + JSON.stringify(works));
 
     let currentIndex = 0;
@@ -158,21 +164,30 @@
     let movedWork = null;
     let newMovedRank = -1;
 
-    while (currentIndex < e.detail.items.length) {// novy rank pro presunutou praci a zaroven posouvani ranku vsech nasledujicich prvku ale jenom ve SlicedWorks     
+    while (currentIndex < e.detail.items.length) { //prochazime vsechny presouvane prvky
+      //for (let currentIndex = 0; currentIndex < e.detail.items.length; currentIndex++) {
+      // novy rank pro presunutou praci a zaroven posouvani ranku vsech nasledujicich prvku ale jenom ve SlicedWorks
       if (works[currentIndex].id == e.detail.info.id) {
         // pokud je presouvany v puvodnim poradi
         movedWork = works[currentIndex];
         //works.splice(currentIndex, 1); // smazat prvek z pole
         wasMovedDeleted = true;
       } else if (e.detail.items[currentIndex].id == e.detail.info.id) {
+        console.log("vkaladame na currentIndex: " + currentIndex);
         //pokud je presouvany v novem poradi
         if (wasMovedDeleted) {
-          let nextRank = works[currentIndex + 1].rank; // bude problem, pokud currentIndex je posledni
+          // vkladame za current
+          let nextRank = works[currentIndex].rank + 1; //predpokladame ze vkladame na konec
+          if (currentIndex + 1 < works.length) {
+            // pokud nevkladame na konec
+            let nextRank = works[currentIndex + 1].rank;
+          }
           console.log("next rank : " + nextRank);
           console.log("lastRank : " + lastRank);
           newMovedRank = Math.ceil((works[currentIndex].rank + nextRank) / 2);
           console.log("if newMovedRank: " + newMovedRank);
-          currentIndex++;
+          currentIndex++; //vkladame za current, proto se pro kontrolu jestli se neprekryli ranky postoupime o jedno dopredu
+          //continue; // pokracujeme na dalsi prvek, vkladame za nejsou potreba kontroly
         } else {
           newMovedRank = Math.ceil((lastRank + works[currentIndex].rank) / 2);
           console.log("else newMovedRank: " + newMovedRank);
@@ -181,8 +196,13 @@
         wasMovedInserted = true;
       }
 
+      if (currentIndex >= works.length) {
+        break;
+      }
+
       if (wasMovedInserted && works[currentIndex].rank <= lastRank) {
         works[currentIndex].rank = lastRank + 1;
+        update_info.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
       }
 
       lastRank = works[currentIndex].rank;
@@ -190,11 +210,31 @@
       currentIndex++;
     }
 
-    //if (wasMovedDeleted) {
+    if(wasMovedInserted){ //projiti zbytku prvku v works 
+      while (currentIndex < works.length){
+        if (works[currentIndex].rank <= lastRank) {
+          works[currentIndex].rank = lastRank + 1;
+          update_info.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
+        }
+        lastRank = works[currentIndex].rank;
+        currentIndex++;
+      }
+    }
+
+    if (wasMovedDeleted && wasMovedInserted) {
       movedWork.rank = newMovedRank;
-    //}
+      update_info.works.push({ id: movedWork.id, rank: movedWork.rank });
+    }
+
+    const update_works = update_info.works;
+    for (let i = 0; i < update_works.length; i++) {
+      if (update_works[i].rank > update_info.maxRank) {
+        update_info.maxRank = update_works[i].rank;
+      }
+    }
 
     console.log("Po razeni: " + JSON.stringify(works));
+    console.log("update_info: " + JSON.stringify(update_info));
     //nahrat nove poradi do db
     //
     //kdyz uspech
