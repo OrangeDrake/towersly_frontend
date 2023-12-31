@@ -7,6 +7,7 @@
   import { keycloak } from "$lib/stores/keycloakStore.js";
   //import {flip} from "svelte/animate";
   import { dndzone } from "svelte-dnd-action";
+  import { invalidateAll } from '$app/navigation'
 
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
@@ -14,17 +15,11 @@
   import { reDrawCurves } from "$lib/stores/connectionStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
   import { allConnectedShelvesNames, ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
+  import { get } from "svelte/store";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   const flipDurationMs = 300;
-
-  // let items = [
-  //   { id: 129, name: "Ukol0", description: "fdf", rank: 6, expectedTime: 0 },
-  //   { id: 130, name: "Ukol1", description: "fdf", rank: 6, expectedTime: 0 },
-  //   { id: 131, name: "Ukol2", description: "fdf", rank: 6, expectedTime: 0 },
-  //   { id: 132, name: "Ukol3", description: "fdf", rank: 6, expectedTime: 0 },
-  // ];
 
   let toastWorkCreated = {
     message: "",
@@ -99,9 +94,12 @@
     works.push(n_work);
     works = works;
     $shelves = $shelves;
+    
+    $reDrawCurves = "work added: " + new Date().getTime();
+    
     resetWork();
 
-    $reDrawCurves = "work added: " + work_name;
+    
   };
 
   const resetWork = () => {
@@ -147,14 +145,15 @@
     //$reDrawCurves = "work moved: " + new Date().getTime();
   }
 
-  function handleDndFinalize(e) {
-
-    const update_info = {
+  async function handleDndFinalize(e) {
+    
+    const worksUpdate = {
       shelfId: shelf.id,
       works: [],
-      maxRank: 0
+      maxRank: 0,
     };
-
+    const workRollback = [];
+      
     console.log("pred razenim: " + JSON.stringify(works));
 
     let currentIndex = 0;
@@ -164,7 +163,8 @@
     let movedWork = null;
     let newMovedRank = -1;
 
-    while (currentIndex < e.detail.items.length) { //prochazime vsechny presouvane prvky
+    while (currentIndex < e.detail.items.length) {
+      //prochazime vsechny presouvane prvky
       //for (let currentIndex = 0; currentIndex < e.detail.items.length; currentIndex++) {
       // novy rank pro presunutou praci a zaroven posouvani ranku vsech nasledujicich prvku ale jenom ve SlicedWorks
       if (works[currentIndex].id == e.detail.info.id) {
@@ -172,6 +172,7 @@
         movedWork = works[currentIndex];
         //works.splice(currentIndex, 1); // smazat prvek z pole
         wasMovedDeleted = true;
+        console.log("vymazat currentIndex: " + currentIndex);
       } else if (e.detail.items[currentIndex].id == e.detail.info.id) {
         console.log("vkaladame na currentIndex: " + currentIndex);
         //pokud je presouvany v novem poradi
@@ -189,32 +190,32 @@
           currentIndex++; //vkladame za current, proto se pro kontrolu jestli se neprekryli ranky postoupime o jedno dopredu
           //continue; // pokracujeme na dalsi prvek, vkladame za nejsou potreba kontroly
         } else {
+          console.log(" works[currentIndex].rank: " + works[currentIndex].rank);
           newMovedRank = Math.ceil((lastRank + works[currentIndex].rank) / 2);
           console.log("else newMovedRank: " + newMovedRank);
         }
         lastRank = newMovedRank;
         wasMovedInserted = true;
       }
-
       if (currentIndex >= works.length) {
         break;
       }
-
-      if (wasMovedInserted && works[currentIndex].rank <= lastRank) {
+      if (wasMovedInserted && works[currentIndex].rank <= lastRank && works[currentIndex].id != e.detail.info.id  ) {// kdy narazime na presouvany prvek neukladame ho
+        workRollback.push({id: works[currentIndex].id, rank: works[currentIndex].rank});
         works[currentIndex].rank = lastRank + 1;
-        update_info.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
+        worksUpdate.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
       }
-
       lastRank = works[currentIndex].rank;
-
       currentIndex++;
     }
 
-    if(wasMovedInserted){ //projiti zbytku prvku v works 
-      while (currentIndex < works.length){
+    if (wasMovedInserted) {
+      //projiti zbytku prvku v works
+      while (currentIndex < works.length) {
         if (works[currentIndex].rank <= lastRank) {
+          workRollback.push({id: works[currentIndex].id, rank: works[currentIndex].rank});
           works[currentIndex].rank = lastRank + 1;
-          update_info.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
+          worksUpdate.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
         }
         lastRank = works[currentIndex].rank;
         currentIndex++;
@@ -222,85 +223,71 @@
     }
 
     if (wasMovedDeleted && wasMovedInserted) {
+      // presinuti prace v ramci jednoho shelfu
+      workRollback.push({id: movedWork.id, rank: movedWork.rank});
       movedWork.rank = newMovedRank;
-      update_info.works.push({ id: movedWork.id, rank: movedWork.rank });
+      worksUpdate.works.push({ id: movedWork.id, rank: movedWork.rank });
     }
 
-    const update_works = update_info.works;
+    const update_works = worksUpdate.works; // hledani max ranku
     for (let i = 0; i < update_works.length; i++) {
-      if (update_works[i].rank > update_info.maxRank) {
-        update_info.maxRank = update_works[i].rank;
+      if (update_works[i].rank > worksUpdate.maxRank) {
+        worksUpdate.maxRank = update_works[i].rank;
       }
     }
 
     console.log("Po razeni: " + JSON.stringify(works));
-    console.log("update_info: " + JSON.stringify(update_info));
-    //nahrat nove poradi do db
-    //
-    //kdyz uspech
-    shelf.works = works;
+    console.log("worksUpdate: " + JSON.stringify(worksUpdate));
+
+    const response = await fetch(API_URL + "/library/updateworks", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + $keycloak.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(worksUpdate),
+    });
+
+    console.log("before update works");
+    if (!response.ok) {
+      console.log("response: " + response);
+      console.log("update works failed");
+      toastWorkCreated.background = "bg-yellow-200";
+      toastWorkCreated.message = "Works move failed";
+      toastStore.trigger(toastWorkCreated);
+      //shelf.works = works_backup;
+      //invalidateAll();
+      for (let i = 0; i < workRollback.length; i++) {
+        for (let j = 0; j < works.length; j++) {
+          if (works[j].id == workRollback[i].id) {
+            works[j].rank = workRollback[i].rank;
+            break;
+          }
+        }
+      }
+      $reDrawCurves = "work moved: " + new Date().getTime();
+      return;
+    } 
+
+
+    // const shelves2 =  $shelves;
+    // $shelves = shelves2;
+
+    //works.push({"id":5000,"name":"fake","description":"","rank":2,"expectedTime":0,"actualTime":0,"shelfId":10056,"completed":false});
+    works.sort((a, b) => { // z nejakeho duvodu je sorted shalves o redraw pozadu, tak seradime primo prace
+      return a.rank - b.rank;
+    });
+    $shelves = $shelves;
+    
+
+    toastStore.background = "bg-green-500";
+    toastStore.message = "Works moved";
+    toastStore.trigger(toastStore);
+    
     $reDrawCurves = "work moved: " + new Date().getTime();
+    console.log("works updated");
   }
 
-  function handleDndFinalize2(e) {
-    console.log("pred razenim: " + JSON.stringify(works));
-    if (e.detail.items.length == slicedWorks.length) {
-      // razeni v ramci shelfu nemeni pocet se pocet prvku, neni tedy mozne, aby bylo nutne navysit nextShelfRank v databazi
-      let moveAtIndex = 0;
-      let lastRank = 0;
-
-      // while (e.detail.items[moveAtIndex].id == works[moveAtIndex].id) {
-      //   moveAtIndex++;
-      //   if (moveAtIndex == e.detail.items.length) {
-      //     console.log("prvky jsou na stejnych mistech");
-      //     slicedWorks = e.detail.items;
-      //     return;
-      //   }
-      //   lastRank = works[moveAtIndex].rank;
-      // }
-
-      while (moveAtIndex < slicedWorks.length) {
-        moveAtIndex++;
-        if (works[moveAtIndex].id == e.detail.info.id) {
-          console.log("nalezeni presunute prace: " + JSON.stringify(works[moveAtIndex]));
-          break;
-        }
-        lastRank = works[moveAtIndex].rank;
-      }
-
-      let actualRank = works[moveAtIndex].rank;
-      let newRankMoved = Math.ceil((lastRank + actualRank) / 2);
-      console.log("newRankMoved: " + newRankMoved);
-      let WorkIdMoved = e.detail.items[moveAtIndex].id;
-
-      // pokud byla mezera mezi indexy, tak taky algoritmus konci
-
-      let actualIndex = moveAtIndex;
-      lastRank = newRankMoved;
-
-      while (actualIndex < works.length) {
-        // cyklus sesouva vesechny ranky a zaroven najde posunutou praci s novym posunutym rankem
-        console.log("behem razeni: " + JSON.stringify(works));
-        if (works[actualIndex].id == WorkIdMoved) {
-          works[actualIndex].rank = newRankMoved;
-        } else if (works[actualIndex].rank <= lastRank) {
-          works[actualIndex].rank = lastRank + 1;
-        }
-        lastRank = works[actualIndex].rank;
-        actualIndex++;
-        //break
-        //console.log("works[actualIndex].rank: " + Object.values(works[actualIndex]));
-        //lastRank = works[actualIndex].rank;
-      }
-      console.log("po razeni: " + JSON.stringify(works));
-    }
-
-    //nahrat nove poradi do db
-    //
-    //kdyz uspech
-    shelf.works = works;
-    $reDrawCurves = "work moved: " + new Date().getTime();
-  }
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 bg-slate-300 {$allConnectedShelvesNames.has(shelf.name) ? 'bordel-solid border-2 border-black' : ''} " bind:this={element}>
@@ -380,7 +367,7 @@
         resetWork();
       }}
     >
-      <svg class="p-1 w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+      <svg class="p-1 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
       </svg>
       Close</button
@@ -393,7 +380,7 @@
         addWork();
       }}
     >
-      <svg class="p-1 w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+      <svg class="p-1 w-5 h-5 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
       </svg>
       Add Work</button

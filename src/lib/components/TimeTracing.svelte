@@ -118,6 +118,7 @@
   //   return data;
   // };
 
+  console.log("+++tracking: " + JSON.stringify($ordered_shelves));
 
 </script>
 
