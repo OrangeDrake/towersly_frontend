@@ -6,7 +6,7 @@
   import "@skeletonlabs/skeleton/styles/skeleton.css";
   import "../app.css";
 
-  import { shelves } from "$lib/stores/libraryStore.js";
+  import { shelves, numberOfVisibleWork } from "$lib/stores/libraryStore.js";
   import { distributions } from "$lib/stores/planningStore.js";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
@@ -15,7 +15,7 @@
   let loginState = "waiting for login...";
 
   const getShelves = async () => {
-    console.log("--------------------getShelves")
+    console.log("--------------------getShelves");
     const token_value = "Bearer " + $keycloak.token;
     console.log("URL" + API_URL);
     var response = await fetch(API_URL + "/library", {
@@ -69,6 +69,20 @@
     trackTime();
   };
 
+  const getNumberOfVisibleWork = async () => {
+    const token_value = "Bearer " + $keycloak.token;
+
+    var response = await fetch(API_URL + "/settings/worksnumber", {
+      method: "GET",
+      headers: {
+        Authorization: token_value,
+      },
+    });
+
+    const data = await response.json();
+    $numberOfVisibleWork = data;
+  };
+
   async function initKeycloak() {
     $keycloak = new Keycloak({
       url: "http://localhost:8080",
@@ -85,6 +99,7 @@
           getShelves();
           getDistributions();
           getTimeTracking();
+          getNumberOfVisibleWork();
         }
       })
       .catch(function () {
@@ -105,7 +120,7 @@
   });
 </script>
 
-<div class = "font-semibold">
+<div class="font-semibold">
   <div class="flex flex-nowrap bg-gray-800">
     <div class="w-1/4 text-white p-4">
       <h2 class="text-xl mb-4">Menu</h2>

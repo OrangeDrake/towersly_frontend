@@ -1,5 +1,6 @@
 import { writable, derived, get } from "svelte/store";
 
+export const numberOfVisibleWork = writable(3);
 export const shelves = writable(null);
 export const allConnectedShelvesNames = writable(new Set());
 

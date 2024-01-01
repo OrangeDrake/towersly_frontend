@@ -11,7 +11,7 @@
 
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
-  import { addTohShelvesLocations, shelves } from "$lib/stores/libraryStore.js";
+  import { addTohShelvesLocations, shelves, numberOfVisibleWork} from "$lib/stores/libraryStore.js";
   import { reDrawCurves } from "$lib/stores/connectionStore.js";
   import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
   import { allConnectedShelvesNames, ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
@@ -58,7 +58,7 @@
 
   // let works = shelf.works;
 
-  let slicedWorks = works.slice(0, 5);
+  let slicedWorks = works.slice(0, $numberOfVisibleWork);
 
   let worksToDisplay = slicedWorks;
 
@@ -374,8 +374,8 @@
       <div>no works yet</div>
     {/if}
   </section>
-  {#if works.length > 5}
-    <p>...</p>
+  {#if works.length > $numberOfVisibleWork}
+    <div class="font-bold text-2xl">...</div>
   {/if}
 
   <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Work</button>
