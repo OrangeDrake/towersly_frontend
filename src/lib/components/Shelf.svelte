@@ -170,7 +170,7 @@
       // novy rank pro presunutou praci a zaroven posouvani ranku vsech nasledujicich prvku ale jenom ve SlicedWorks
 
       //if(currentIndex >= slicedWorks.length && slicedWorks.length < e.detail.length){ //presun mezi shelfy na konec
-      if (currentIndex >= slicedWorks.length && movedWork == null) {
+      if (currentIndex >= slicedWorks.length && movedWork == null) { // vkladana prace je na konci
         console.log("currentIndex: " + currentIndex + " slicedWorks.length: " + slicedWorks.length + " e.detail.items.length: " + e.detail.items.length);
         newMovedRank = 0; //predpokladame vkladani do prazhneho shelfu
         if (slicedWorks.length != 0) {
@@ -227,7 +227,7 @@
         break;
       }
       if (wasMovedInserted && works[currentIndex].rank <= lastRank && works[currentIndex].id != e.detail.info.id) {
-        // kdy narazime na presouvany prvek neukladame ho
+        // kdyz narazime na presouvany prvek neukladame ho
         workRollback.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
         works[currentIndex].rank = lastRank + 1;
         worksUpdate.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
@@ -256,13 +256,6 @@
       worksUpdate.works.push({ id: movedWork.id, rank: movedWork.rank });
     }
 
-    const update_works = worksUpdate.works; // hledani max ranku
-    for (let i = 0; i < update_works.length; i++) {
-      if (update_works[i].rank > worksUpdate.maxRank) {
-        worksUpdate.maxRank = update_works[i].rank;
-      }
-    }
-
     if (deletedWorkIndex == -1 && slicedWorks.length > e.detail.items.length) {
       //if (wasMovedDeleted && !wasMovedInserted) { aleternativa
       // smazani prace byla na konci slicedWorks
@@ -279,8 +272,18 @@
       movedWork.rank = newMovedRank;
       console.log("!wasMovedDeleted && wasMovedInserted movedWork: " + JSON.stringify(movedWork));
       works.push(movedWork);
-      //pridat zmenu shelfu do databaze
+      worksUpdate["workNewInShelf"] = { id: movedWork.id, rank: movedWork.rank }
+      worksUpdate.maxRank = movedWork.rank; // novy work v shelu muze mitmaximalni rank
     }
+
+    const update_works = worksUpdate.works; // hledani max ranku
+    for (let i = 0; i < update_works.length; i++) {
+      if (update_works[i].rank > worksUpdate.maxRank) {
+        worksUpdate.maxRank = update_works[i].rank;
+      }
+    }
+
+    
 
     console.log("Po razeni: " + JSON.stringify(works));
     console.log("worksUpdate: " + JSON.stringify(worksUpdate));
