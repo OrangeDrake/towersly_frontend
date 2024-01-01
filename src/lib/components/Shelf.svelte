@@ -264,13 +264,14 @@
     }
 
     if (deletedWorkIndex == -1 && slicedWorks.length > e.detail.items.length) {
+      //if (wasMovedDeleted && !wasMovedInserted) { aleternativa
       // smazani prace byla na konci slicedWorks
       works.splice(slicedWorks.length - 1, 1);
     }
 
     if (wasMovedDeleted && !wasMovedInserted) {
       // presinuti prace v ramci jednoho shelfu
-      workRollback.push({ id: movedWork.id, rank: movedWork.rank });
+      workRollback.push({ id: movedWork.id, rank: movedWork.rank });// nebude stacit jenom presunout rank, ale musime prvek vlozit na spravne misto
       works.splice(deletedWorkIndex, 1);
     }
 
@@ -324,9 +325,12 @@
     });
     $shelves = $shelves;
 
+
+    if (wasMovedInserted){
     toastStore.background = "bg-green-500";
-    toastStore.message = "Works moved";
+    toastStore.message = "Work "  + movedWork.name + " moved";
     toastStore.trigger(toastStore);
+  };
 
     $reDrawCurves = "work moved: " + new Date().getTime();
     console.log("works updated");

@@ -24,8 +24,8 @@
   let work_actual_duration_seconds_edit = work.actualTime % 60;
   let work_actual_duration_minutes_edit = Math.floor((work.actualTime / 60) % 60);
   let work_actual_duration_hours_edit = Math.floor(work.actualTime / 60 / 60);
-  let work_expected_duration_minutes_edit = Math.floor((work.expectedTime / 60) % 60);
-  let work_expected_duration_hours_edit = Math.floor(work.expectedTime / 60 / 60);
+  let work_expected_duration_minutes_edit = Math.floor((work.expectedTime) % 60);
+  let work_expected_duration_hours_edit = Math.floor(work.expectedTime / 60);
   let work_name_edit = work.name;
   let work_description_edit = work.description;
 
@@ -45,12 +45,12 @@
     placement: "top",
   };
 
-  // const MinutesToHoursAndMinutesText = (minutes) => {
-  //   const hours = Math.floor(minutes / 60);
-  //   const minutesPart = minutes % 60;
-
-  //   return hours + ":" + minutesPart;
-  // };
+  const MinutesToHoursAndMinutesText = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const minutesPart = minutes % 60;
+    const secondsPart = 0;
+    return hours.toString().padStart(2, "0") + ":" + minutesPart.toString().padStart(2, "0") + ":" + secondsPart.toString().padStart(2, "0");
+  };
 
   const secondsToHoursAndMinutesAndSecondsText = (seconds) => {
     const secondsPart = seconds % 60;
@@ -101,8 +101,8 @@
     work_actual_duration_seconds_edit = work.actualTime % 60;
     work_actual_duration_minutes_edit = Math.floor((work.actualTime / 60) % 60);
     work_actual_duration_hours_edit = Math.floor(work.actualTime / 60 / 60);
-    work_expected_duration_minutes_edit = Math.floor((work.expectedTime / 60) % 60);
-    work_expected_duration_hours_edit = Math.floor(work.expectedTime / 60 / 60);
+    work_expected_duration_minutes_edit = Math.floor((work.expectedTime) % 60);
+    work_expected_duration_hours_edit = Math.floor(work.expectedTime / 60);
     work_name_edit = work.name;
     work_description_edit = work.description;
   };
@@ -151,7 +151,7 @@
   <div class="text-stone-600">Planed Duration:</div>
   <div>
     <!-- {work.expectedDuration} -->
-    {secondsToHoursAndMinutesAndSecondsText(work.expectedTime)}
+    {MinutesToHoursAndMinutesText(work.expectedTime)}
   </div>
 </div>
 
