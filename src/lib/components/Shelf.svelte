@@ -7,7 +7,7 @@
   import { keycloak } from "$lib/stores/keycloakStore.js";
   //import {flip} from "svelte/animate";
   import { dndzone } from "svelte-dnd-action";
-  import { invalidateAll } from '$app/navigation'
+  import { invalidateAll } from "$app/navigation";
 
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
@@ -60,6 +60,8 @@
 
   let slicedWorks = works.slice(0, 5);
 
+  let worksToDisplay = slicedWorks;
+
   const hoursAndMinutesToMinutes = (hours, minutes) => {
     return hours * 60 + minutes;
   };
@@ -94,12 +96,10 @@
     works.push(n_work);
     works = works;
     $shelves = $shelves;
-    
-    $reDrawCurves = "work added: " + new Date().getTime();
-    
-    resetWork();
 
-    
+    $reDrawCurves = "work added: " + new Date().getTime();
+
+    resetWork();
   };
 
   const resetWork = () => {
@@ -141,19 +141,18 @@
   // console.log(items);
 
   function handleDndConsider(e) {
-    slicedWorks = e.detail.items;
+    worksToDisplay = e.detail.items;
     //$reDrawCurves = "work moved: " + new Date().getTime();
   }
 
   async function handleDndFinalize(e) {
-    
     const worksUpdate = {
       shelfId: shelf.id,
       works: [],
       maxRank: 0,
     };
     const workRollback = [];
-      
+
     console.log("pred razenim: " + JSON.stringify(works));
 
     let currentIndex = 0;
@@ -162,18 +161,45 @@
     let wasMovedInserted = false;
     let movedWork = null;
     let newMovedRank = -1;
+    let deletedWorkIndex = -1;
 
     while (currentIndex < e.detail.items.length) {
+      console.log("shelf name " + shelf.name + ", slicedWorks.length: " + slicedWorks.length + " e.detail.items.length: " + e.detail.items.length);
       //prochazime vsechny presouvane prvky
       //for (let currentIndex = 0; currentIndex < e.detail.items.length; currentIndex++) {
       // novy rank pro presunutou praci a zaroven posouvani ranku vsech nasledujicich prvku ale jenom ve SlicedWorks
+
+      //if(currentIndex >= slicedWorks.length && slicedWorks.length < e.detail.length){ //presun mezi shelfy na konec
+      if (currentIndex >= slicedWorks.length && movedWork == null) {
+        console.log("currentIndex: " + currentIndex + " slicedWorks.length: " + slicedWorks.length + " e.detail.items.length: " + e.detail.items.length);
+        newMovedRank = 0; //predpokladame vkladani do prazhneho shelfu
+        if (slicedWorks.length != 0) {
+          newMovedRank = works[slicedWorks.length - 1].rank + 1;
+        }
+        lastRank = newMovedRank;
+        console.log("vlozen z jineho shelfu nakonec: " + newMovedRank);
+        movedWork = e.detail.items[currentIndex]; //moved musi byt posledni
+        wasMovedInserted = true;
+        break;
+      } else if (currentIndex >= slicedWorks.length) {
+        break;
+      }
+
+      if (works[currentIndex].id == e.detail.info.id && e.detail.items[currentIndex].id == e.detail.info.id) { //presunuti na miste
+        break;
+      }
+
       if (works[currentIndex].id == e.detail.info.id) {
         // pokud je presouvany v puvodnim poradi
         movedWork = works[currentIndex];
         //works.splice(currentIndex, 1); // smazat prvek z pole
+        deletedWorkIndex = currentIndex;
         wasMovedDeleted = true;
         console.log("vymazat currentIndex: " + currentIndex);
       } else if (e.detail.items[currentIndex].id == e.detail.info.id) {
+        movedWork = e.detail.items[currentIndex];
+        console.log("movedWork: " + JSON.stringify(movedWork));
+
         console.log("vkaladame na currentIndex: " + currentIndex);
         //pokud je presouvany v novem poradi
         if (wasMovedDeleted) {
@@ -200,8 +226,9 @@
       if (currentIndex >= works.length) {
         break;
       }
-      if (wasMovedInserted && works[currentIndex].rank <= lastRank && works[currentIndex].id != e.detail.info.id  ) {// kdy narazime na presouvany prvek neukladame ho
-        workRollback.push({id: works[currentIndex].id, rank: works[currentIndex].rank});
+      if (wasMovedInserted && works[currentIndex].rank <= lastRank && works[currentIndex].id != e.detail.info.id) {
+        // kdy narazime na presouvany prvek neukladame ho
+        workRollback.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
         works[currentIndex].rank = lastRank + 1;
         worksUpdate.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
       }
@@ -213,7 +240,7 @@
       //projiti zbytku prvku v works
       while (currentIndex < works.length) {
         if (works[currentIndex].rank <= lastRank) {
-          workRollback.push({id: works[currentIndex].id, rank: works[currentIndex].rank});
+          workRollback.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
           works[currentIndex].rank = lastRank + 1;
           worksUpdate.works.push({ id: works[currentIndex].id, rank: works[currentIndex].rank });
         }
@@ -224,7 +251,7 @@
 
     if (wasMovedDeleted && wasMovedInserted) {
       // presinuti prace v ramci jednoho shelfu
-      workRollback.push({id: movedWork.id, rank: movedWork.rank});
+      workRollback.push({ id: movedWork.id, rank: movedWork.rank });
       movedWork.rank = newMovedRank;
       worksUpdate.works.push({ id: movedWork.id, rank: movedWork.rank });
     }
@@ -234,6 +261,24 @@
       if (update_works[i].rank > worksUpdate.maxRank) {
         worksUpdate.maxRank = update_works[i].rank;
       }
+    }
+
+    if (deletedWorkIndex == -1 && slicedWorks.length > e.detail.items.length) {
+      // smazani prace byla na konci slicedWorks
+      works.splice(slicedWorks.length - 1, 1);
+    }
+
+    if (wasMovedDeleted && !wasMovedInserted) {
+      // presinuti prace v ramci jednoho shelfu
+      workRollback.push({ id: movedWork.id, rank: movedWork.rank });
+      works.splice(deletedWorkIndex, 1);
+    }
+
+    if (!wasMovedDeleted && wasMovedInserted) {
+      movedWork.rank = newMovedRank;
+      console.log("!wasMovedDeleted && wasMovedInserted movedWork: " + JSON.stringify(movedWork));
+      works.push(movedWork);
+      //pridat zmenu shelfu do databaze
     }
 
     console.log("Po razeni: " + JSON.stringify(works));
@@ -267,27 +312,25 @@
       }
       $reDrawCurves = "work moved: " + new Date().getTime();
       return;
-    } 
-
+    }
 
     // const shelves2 =  $shelves;
     // $shelves = shelves2;
 
     //works.push({"id":5000,"name":"fake","description":"","rank":2,"expectedTime":0,"actualTime":0,"shelfId":10056,"completed":false});
-    works.sort((a, b) => { // z nejakeho duvodu je sorted shalves o redraw pozadu, tak seradime primo prace
+    works.sort((a, b) => {
+      // z nejakeho duvodu je sorted shalves o redraw pozadu, tak seradime primo prace
       return a.rank - b.rank;
     });
     $shelves = $shelves;
-    
 
     toastStore.background = "bg-green-500";
     toastStore.message = "Works moved";
     toastStore.trigger(toastStore);
-    
+
     $reDrawCurves = "work moved: " + new Date().getTime();
     console.log("works updated");
   }
-
 </script>
 
 <div class="card p-2 mx-2 mt-2 mb-0 h-50 w-72 bg-slate-300 {$allConnectedShelvesNames.has(shelf.name) ? 'bordel-solid border-2 border-black' : ''} " bind:this={element}>
@@ -313,9 +356,9 @@
   </section> -->
   <!-- {/if} -->
 
-  <section use:dndzone={{ items: slicedWorks, flipDurationMs }} on:consider={handleDndConsider} on:finalize={handleDndFinalize}>
+  <section use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider} on:finalize={handleDndFinalize}>
     <!-- <section > -->
-    {#each slicedWorks as work, j (work.id)}
+    {#each worksToDisplay as work, j (work.id)}
       <div animate:flip={{ duration: flipDurationMs }}>
         <Work {work} index={j} {shelf} />
       </div>
