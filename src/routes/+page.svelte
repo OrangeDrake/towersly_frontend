@@ -21,7 +21,7 @@
 </script>
 
 {#key $reDrawCurves}
-  <div class="w-max" bind:this={element}>
+  <div class="w-max bg-white" bind:this={element}>
 
     <!-- musí být první aby nepřekrýval popupy -->
     <Connection  page ={element}/> 

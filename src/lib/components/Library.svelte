@@ -1,5 +1,5 @@
 <script>
-  import { ordered_shelves } from "$lib/stores/libraryStore.js";
+  import { ordered_shelves, numberOfVisibleWork } from "$lib/stores/libraryStore.js";
   import { toastStore } from "@skeletonlabs/skeleton";
   import { popup } from "@skeletonlabs/skeleton";
   import { storePopup } from "@skeletonlabs/skeleton";
@@ -8,27 +8,39 @@
   import Shelf from "$lib/components/Shelf.svelte";
   import AddShelf from "$lib/components/AddShelf.svelte";
   import TimeTracing from "$lib/components/TimeTracing.svelte";
+  import { reDrawCurves } from "$lib/stores/connectionStore.js";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-  
-	let duration = 5000;
 
+  const onChangeNumberOfVisibleWork = () => {
+    $reDrawCurves = "work moved: " + new Date().getTime();
+  };
+
+  let duration = 5000;
 </script>
 
-<div class="ml-2 p-2 pb-10 bg-white">
-  <!-- <div class="ml-2 p-2 pb-10"> -->
-  <svg class="inline-block w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-    <path
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      d="M10 16.5c0-1-8-2.7-9-2V1.8c1-1 9 .707 9 1.706M10 16.5V3.506M10 16.5c0-1 8-2.7 9-2V1.8c-1-1-9 .707-9 1.706"
-    />
-  </svg>
-  <span class="text-stone-600 text-lg font-bold">Library</span>
+<div class="ml-2 p-2 pb-10 flex-nowrap">
+  <div class="flex p-3">
+    <span class="flex-initial text-stone-600 text-lg font-bold">
+      <svg class="inline-block flex-initial w-7 h-7 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 16.5c0-1-8-2.7-9-2V1.8c1-1 9 .707 9 1.706M10 16.5V3.506M10 16.5c0-1 8-2.7 9-2V1.8c-1-1-9 .707-9 1.706"
+        />
+      </svg>
+      Library</span
+    >
+    <span> </span>
+  </div>
 
-  <TimeTracing/>
+  <div class="flex p-3  bg-slate-300">
+    <TimeTracing />
+    <span class="flex-initial align-bottom text-lg pl-1 pr-1 pt-3">Display Works:</span>
+    <span class="flex-initial w-12 pt-3"><input bind:value={$numberOfVisibleWork} class="input rounded pl-1" type="number" min="1" step="1" on:change={onChangeNumberOfVisibleWork} /></span>
+  </div>
 
   {#if $ordered_shelves == null}
     <div>Loading Shelves...</div>
@@ -40,5 +52,4 @@
       <AddShelf />
     </div>
   {/if}
-
 </div>

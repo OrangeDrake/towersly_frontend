@@ -120,7 +120,7 @@
   });
 </script>
 
-<div class="font-semibold">
+<div class="font-semibold bg-white">
   <div class="flex flex-nowrap bg-gray-800">
     <div class="w-1/4 text-white p-4">
       <h2 class="text-xl mb-4">Menu</h2>

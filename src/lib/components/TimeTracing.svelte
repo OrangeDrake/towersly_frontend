@@ -152,6 +152,10 @@
   {/if}
 
   <div class="p-4 w-72 shadow-xl bg-orange-200 border-solid border-2" data-popup={targer_popup}>
+    <div>
+      Select work to track
+    </div>
+    <hr />
     {#if $ordered_shelves != null && $ordered_shelves.length != 0}
       {#each $ordered_shelves as shelf}
         {#if shelf.works.length != 0}
@@ -167,7 +171,7 @@
           startTimer();
         }}
       >
-        <svg class="p-1 w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
+        <svg class="pr-1 w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20">
           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5.757v8.486M5.757 10h8.486M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>
         Track Progress</button

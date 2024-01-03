@@ -10,7 +10,7 @@
 
 </script>
 
-<div class="ml-2 m-0 mt-0 p-2 bg-white">
+<div class="ml-2 m-0 mt-0 p-2">
   <!-- <div class="ml-2 m-0 mt-0 p-2"> -->
   <svg
     class="inline-block w-7 h-7 text-gray-800 dark:text-white"
