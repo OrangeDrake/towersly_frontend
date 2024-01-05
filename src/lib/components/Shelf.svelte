@@ -4,18 +4,16 @@
   import { storePopup } from "@skeletonlabs/skeleton";
   import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
+  import { dndzone } from "svelte-dnd-action";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   //import {flip} from "svelte/animate";
-  import { dndzone } from "svelte-dnd-action";
-  import { invalidateAll } from "$app/navigation";
+
 
   import { API_URL } from "$lib/components/Constants.svelte";
   import Work from "$lib/components/Work.svelte";
   import { addTohShelvesLocations, shelves, numberOfVisibleWork} from "$lib/stores/libraryStore.js";
   import { reDrawCurves } from "$lib/stores/connectionStore.js";
-  import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
   import { allConnectedShelvesNames, ordered_shelves_names, ordered_shelves, shelves_locations } from "$lib/stores/libraryStore.js";
-  import { get } from "svelte/store";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -354,14 +352,6 @@
     <span class="font-bold">{shelf.name}</span>
     <hr />
   </div>
-  <!-- {#if slicedWorks.length != 0} -->
-
-  <!-- <section use:dndzone={{items:slicedWorks}}>
-    {#each slicedWorks as item(item.id)}
-      <div animate:flip={{ duration: flipDurationMs }}>{item.name}</div>
-    {/each}
-  </section> -->
-  <!-- {/if} -->
 
   <section use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider} on:finalize={handleDndFinalize}>
     <!-- <section > -->
@@ -390,15 +380,6 @@
       <span>Description</span>
       <input bind:value={work_description} class="input rounded p-1" type="text" />
     </label>
-
-    <!-- <label class="label">
-      <span>Actual Duration</span>
-      <div class="flex">
-        <span class="flex-initial w-24"><input bind:value={work_actual_duration_hours} class="input rounded p-1" type="number" min="0" step="1" /></span>
-        <span class="flex-initial w-4	text-center">:</span>
-        <span class="flex-initial w-24"><input bind:value={work_actual_duration_minutes} class="input rounded p-1" type="number" min="0" max="59" step="1" /></span>
-      </div>
-    </label> -->
 
     <label class="label">
       <span>Expected Duration</span>
