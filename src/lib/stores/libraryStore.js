@@ -3,6 +3,7 @@ import { writable, derived, get } from "svelte/store";
 export const numberOfVisibleWork = writable(3);
 export const shelves = writable(null);
 export const allConnectedShelvesNames = writable(new Set());
+export const workDisplayChange = writable(0);
 
 export const ordered_shelves = derived(shelves, (shelves) => {
   if (shelves == null) {
