@@ -17,9 +17,11 @@
     const flipDurationMs = 300;
 
     let shelves;
+    let shelvesToDisplay;
 
     $:{
         shelves = $ordered_shelves;
+        shelvesToDisplay = shelves;
     }
     const changeNumberOfVisibleWork = async () => {
 
@@ -43,11 +45,68 @@
     };
 
     function handleDndConsider(e) {
-        shelves = e.detail.items;
+        shelvesToDisplay = e.detail.items;
     }
 
     function handleDndFinalize(e) {
-        shelves = e.detail.items;
+        //shelves = e.detail.items;
+        const shelfUpdate = {
+            shelves: [],
+            maxRank: 0
+        };
+        let currentIndex = 0;
+        let lastRank = 0;
+        let wasMovedDeleted = false;
+        let wasMovedInserted = false;
+        let movedWork = null;
+        let newMovedRank = -1;
+        console.log("shelves pred razenim: " + JSON.stringify(shelves))
+        console.log("e.detail.info.id: " + e.detail.info.id);
+        while (currentIndex < e.detail.items.length) {
+            console.log("currentIndex: " + currentIndex + ":shelves[currentIndex].id: " + shelves[currentIndex].id);
+            console.log("shelves move 0");
+            if (shelves[currentIndex].id == e.detail.info.id && e.detail.items[currentIndex].id == e.detail.info.id) { //presunuti na miste
+                console.log("shelves move 1");
+                break;
+            }
+            if (shelves[currentIndex].id == e.detail.info.id) {
+                console.log("shelves move 2")
+                movedWork = shelves[currentIndex]
+                wasMovedDeleted = true;
+            } else if (e.detail.items[currentIndex].id == e.detail.info.id) { //vkladame
+                console.log("shelves move 3")
+                if (wasMovedDeleted) { //uz bylo mazano vkladame za
+                    console.log("shelves move 4")
+                    let currentRank = shelves[currentIndex].rank;
+                    let nextRank = shelves[currentIndex].rank + 1; //predpokladame ze jsme na konci
+                    if (currentIndex + 1 < shelves.length) {
+                        nextRank = shelves[currentIndex + 1].rank;
+                    }
+                    newMovedRank = Math.ceil((currentRank + nextRank) / 2);
+                    console.log("newMovedRank:" + newMovedRank);
+                    movedWork = e.detail.items[currentIndex];
+                    lastRank = nextRank;
+                    currentIndex++
+                } else { ////nebylo mazano vkladame pred
+                    let currentRank = shelves[currentIndex].rank;
+                    newMovedRank = Math.ceil((lastRank + currentRank) / 2);
+                    lastRank = newMovedRank;
+                }
+            } else {
+                lastRank = shelves[currentIndex].rank;
+            }
+
+            if (currentIndex >= shelves.length) {
+                break;
+            }
+
+            if (shelves[currentIndex].rank <= lastRank) {
+                shelves[currentIndex].rank = shelves[currentIndex].rank + 1;
+            }
+            currentIndex++;
+        }
+        movedWork.rank = newMovedRank;
+        $reDrawCurves = "work moved: " + new Date().getTime();
     }
 
 </script>
@@ -78,13 +137,13 @@
                                                     on:change={onChangeNumberOfVisibleWork}/></span>
     </div>
 
-    {#if shelves == null}
+    {#if shelvesToDisplay == null}
         <div>Loading Shelves...</div>
     {:else}
         <div class="flex flex-nowrap">
-            <section class="flex flex-nowrap" use:dndzone={{ items: shelves, flipDurationMs, type:'columns' }}
+            <section class="flex flex-nowrap" use:dndzone={{ items: shelvesToDisplay, flipDurationMs, type:'columns' }}
                      on:consider={handleDndConsider} on:finalize={handleDndFinalize}>
-                {#each shelves as shelf, i (shelf.id)}
+                {#each shelvesToDisplay as shelf, i (shelf.id)}
                     <div animate:flip={{ duration: flipDurationMs }}>
                         <Shelf {shelf}/>
                     </div>
