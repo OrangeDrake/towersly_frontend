@@ -61,9 +61,15 @@
 
     // let works = shelf.works;
 
-    let slicedWorks = works.slice(0, $numberOfVisibleWork);
-
+    let slicedWorks = works.slice(0, $numberOfVisibleWork);;
     let worksToDisplay = slicedWorks;
+
+
+    $:{
+        console.log("responsible slice:"  +  $numberOfVisibleWork)
+        slicedWorks = works.slice(0, $numberOfVisibleWork);
+        worksToDisplay = slicedWorks;
+    }
 
     const hoursAndMinutesToMinutes = (hours, minutes) => {
         return hours * 60 + minutes;
@@ -148,8 +154,14 @@
     });
     //   console.log("shelh")
     // console.log(shelf);
-    console.log("Works");
-    console.log(works);
+    console.log("slicedWorks");
+    console.log(slicedWorks);
+    console.log("worksToDisplay");
+    console.log(worksToDisplay);
+    console.log("numberOfVisibleWork:" + $numberOfVisibleWork);
+
+
+
     // console.log("items")slicedWslicedWorks
     // console.log(items);
 
@@ -346,7 +358,7 @@
             toastStore.message = "Work " + movedWork.name + " moved";
             toastStore.trigger(toastStore);
         }
-        ;
+
 
         $reDrawCurves = "work moved: " + new Date().getTime();
         console.log("works updated");
@@ -370,9 +382,11 @@
         <hr/>
     </div>
 
-    {#if numberOfVisibleWork == 0}
+
+    {#if $numberOfVisibleWork == 0 || worksToDisplay == null}
         Loading Settings...
     {:else}
+        <!--{#key $numberOfVisibleWork}-->
         <section use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider}
                  on:finalize={handleDndFinalize}>
             <!-- <section > -->
@@ -385,6 +399,7 @@
             <!--  <div>no works yet</div>-->
             <!--{/if}-->
         </section>
+        <!--{/key}-->
         {#if works.length > $numberOfVisibleWork}
             <div class="font-bold text-2xl">...</div>
         {/if}
