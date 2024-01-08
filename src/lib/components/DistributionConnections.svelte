@@ -3,7 +3,7 @@
 import { afterUpdate, onMount, beforeUpdate } from "svelte";
 import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
 import { keycloak } from "$lib/stores/keycloakStore.js";
-import { API_URL } from "$lib/components/Constants.svelte";
+import { API_URL } from "$lib/shared/Constants.svelte";
 import {allConnectedShelvesNames, ordered_shelves, resetAllConnectedShelvesNames, ordered_shelves_names, addToAllConnectedShelvesNames, removeFromAllConnectedShelvesNames} from "$lib/stores/libraryStore.js";
 import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
 import { reDrawCurves } from "$lib/stores/connectionStore.js";

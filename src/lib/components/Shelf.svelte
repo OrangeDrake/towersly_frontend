@@ -9,7 +9,7 @@
     //import {flip} from "svelte/animate";
 
 
-    import {API_URL} from "$lib/components/Constants.svelte";
+    import {API_URL} from "$lib/shared/Constants.svelte";
     import Work from "$lib/components/Work.svelte";
     import {addTohShelvesLocations, shelves, numberOfVisibleWork} from "$lib/stores/libraryStore.js";
     import {reDrawCurves} from "$lib/stores/connectionStore.js";

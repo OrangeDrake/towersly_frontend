@@ -4,7 +4,7 @@
   import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { popup } from "@skeletonlabs/skeleton";
-  import { API_URL } from "$lib/components/Constants.svelte";
+  import { API_URL } from "$lib/shared/Constants.svelte";
   import Rule from "$lib/components/Rule.svelte";
   import {reDrawCurves} from "$lib/stores/connectionStore.js";
 

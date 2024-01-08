@@ -1,6 +1,6 @@
 <script>
     import { keycloak } from "$lib/stores/keycloakStore.js";
-    import {API_URL} from "$lib/components/Constants.svelte";
+    import {API_URL} from "$lib/shared/Constants.svelte";
     import { distributions } from "$lib/stores/planningStore.js";
     let name = "";
   

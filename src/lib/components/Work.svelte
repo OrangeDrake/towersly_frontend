@@ -6,7 +6,7 @@
   import { keycloak } from "$lib/stores/keycloakStore.js";
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
-  import { API_URL } from "$lib/components/Constants.svelte";
+  import { API_URL } from "$lib/shared/Constants.svelte";
 
   export let shelf;
   export let work;

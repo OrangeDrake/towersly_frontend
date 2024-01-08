@@ -6,7 +6,7 @@
     import {storePopup} from "@skeletonlabs/skeleton";
     import {computePosition, autoUpdate, offset, shift, flip, arrow} from "@floating-ui/dom";
     import {dndzone} from "svelte-dnd-action";
-    import {API_URL} from "$lib/components/Constants.svelte";
+    import {API_URL} from "$lib/shared/Constants.svelte";
     import Shelf from "$lib/components/Shelf.svelte";
     import AddShelf from "$lib/components/AddShelf.svelte";
     import TimeTracing from "$lib/components/TimeTracing.svelte";

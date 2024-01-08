@@ -6,7 +6,7 @@
   import { ordered_shelves } from "$lib/stores/libraryStore.js";
   import { toastStore } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
-  import { API_URL } from "$lib/components/Constants.svelte";
+  import { API_URL } from "$lib/shared/Constants.svelte";
   import { reDrawCurves } from "$lib/stores/connectionStore.js";
   import { tracking, elapsed, trackTime, updateTrackedWorkActualTime } from "$lib/stores/timeTrackingStore.js";
 
