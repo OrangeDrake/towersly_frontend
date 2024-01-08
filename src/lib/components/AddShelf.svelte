@@ -2,6 +2,7 @@
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/components/Constants.svelte";
   import { shelves } from "$lib/stores/libraryStore.js";
+  import { toast, defaultToastStore } from "$lib/components/DefaultToast.svelte"
   let name = "";
 
   const addShelf = async () => {
@@ -17,6 +18,8 @@
     const n_shelf = await response.json();
     shelves.update((shelves) => [...shelves, n_shelf]);
     console.log(Object.values($shelves));
+    toast.message = "Shelf " + name + " created";
+    defaultToastStore.trigger(toast);
   };
 </script>
 
