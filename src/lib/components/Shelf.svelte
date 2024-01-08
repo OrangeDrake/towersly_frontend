@@ -24,7 +24,7 @@
 
     const flipDurationMs = 300;
 
-    let toastWorkCreated = {
+    let toastWork = {
         message: "",
         hideDismiss: true,
         timeout: 10000,
@@ -96,15 +96,15 @@
         });
 
         if (!response.ok) {
-            toastWorkCreated.background = "bg-yellow-200";
-            toastWorkCreated.message = "Work " + work_name + " create failed";
-            toastStore.trigger(toastWorkCreated);
+            toastWork.background = "bg-yellow-200";
+            toastWork.message = "Work " + work_name + " create failed";
+            toastStore.trigger(toastWork);
             return;
         }
 
-        toastWorkCreated.background = "bg-green-500";
-        toastWorkCreated.message = "Work " + work_name + " created";
-        toastStore.trigger(toastWorkCreated);
+        toastWork.background = "bg-green-500";
+        toastWork.message = "Work " + work_name + " created";
+        toastStore.trigger(toastWork);
 
         const n_work = await response.json();
         works.push(n_work);
@@ -299,7 +299,7 @@
             console.log("!wasMovedDeleted && wasMovedInserted movedWork: " + JSON.stringify(movedWork));
             works.push(movedWork);
             worksUpdate["workNewInShelf"] = {id: movedWork.id, rank: movedWork.rank}
-            worksUpdate.maxRank = movedWork.rank; // novy work v shelu muze mitmaximalni rank
+            worksUpdate.maxRank = movedWork.rank; // novy work v shelu muze mit maximalni rank
         }
 
         const update_works = worksUpdate.works; // hledani max ranku
@@ -325,9 +325,9 @@
         if (!response.ok) {
             console.log("response: " + response);
             console.log("update works failed");
-            toastWorkCreated.background = "bg-yellow-200";
-            toastWorkCreated.message = "Works move failed";
-            toastStore.trigger(toastWorkCreated);
+            toastWork.background = "bg-yellow-200";
+            toastWork.message = "Works move failed";
+            toastStore.trigger(toastWork);
             //shelf.works = works_backup;
             //invalidateAll();
             for (let i = 0; i < workRollback.length; i++) {
@@ -354,9 +354,9 @@
 
 
         if (wasMovedInserted) {
-            toastStore.background = "bg-green-500";
-            toastStore.message = "Work " + movedWork.name + " moved";
-            toastStore.trigger(toastStore);
+            toastWork.background = "bg-green-500";
+            toastWork.message = "Work " + movedWork.name + " moved";
+            toastStore.trigger(toastWork);
         }
 
 
@@ -383,9 +383,9 @@
     </div>
 
 
-    {#if $numberOfVisibleWork == 0 || worksToDisplay == null}
-        Loading Settings...
-    {:else}
+    <!--{#if $numberOfVisibleWork == 0 || worksToDisplay == null}-->
+    <!--    Loading Settings...-->
+    <!--{:else}-->
         <!--{#key $numberOfVisibleWork}-->
         <section use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider}
                  on:finalize={handleDndFinalize}>
@@ -403,7 +403,7 @@
         {#if works.length > $numberOfVisibleWork}
             <div class="font-bold text-2xl">...</div>
         {/if}
-    {/if}
+    <!--{/if}-->
 
     <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Work</button>
 

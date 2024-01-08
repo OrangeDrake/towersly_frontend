@@ -16,6 +16,15 @@
 
     const flipDurationMs = 300;
 
+    let toastShelf = {
+        message: "",
+        hideDismiss: true,
+        timeout: 10000,
+        background: "bg-green-500",
+        position: "r",
+        padding: "p-4",
+    };
+
     let shelves;
     let shelvesToDisplay;
 
@@ -35,7 +44,6 @@
         });
     };
 
-
     const onChangeNumberOfVisibleWork = () => {
         console.log("První funkce byla zavolána.");
         // Zastaví předchozí odpočet (pokud existuje)
@@ -48,17 +56,20 @@
         shelvesToDisplay = e.detail.items;
     }
 
-    function handleDndFinalize(e) {
+    async function handleDndFinalize(e) {
         //shelves = e.detail.items;
-        const shelfUpdate = {
+        console.log("shelves pred presunem: " + JSON.stringify(shelves))
+        const shelvesUpdate = {
             shelves: [],
             maxRank: 0
         };
+        const shelfRollback = [];
+
         let currentIndex = 0;
         let lastRank = 0;
         let wasMovedDeleted = false;
         let wasMovedInserted = false;
-        let movedWork = null;
+        let movedShelf = null;
         let newMovedRank = -1;
         console.log("shelves pred razenim: " + JSON.stringify(shelves))
         console.log("e.detail.info.id: " + e.detail.info.id);
@@ -71,7 +82,7 @@
             }
             if (shelves[currentIndex].id == e.detail.info.id) {
                 console.log("shelves move 2")
-                movedWork = shelves[currentIndex]
+                movedShelf = shelves[currentIndex]
                 wasMovedDeleted = true;
             } else if (e.detail.items[currentIndex].id == e.detail.info.id) { //vkladame
                 console.log("shelves move 3")
@@ -84,7 +95,7 @@
                     }
                     newMovedRank = Math.ceil((currentRank + nextRank) / 2);
                     console.log("newMovedRank:" + newMovedRank);
-                    movedWork = e.detail.items[currentIndex];
+                    movedShelf = e.detail.items[currentIndex];
                     lastRank = nextRank;
                     currentIndex++
                 } else { ////nebylo mazano vkladame pred
@@ -101,12 +112,71 @@
             }
 
             if (shelves[currentIndex].rank <= lastRank) {
+                shelfRollback.push({id: shelves[currentIndex].id, rank: shelves[currentIndex].rank});
                 shelves[currentIndex].rank = shelves[currentIndex].rank + 1;
+                shelvesUpdate.shelves.push({id: shelves[currentIndex].id, rank: shelves[currentIndex].rank});
             }
             currentIndex++;
         }
-        movedWork.rank = newMovedRank;
-        $reDrawCurves = "work moved: " + new Date().getTime();
+
+        shelfRollback.push({id: movedShelf.id, rank: movedShelf.rank});
+        movedShelf.rank = newMovedRank;
+        shelvesUpdate.shelves.push({id: movedShelf.id, rank: movedShelf.rank});
+
+        // toastStore.background = "bg-green-500";
+        // toastStore.message = "Work " + movedWork.name + " moved";
+        // toastStore.trigger(toastStore);
+
+        shelves.sort((a, b) => {
+
+            return a.rank - b.rank;
+        });
+
+
+        // shelvesToDisplay = shelves;
+
+        const update_shelves = shelvesUpdate.shelves; // hledani max ranku
+        for (let i = 0; i < update_shelves.length; i++) {
+            if (update_shelves[i].rank > shelvesUpdate.maxRank) {
+                shelvesUpdate.maxRank = update_shelves[i].rank;
+            }
+        }
+
+        const response =  await fetch(API_URL + "/library/updateshelves", {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer " + $keycloak.token,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(shelvesUpdate),
+        });
+
+        if (!response.ok) {
+            console.log("response: " + response);
+            console.log("update works failed");
+            toastShelf.background = "bg-yellow-200";
+            toastShelf.message = "Works move failed";
+            toastStore.trigger(toastShelf);
+            //shelf.works = works_backup;
+            //invalidateAll();
+            console.log("shelfRollback: " + JSON.stringify(shelfRollback));
+            for (let i = 0; i < shelfRollback.length; i++) {
+                for (let j = 0; j < shelves.length; j++) {
+                    if (shelves[j].id == shelfRollback[i].id) {
+                        shelves[j].rank = shelfRollback[i].rank;
+                        break;
+                    }
+                }
+            }
+            $reDrawCurves = "work moved: " + new Date().getTime();
+            return;
+        }
+
+        toastShelf.background = "bg-green-500";
+        toastShelf.message = "Work " + movedShelf.name + " moved";
+        toastStore.trigger(toastShelf);
+        $reDrawCurves = "shelves moved: " + new Date().getTime();
+
     }
 
 </script>
