@@ -5,7 +5,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"start": "node build"
 	},
 	"devDependencies": {
 		"@rollup/plugin-legacy": "^3.0.1",
@@ -24,6 +25,7 @@
 		"@floating-ui/dom": "^1.5.1",
 		"@skeletonlabs/skeleton": "^1.11.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.1",
-		"keycloak-js": "^21.1.2"
+		"keycloak-js": "^21.1.2",
+		"yarn": "^1.22.21"
 	}
 }
