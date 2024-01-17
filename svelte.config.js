@@ -20,9 +20,12 @@
 
 // svelte.config.js
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import adapter from '@sveltejs/adapter-auto';
+//import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-node';
 
 export default {
 	preprocess: [vitePreprocess()],
-	adapter: adapter()
+	kit: {
+		adapter: adapter()
+	}
 };

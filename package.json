@@ -9,7 +9,7 @@
 	},
 	"devDependencies": {
 		"@rollup/plugin-legacy": "^3.0.1",
-		"@sveltejs/adapter-auto": "^3.1.0",
+		"@sveltejs/adapter-node": "^3.0.1",
 		"@sveltejs/kit": "^2.3.2",
 		"autoprefixer": "^10.4.14",
 		"postcss": "^8.4.26",
