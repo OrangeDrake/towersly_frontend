@@ -1,12 +1,12 @@
 <script>
     import { keycloak } from "$lib/stores/keycloakStore.js";
-    import {API_URL} from "$lib/shared/Constants.svelte";
     import { distributions } from "$lib/stores/planningStore.js";
+    import {PUBLIC_API_URL} from "$env/static/public";
     let name = "";
   
     const addDistribution = async () => {
       const token_value = "Bearer " + $keycloak.token;
-      const response = await fetch(API_URL + "/planning/adddistribution", {
+      const response = await fetch(PUBLIC_API_URL + "/planning/adddistribution", {
         method: "POST",
         headers: {
           Authorization: token_value,

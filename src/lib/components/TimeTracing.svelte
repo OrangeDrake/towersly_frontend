@@ -6,9 +6,9 @@
   import { ordered_shelves } from "$lib/stores/libraryStore.js";
   import { toastStore } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
-  import { API_URL } from "$lib/shared/Constants.svelte";
   import { reDrawCurves } from "$lib/stores/connectionStore.js";
   import { tracking, elapsed, trackTime, updateTrackedWorkActualTime } from "$lib/stores/timeTrackingStore.js";
+  import {PUBLIC_API_URL} from "$env/static/public";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -47,7 +47,7 @@
     
 
     const token_value = "Bearer " + $keycloak.token;
-    const response = await fetch(API_URL + "/profile/startTracking", {
+    const response = await fetch(PUBLIC_API_URL + "/profile/startTracking", {
       method: "POST",
       headers: {
         Authorization: token_value,
@@ -66,7 +66,7 @@
 
   const stopTimer = async () => {
     const token_value = "Bearer " + $keycloak.token;
-    const response = await fetch(API_URL + "/profile/stopTracking", {
+    const response = await fetch(PUBLIC_API_URL + "/profile/stopTracking", {
       method: "POST",
       headers: {
         Authorization: token_value,

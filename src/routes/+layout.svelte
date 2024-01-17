@@ -9,17 +9,16 @@
   import { shelves, numberOfVisibleWork } from "$lib/stores/libraryStore.js";
   import { distributions } from "$lib/stores/planningStore.js";
   import { keycloak } from "$lib/stores/keycloakStore.js";
-  import { API_URL } from "$lib/shared/Constants.svelte";
   import { tracking, trackTime } from "$lib/stores/timeTrackingStore.js";
-  import {PUBLIC_KEYCLOAK_URL} from "$env/static/public";
+  import {PUBLIC_API_URL, PUBLIC_KEYCLOAK_URL} from "$env/static/public";
 
   let loginState = "waiting for login...";
 
   const getShelves = async () => {
     console.log("--------------------getShelves");
     const token_value = "Bearer " + $keycloak.token;
-    console.log("URL" + API_URL);
-    var response = await fetch(API_URL + "/library", {
+    console.log("URL" + PUBLIC_API_URL);
+    var response = await fetch(PUBLIC_API_URL + "/library", {
       method: "GET",
       headers: {
         Authorization: token_value,
@@ -34,7 +33,7 @@
   const getDistributions = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
-    var response = await fetch(API_URL + "/planning", {
+    var response = await fetch(PUBLIC_API_URL + "/planning", {
       method: "GET",
       headers: {
         Authorization: token_value,
@@ -49,7 +48,7 @@
   const getTimeTracking = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
-    var response = await fetch(API_URL + "/profile/tracking", {
+    var response = await fetch(PUBLIC_API_URL + "/profile/tracking", {
       method: "GET",
       headers: {
         Authorization: token_value,
@@ -73,7 +72,7 @@
   const getNumberOfVisibleWork = async () => {
     const token_value = "Bearer " + $keycloak.token;
 
-    var response = await fetch(API_URL + "/settings/worksnumber", {
+    var response = await fetch(PUBLIC_API_URL + "/settings/worksnumber", {
       method: "GET",
       headers: {
         Authorization: token_value,

@@ -1,8 +1,8 @@
 <script>
     import {keycloak} from "$lib/stores/keycloakStore.js";
-    import {API_URL} from "$lib/shared/Constants.svelte";
     import {shelves} from "$lib/stores/libraryStore.js";
     import {toast, defaultToastStore} from "$lib/shared/DefaultToast.svelte"
+    import {PUBLIC_API_URL} from "$env/static/public";
 
     let name = "";
 
@@ -25,7 +25,7 @@
 
 
         const token_value = "Bearer " + $keycloak.token;
-        const response = await fetch(API_URL + "/library/addshelf", {
+        const response = await fetch(PUBLIC_API_URL + "/library/addshelf", {
             method: "POST",
             headers: {
                 Authorization: token_value,

@@ -7,9 +7,6 @@
     import {dndzone} from "svelte-dnd-action";
     import {keycloak} from "$lib/stores/keycloakStore.js";
     //import {flip} from "svelte/animate";
-
-
-    import {API_URL} from "$lib/shared/Constants.svelte";
     import Work from "$lib/components/Work.svelte";
     import {addTohShelvesLocations, shelves, numberOfVisibleWork} from "$lib/stores/libraryStore.js";
     import {reDrawCurves} from "$lib/stores/connectionStore.js";
@@ -19,6 +16,7 @@
         ordered_shelves,
         shelves_locations
     } from "$lib/stores/libraryStore.js";
+    import {PUBLIC_API_URL} from "$env/static/public";
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
 
@@ -79,7 +77,7 @@
         const token_value = "Bearer " + $keycloak.token;
         const expectedDurationInMinutes = hoursAndMinutesToMinutes(work_expected_duration_hours, work_expected_duration_minutes);
 
-        var url = new URL(API_URL + "/library/addwork");
+        var url = new URL(PUBLIC_API_URL + "/library/addwork");
 
         const response = await fetch(url, {
             method: "POST",
@@ -387,7 +385,7 @@
     <!--    Loading Settings...-->
     <!--{:else}-->
         <!--{#key $numberOfVisibleWork}-->
-        <section use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider}
+        <section class = "min-h-4" use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider}
                  on:finalize={handleDndFinalize}>
             <!-- <section > -->
             {#each worksToDisplay as work, j (work.id)}

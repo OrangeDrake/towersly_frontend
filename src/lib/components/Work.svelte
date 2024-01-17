@@ -5,9 +5,8 @@
   import { storePopup } from "@skeletonlabs/skeleton";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-
-  import { API_URL } from "$lib/shared/Constants.svelte";
   import {reDrawCurves} from "$lib/stores/connectionStore.js";
+  import {PUBLIC_API_URL} from "$env/static/public";
 
   export let shelf;
   export let work;
@@ -68,7 +67,7 @@
     const actualDurationInSeconds = work_actual_duration_hours_edit * 60 * 60 + work_actual_duration_minutes_edit * 60 + work_actual_duration_seconds_edit;
     const expectedDurationInMinutes = work_expected_duration_hours_edit * 60 + work_expected_duration_minutes_edit;
 
-    var url = new URL(API_URL + "/library/savework?" + new URLSearchParams({ workId: work.id }));
+    var url = new URL(PUBLIC_API_URL + "/library/savework?" + new URLSearchParams({ workId: work.id }));
 
     const response = await fetch(url, {
       method: "POST",

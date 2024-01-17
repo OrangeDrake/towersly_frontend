@@ -3,10 +3,10 @@
 import { afterUpdate, onMount, beforeUpdate } from "svelte";
 import { RadioGroup, RadioItem } from "@skeletonlabs/skeleton";
 import { keycloak } from "$lib/stores/keycloakStore.js";
-import { API_URL } from "$lib/shared/Constants.svelte";
 import {allConnectedShelvesNames, ordered_shelves, resetAllConnectedShelvesNames, ordered_shelves_names, addToAllConnectedShelvesNames, removeFromAllConnectedShelvesNames} from "$lib/stores/libraryStore.js";
 import { ordered_distributions, distributions_locations, distributions, addToDistributionsLocations } from "$lib/stores/planningStore.js";
 import { reDrawCurves } from "$lib/stores/connectionStore.js";
+import {PUBLIC_API_URL} from "$env/static/public";
 
   let connectedShelvesNames;
   let shelvesNamesToAdd;
@@ -44,7 +44,7 @@ import { reDrawCurves } from "$lib/stores/connectionStore.js";
 
     const token_value = "Bearer " + $keycloak.token;
 
-    var url = new URL(API_URL + "/planning/addconnectedshelf");
+    var url = new URL(PUBLIC_API_URL + "/planning/addconnectedshelf");
     url.searchParams.append("distributionId", distribution.id);
     url.searchParams.append("shelfName", shelfNameToConnect);
 
@@ -74,7 +74,7 @@ import { reDrawCurves } from "$lib/stores/connectionStore.js";
     }
 
     const token_value = "Bearer " + $keycloak.token;
-    const url = new URL(API_URL + "/planning/removeconnectedshelf");
+    const url = new URL(PUBLIC_API_URL + "/planning/removeconnectedshelf");
     url.searchParams.append("distributionId", distribution.id);
     url.searchParams.append("shelfName", shelfNameToRemove);
     const response = await fetch(url, {
@@ -108,7 +108,7 @@ import { reDrawCurves } from "$lib/stores/connectionStore.js";
 
   const changeConnectingType = () => {
     const token_value = "Bearer " + $keycloak.token;
-    const url = new URL(API_URL + "/planning/changeconnectingtype");
+    const url = new URL(PUBLIC_API_URL + "/planning/changeconnectingtype");
     url.searchParams.append("distributionId", distribution.id);
     url.searchParams.append("type", typeMixingShelves);
     fetch(url, {

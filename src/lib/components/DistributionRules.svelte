@@ -4,9 +4,9 @@
   import { toastStore } from "@skeletonlabs/skeleton";
   import { computePosition, autoUpdate, offset, shift, flip, arrow } from "@floating-ui/dom";
   import { popup } from "@skeletonlabs/skeleton";
-  import { API_URL } from "$lib/shared/Constants.svelte";
   import Rule from "$lib/components/Rule.svelte";
   import {reDrawCurves} from "$lib/stores/connectionStore.js";
+  import {PUBLIC_API_URL} from "$env/static/public";
 
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -128,7 +128,7 @@
 
     const token_value = "Bearer " + $keycloak.token;
 
-    var url = new URL(API_URL + "/planning/addrule");
+    var url = new URL(PUBLIC_API_URL + "/planning/addrule");
     url.searchParams.append("distributionId", distribution.id);
 
     rule_options.pop();

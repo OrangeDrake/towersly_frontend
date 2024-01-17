@@ -6,12 +6,11 @@
     import {storePopup} from "@skeletonlabs/skeleton";
     import {computePosition, autoUpdate, offset, shift, flip, arrow} from "@floating-ui/dom";
     import {dndzone} from "svelte-dnd-action";
-    import {API_URL} from "$lib/shared/Constants.svelte";
-    //import {API_URL} from "$env/static/public"
     import Shelf from "$lib/components/Shelf.svelte";
     import AddShelf from "$lib/components/AddShelf.svelte";
     import TimeTracing from "$lib/components/TimeTracing.svelte";
     import {reDrawCurves} from "$lib/stores/connectionStore.js";
+    import {PUBLIC_API_URL} from "$env/static/public";
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
 
@@ -36,8 +35,8 @@
     const changeNumberOfVisibleWork = async () => {
 
         const token_value = "Bearer " + $keycloak.token;
-        console.log("URL" + API_URL);
-        var response = await fetch(API_URL + "/settings/setworksnumber?" + new URLSearchParams({'numberOfVisibleWorks': $numberOfVisibleWork}), {
+        console.log("URL" + PUBLIC_API_URL);
+        var response = await fetch(PUBLIC_API_URL + "/settings/setworksnumber?" + new URLSearchParams({'numberOfVisibleWorks': $numberOfVisibleWork}), {
             method: "GET",
             headers: {
                 Authorization: token_value,
@@ -143,7 +142,7 @@
             }
         }
 
-        const response =  await fetch(API_URL + "/library/updateshelves", {
+        const response = await fetch(PUBLIC_API_URL + "/library/updateshelves", {
             method: "POST",
             headers: {
                 Authorization: "Bearer " + $keycloak.token,
@@ -204,7 +203,7 @@
         <TimeTracing/>
         <span class="flex-initial align-bottom text-lg pl-1 pr-1 pt-3">Display Works:</span>
         <span class="flex-initial w-12 pt-3"><input bind:value={$numberOfVisibleWork} class="input rounded pl-1"
-                                                    type="number" min="1" step="1"
+                                                    type="number" min="0" step="1"
                                                     on:change={onChangeNumberOfVisibleWork}/></span>
     </div>
 
@@ -212,7 +211,8 @@
         <div>Loading Shelves...</div>
     {:else}
         <div class="flex flex-nowrap">
-            <section class="flex flex-nowrap" use:dndzone={{ items: shelvesToDisplay, flipDurationMs, type:'columns' }}
+            <section class="flex flex-nowrap"
+                     use:dndzone={{ items: shelvesToDisplay, flipDurationMs, type:'columns' }}
                      on:consider={handleDndConsider} on:finalize={handleDndFinalize}>
                 {#each shelvesToDisplay as shelf, i (shelf.id)}
                     <div animate:flip={{ duration: flipDurationMs }}>
