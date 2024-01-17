@@ -11,6 +11,7 @@
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { API_URL } from "$lib/shared/Constants.svelte";
   import { tracking, trackTime } from "$lib/stores/timeTrackingStore.js";
+  import {PUBLIC_KEYCLOAK_URL} from "$env/static/public";
 
   let loginState = "waiting for login...";
 
@@ -85,8 +86,8 @@
 
   async function initKeycloak() {
     $keycloak = new Keycloak({
-      url: "http://localhost:8080",
-      realm: "master",
+      url: PUBLIC_KEYCLOAK_URL,
+      realm: "master2",
       clientId: "t_client",
     });
     $keycloak
