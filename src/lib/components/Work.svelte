@@ -7,6 +7,7 @@
   storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
   import { API_URL } from "$lib/shared/Constants.svelte";
+  import {reDrawCurves} from "$lib/stores/connectionStore.js";
 
   export let shelf;
   export let work;
@@ -94,7 +95,9 @@
     toastWorkEdited.background = "bg-green-500";
     toastStore.trigger(toastWorkEdited);
 
-    popup.hide(edit_targer_popup);
+    $reDrawCurves = "shelves moved: " + new Date().getTime();
+
+    //popup.hide(edit_targer_popup);
   };
 
   const resetEdit = () => {
