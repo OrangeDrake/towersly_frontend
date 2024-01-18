@@ -310,7 +310,7 @@
         console.log("Po razeni: " + JSON.stringify(works));
         console.log("worksUpdate: " + JSON.stringify(worksUpdate));
 
-        const response = await fetch(API_URL + "/library/updateworks", {
+        const response = await fetch(PUBLIC_API_URL + "/library/updateworks", {
             method: "POST",
             headers: {
                 Authorization: "Bearer " + $keycloak.token,
