@@ -84,6 +84,8 @@
                 console.log("shelves move 2")
                 movedShelf = shelves[currentIndex]
                 wasMovedDeleted = true;
+                currentIndex++;
+                continue;
             } else if (e.detail.items[currentIndex].id == e.detail.info.id) { //vkladame
                 console.log("shelves move 3")
                 if (wasMovedDeleted) { //uz bylo mazano vkladame za
@@ -103,9 +105,6 @@
                     newMovedRank = Math.ceil((lastRank + currentRank) / 2);
                     lastRank = newMovedRank;
                 }
-            } else {
-                lastRank = shelves[currentIndex].rank;
-            }
 
             if (currentIndex >= shelves.length) {
                 break;
@@ -117,6 +116,7 @@
                 shelvesUpdate.shelves.push({id: shelves[currentIndex].id, rank: shelves[currentIndex].rank});
             }
             currentIndex++;
+            lastRank = shelves[currentIndex].rank;
         }
 
         shelfRollback.push({id: movedShelf.id, rank: movedShelf.rank});
