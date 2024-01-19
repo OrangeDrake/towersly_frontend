@@ -10,12 +10,7 @@
     import Work from "$lib/components/Work.svelte";
     import {addTohShelvesLocations, shelves, numberOfVisibleWork} from "$lib/stores/libraryStore.js";
     import {reDrawCurves} from "$lib/stores/connectionStore.js";
-    import {
-        allConnectedShelvesNames,
-        ordered_shelves_names,
-        ordered_shelves,
-        shelves_locations
-    } from "$lib/stores/libraryStore.js";
+    import {allConnectedShelvesNames} from "$lib/stores/libraryStore.js";
     import {PUBLIC_API_URL} from "$env/static/public";
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
@@ -59,12 +54,13 @@
 
     // let works = shelf.works;
 
-    let slicedWorks = works.slice(0, $numberOfVisibleWork);;
+    let slicedWorks = works.slice(0, $numberOfVisibleWork);
+    ;
     let worksToDisplay = slicedWorks;
 
 
     $:{
-        console.log("responsible slice:"  +  $numberOfVisibleWork)
+        console.log("responsible slice:" + $numberOfVisibleWork)
         slicedWorks = works.slice(0, $numberOfVisibleWork);
         worksToDisplay = slicedWorks;
     }
@@ -157,7 +153,6 @@
     console.log("worksToDisplay");
     console.log(worksToDisplay);
     console.log("numberOfVisibleWork:" + $numberOfVisibleWork);
-
 
 
     // console.log("items")slicedWslicedWorks
@@ -384,23 +379,23 @@
     <!--{#if $numberOfVisibleWork == 0 || worksToDisplay == null}-->
     <!--    Loading Settings...-->
     <!--{:else}-->
-        <!--{#key $numberOfVisibleWork}-->
-        <section class = "min-h-4" use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider}
-                 on:finalize={handleDndFinalize}>
-            <!-- <section > -->
-            {#each worksToDisplay as work, j (work.id)}
-                <div animate:flip={{ duration: flipDurationMs }}>
-                    <Work {work} index={j} {shelf}/>
-                </div>
-            {/each}
-            <!--{#if works.length == 0}-->
-            <!--  <div>no works yet</div>-->
-            <!--{/if}-->
-        </section>
-        <!--{/key}-->
-        {#if works.length > $numberOfVisibleWork}
-            <div class="font-bold text-2xl">...</div>
-        {/if}
+    <!--{#key $numberOfVisibleWork}-->
+    <section class="min-h-4" use:dndzone={{ items: worksToDisplay, flipDurationMs }} on:consider={handleDndConsider}
+             on:finalize={handleDndFinalize}>
+        <!-- <section > -->
+        {#each worksToDisplay as work, j (work.id)}
+            <div animate:flip={{ duration: flipDurationMs }}>
+                <Work {work} index={j} {shelf}/>
+            </div>
+        {/each}
+        <!--{#if works.length == 0}-->
+        <!--  <div>no works yet</div>-->
+        <!--{/if}-->
+    </section>
+    <!--{/key}-->
+    {#if works.length > $numberOfVisibleWork}
+        <div class="font-bold text-2xl">...</div>
+    {/if}
     <!--{/if}-->
 
     <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Work</button>

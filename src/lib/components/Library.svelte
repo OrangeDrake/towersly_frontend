@@ -71,7 +71,7 @@
         let wasMovedInserted = false;
         let movedShelf = null;
         let newMovedRank = -1;
-        console.log("shelves pred razenim: " + JSON.stringify(shelves))
+
         console.log("e.detail.info.id: " + e.detail.info.id);
         while (currentIndex < e.detail.items.length) {
             console.log("currentIndex: " + currentIndex + ":shelves[currentIndex].id: " + shelves[currentIndex].id);
@@ -122,6 +122,8 @@
         shelfRollback.push({id: movedShelf.id, rank: movedShelf.rank});
         movedShelf.rank = newMovedRank;
         shelvesUpdate.shelves.push({id: movedShelf.id, rank: movedShelf.rank});
+
+        console.log("shelves pred razenim: " + JSON.stringify(shelves))
 
         shelves.sort((a, b) => {
             return a.rank - b.rank;
