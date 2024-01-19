@@ -96,8 +96,8 @@
                     newMovedRank = Math.ceil((currentRank + nextRank) / 2);
                     console.log("newMovedRank:" + newMovedRank);
                     movedShelf = e.detail.items[currentIndex];
-                    lastRank = nextRank;
-                    currentIndex++
+                    lastRank = newMovedRank;
+                    currentIndex++//rovnou jsme za vkladany
                 } else { ////nebylo mazano vkladame pred
                     let currentRank = shelves[currentIndex].rank;
                     newMovedRank = Math.ceil((lastRank + currentRank) / 2);
