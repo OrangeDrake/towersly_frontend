@@ -1,7 +1,5 @@
 <script>
   import { afterUpdate, tick } from "svelte";
-
-  //import {PUBLIC_API_URL} from "$env/static/public";
   import Library from "$lib/components/Library.svelte";
   import Planning from "$lib/components/Planning.svelte";
   import Connection from "$lib/components/Connection.svelte";

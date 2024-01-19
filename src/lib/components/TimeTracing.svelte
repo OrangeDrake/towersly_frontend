@@ -42,9 +42,6 @@
     const selected_wok_workId = selected_wok.id;
     const selected_wok_name = selected_wok.name;
     $tracking = { start: Date.now(), workName: selected_wok_name, workId: selected_wok_workId, shelfId: selected_shelf.id };
-    // console.log("selected_wok: " + JSON.stringify(selected_wok) )
-    // console.log("selected_wok_workId: " + selected_wok_workId )
-    
 
     const token_value = "Bearer " + $keycloak.token;
     const response = await fetch(PUBLIC_API_URL + "/profile/startTracking", {
@@ -86,7 +83,7 @@
 
     const data = await response.json();
 
-    if(data == 0){
+    if(data === 0){
       t.background = "bg-yellow-200";
       t.message = "time meassure stop error: " + $tracking.workName;
       toastStore.trigger(t);

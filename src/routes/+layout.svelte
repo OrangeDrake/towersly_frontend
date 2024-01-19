@@ -1,16 +1,18 @@
 <script>
   import { onMount } from "svelte";
   import Keycloak from "keycloak-js";
-  import { Toast, toastStore } from "@skeletonlabs/skeleton";
+  import { Toast } from "@skeletonlabs/skeleton";
   import "@skeletonlabs/skeleton/themes/theme-skeleton.css";
   import "@skeletonlabs/skeleton/styles/skeleton.css";
   import "../app.css";
-
   import { shelves, numberOfVisibleWork } from "$lib/stores/libraryStore.js";
   import { distributions } from "$lib/stores/planningStore.js";
   import { keycloak } from "$lib/stores/keycloakStore.js";
   import { tracking, trackTime } from "$lib/stores/timeTrackingStore.js";
   import {PUBLIC_API_URL, PUBLIC_KEYCLOAK_URL} from "$env/static/public";
+  import { reDrawCurves } from "$lib/stores/connectionStore.js";
+  import {resetLocations} from "$lib/stores/connectionStore.js";
+  import {resetLocations2} from "$lib/stores/connectionStore2.js";
 
   let loginState = "waiting for login...";
 
@@ -66,6 +68,9 @@
     }
 
     $tracking = data;
+    if($tracking != null){
+      $reDrawCurves = "time tracking stop: " + Date.now();
+    }
     trackTime();
   };
 

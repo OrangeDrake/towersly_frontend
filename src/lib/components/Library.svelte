@@ -123,17 +123,9 @@
         movedShelf.rank = newMovedRank;
         shelvesUpdate.shelves.push({id: movedShelf.id, rank: movedShelf.rank});
 
-        // toastStore.background = "bg-green-500";
-        // toastStore.message = "Work " + movedWork.name + " moved";
-        // toastStore.trigger(toastStore);
-
         shelves.sort((a, b) => {
-
             return a.rank - b.rank;
         });
-
-
-        // shelvesToDisplay = shelves;
 
         const update_shelves = shelvesUpdate.shelves; // hledani max ranku
         for (let i = 0; i < update_shelves.length; i++) {
