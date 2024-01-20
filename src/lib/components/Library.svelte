@@ -80,7 +80,7 @@
                 console.log("shelves move 1");
                 break;
             }
-            if (shelves[currentIndex].id == e.detail.info.id) {
+            if (shelves[currentIndex].id == e.detail.info.id) { ///mazeme
                 console.log("shelves move 2")
                 movedShelf = shelves[currentIndex]
                 wasMovedDeleted = true;
@@ -105,6 +105,7 @@
                     newMovedRank = Math.ceil((lastRank + currentRank) / 2);
                     lastRank = newMovedRank;
                 }
+            }
 
             if (currentIndex >= shelves.length) {
                 break;
@@ -115,8 +116,9 @@
                 shelves[currentIndex].rank = shelves[currentIndex].rank + 1;
                 shelvesUpdate.shelves.push({id: shelves[currentIndex].id, rank: shelves[currentIndex].rank});
             }
-            currentIndex++;
             lastRank = shelves[currentIndex].rank;
+            currentIndex++;
+
         }
 
         shelfRollback.push({id: movedShelf.id, rank: movedShelf.rank});
