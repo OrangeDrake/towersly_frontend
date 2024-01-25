@@ -11,8 +11,6 @@
     import {tracking, trackTime} from "$lib/stores/timeTrackingStore.js";
     import {PUBLIC_API_URL, PUBLIC_KEYCLOAK_URL} from "$env/static/public";
     import {reDrawCurves} from "$lib/stores/connectionStore.js";
-    import {resetLocations} from "$lib/stores/connectionStore.js";
-    import {resetLocations2} from "$lib/stores/connectionStore2.js";
 
     let loginState = "waiting for login...";
 
@@ -26,7 +24,6 @@
         });
     };
 
-
     const getShelves = async () => {
         console.log("--------------------getShelves");
         const token_value = "Bearer " + $keycloak.token;
@@ -37,7 +34,6 @@
                 Authorization: token_value,
             },
         });
-
         const data = await response.json();
 
         $shelves = data;

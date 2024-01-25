@@ -19,9 +19,16 @@
         distributions,
         addToDistributionsLocations
     } from "$lib/stores/planningStore.js";
-    import {ordered_shelves_names, ordered_shelves, shelves_locations} from "$lib/stores/libraryStore.js";
+    import {
+        ordered_shelves_names,
+        ordered_shelves,
+        shelves_locations,
+        numberOfVisibleWork
+    } from "$lib/stores/libraryStore.js";
     import {tick} from 'svelte';
     import {tracking} from "$lib/stores/timeTrackingStore.js";
+    import {keycloak} from "$lib/stores/keycloakStore.js";
+    import {PUBLIC_API_URL} from "$env/static/public";
 
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
@@ -71,6 +78,21 @@
     let offsetLeft;
     let offsetWidth;
     let offsetHeight;
+    PUBLIC_API_URL
+    const getGoogleEvents = async () => {
+
+        const token_value = "Bearer " + $keycloak.token;
+        console.log("URL" + PUBLIC_API_URL);
+        var response = await fetch(PUBLIC_API_URL + "/google/events?" + new URLSearchParams({
+            'weekNumber': 4,
+            'year': 2024
+        }), {
+            method: "GET",
+            headers: {
+                Authorization: token_value,
+            },
+        });
+    };
 
     const getElementLocation = () => {
         if (generateButtonElement != null) {
@@ -131,12 +153,6 @@
         return (time / 60) * hoursHeight;
     };
 
-    // $ :  {
-    //   if (Object.keys($distributions_locations).length == $ordered_distributions.length) {
-    //   getElementLocation();
-    //   }
-    // }
-
     $: {
         if (element != null && $ordered_distributions != null && $ordered_shelves != null && Object.keys($distributions_locations).length === $ordered_distributions.length && Object.keys($shelves_locations).length === $ordered_shelves.length) {
 
@@ -148,20 +164,6 @@
             resetLocations2();
         }
     }
-
-    // const culculateCurves = async () => {
-
-    //       await tick();
-    //       if (element == null){
-    //           return;
-    //       }
-    //       getElementLocation();
-    //       calculateCurves2();
-    //       resetLocations();
-    //       resetLocations2();
-    // }
-
-    //culculateCurves();
 
     afterUpdate(() => {
         getElementLocation();
@@ -182,6 +184,18 @@
     <span class="text-stone-600 text-lg font-bold">Calendar</span>
 
     <div class="flex flex-nowrap">
+
+        <button
+                type="button"
+                class="btn btn-sm m-2 variant-filled bg-amber-800"
+                on:click={() => {
+        getGoogleEvents();
+      }}
+        >
+            Get google calnedar events
+        </button
+        >
+
         <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Custom Slot</button>
 
         <button
