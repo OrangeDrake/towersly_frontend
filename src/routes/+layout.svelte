@@ -13,6 +13,11 @@
     import {reDrawCurves} from "$lib/stores/connectionStore.js";
 
     let loginState = "waiting for login...";
+    let preferedName = "";
+
+    const logout = () => {
+        $keycloak.logout();
+    }
 
     const creteUserIfneeded = async () => {
         const token_value = "Bearer " + $keycloak.token;
@@ -112,7 +117,14 @@
                         getShelves();
                         getDistributions();
                         getTimeTracking();
-                        getNumberOfVisibleWork()
+                        getNumberOfVisibleWork();
+                        const userInfo =  $keycloak.loadUserInfo();
+                        userInfo.then(userData =>
+                        {console.log("userInfo:" + JSON.stringify(userData));
+                            preferedName = userData["preferred_username"];
+                            console.log(preferedName);
+
+                        });
                         console.log("created if needed")
                     });
                 }
@@ -136,9 +148,10 @@
 
         async function updateToken() {
             console.log("---update token");
-            $keycloak.updateToken(10*60);
+            $keycloak.updateToken(10 * 60);
         }
-        const interval = setInterval(updateToken, 9*60 * 1000);
+
+        const interval = setInterval(updateToken, 9 * 60 * 1000);
         return () => clearInterval(interval);
     });
 
@@ -147,13 +160,19 @@
 
 <div class="font-semibold bg-white">
     <div class="flex flex-nowrap bg-gray-800">
-        <div class="w-1/4 text-white p-4">
+        <div class="text-white p-4">
             <h2 class="text-xl mb-4">Menu</h2>
         </div>
 
         <div class="flex-1 p-4 pr-10">
             <div class="text-right">
-                <p class="text-xl text-white">{loginState}</p>
+                <span class="text-xl text-white">{preferedName}</span>
+                <button
+                        type="button"
+                        class="btn btn-l m-2 variant-filled bg-amber-800"
+                        on:click={() => {logout();}}>
+                    Logout
+                </button>
             </div>
         </div>
     </div>
