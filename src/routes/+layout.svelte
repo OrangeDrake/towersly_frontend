@@ -4,7 +4,7 @@
     import {Toast} from "@skeletonlabs/skeleton";
     import "@skeletonlabs/skeleton/themes/theme-skeleton.css";
     import "@skeletonlabs/skeleton/styles/skeleton.css";
-    import "../app.css";
+    // import "../app.css";
     import {shelves, numberOfVisibleWork} from "$lib/stores/libraryStore.js";
     import {distributions} from "$lib/stores/planningStore.js";
     import {keycloak} from "$lib/stores/keycloakStore.js";
