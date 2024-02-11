@@ -29,6 +29,7 @@
     import {tracking} from "$lib/stores/timeTrackingStore.js";
     import {keycloak} from "$lib/stores/keycloakStore.js";
     import {PUBLIC_API_URL} from "$env/static/public";
+    import GoogleEvents from "$lib/components/GoogleEvents.svelte";
 
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
@@ -78,21 +79,21 @@
     let offsetLeft;
     let offsetWidth;
     let offsetHeight;
-    PUBLIC_API_URL
-    const getGoogleEvents = async () => {
 
-        const token_value = "Bearer " + $keycloak.token;
-        console.log("URL" + PUBLIC_API_URL);
-        var response = await fetch(PUBLIC_API_URL + "/google/events?" + new URLSearchParams({
-            'weekNumber': 4,
-            'year': 2024
-        }), {
-            method: "GET",
-            headers: {
-                Authorization: token_value,
-            },
-        });
-    };
+    // const getGoogleEvents = async () => {
+    //
+    //     const token_value = "Bearer " + $keycloak.token;
+    //     console.log("URL" + PUBLIC_API_URL);
+    //     var response = await fetch(PUBLIC_API_URL + "/google/events?" + new URLSearchParams({
+    //         'weekNumber': 4,
+    //         'year': 2024
+    //     }), {
+    //         method: "GET",
+    //         headers: {
+    //             Authorization: token_value,
+    //         },
+    //     });
+    // };
 
     const getElementLocation = () => {
         if (generateButtonElement != null) {
@@ -185,17 +186,6 @@
 
     <div class="flex flex-nowrap">
 
-        <button
-                type="button"
-                class="btn btn-sm m-2 variant-filled bg-amber-800"
-                on:click={() => {
-        getGoogleEvents();
-      }}
-        >
-            Get google calnedar events
-        </button
-        >
-
         <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Custom Slot</button>
 
         <button
@@ -230,6 +220,9 @@
 
             <span class="text-lg">Implements rules</span></button
         >
+
+        <GoogleEvents/>
+
     </div>
 
     <div class="card m-2 p-2 m-2S pb-10 w-min">
