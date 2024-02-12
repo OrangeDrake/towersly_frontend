@@ -191,10 +191,12 @@
     </div>
     <div class="flex p-3 bg-slate-300">
         <TimeTracing/>
+        <div>
         <span class="flex-initial align-bottom text-lg pl-1 pr-1 pt-3">Display Works:</span>
         <span class="flex-initial w-12 pt-3"><input bind:value={$numberOfVisibleWork} class="input rounded pl-1"
                                                     type="number" min="0" step="1"
                                                     on:change={onChangeNumberOfVisibleWork}/></span>
+        </div>
     </div>
 
     {#if shelvesToDisplay == null}

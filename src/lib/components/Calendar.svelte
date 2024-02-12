@@ -30,9 +30,14 @@
     import {keycloak} from "$lib/stores/keycloakStore.js";
     import {PUBLIC_API_URL} from "$env/static/public";
     import GoogleEvents from "$lib/components/GoogleEvents.svelte";
+    import currentWeekNumber from "current-week-number";
+    import {RadioGroup, RadioItem} from '@skeletonlabs/skeleton';
 
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
+
+    export let gapiLoaded;
+    export let gisLoaded;
 
     let element;
 
@@ -80,12 +85,9 @@
     let offsetWidth;
     let offsetHeight;
 
-    const currentDate = new Date();
-    const startDate = new Date(currentDate.getFullYear(), 0, 1);
-    let days = Math.floor((currentDate - startDate) /
-        (24 * 60 * 60 * 1000));
+    let weekNumber = currentWeekNumber();
 
-    let weekNumber = Math.ceil(days / 7);
+    let value = 0;
 
     // const getGoogleEvents = async () => {
     //
@@ -193,46 +195,71 @@
 
     <div class="flex flex-nowrap">
 
-        <button class="btn btn-sm m-2 variant-filled rounded" use:popup={popupFeatured}>Create Custom Slot</button>
+        <div class="flex p-2 m-1 w-30 bg-cyan-300">
+            <button class="btn btn-sm m-1 variant-filled rounded" use:popup={popupFeatured}>
+                <svg class="w-5 h-5 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m11.5 11.5 2 2M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.2-5.3a1.5 1.5 0 0 1 2 2L10 17Zm-5 3h14c.6 0 1-.4 1-1V7c0-.6-.4-1-1-1H5a1 1 0 0 0-1 1v12c0 .6.4 1 1 1Z"/>
+                </svg>
 
-        <button
-                type="button"
-                class="btn btn-sm m-2 variant-filled bg-amber-800"
-                on:click={() => {
-        clearGeneratedAndRefresh();
-      }}
-        >
-            <svg class="p-1 w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                 fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-            </svg>
-            Drop Generated Slots
-        </button
-        >
+                Create Custom Slot</button>
 
-        <button
-                bind:this={generateButtonElement}
-                type="button"
-                class="btn btn-sm m-2 variant-filled rounded"
-                on:click={() => {
+            <button
+                    bind:this={generateButtonElement}
+                    type="button"
+                    class="btn m-1 btn-sm variant-filled rounded"
+                    on:click={() => {
         generatePlan();
       }}
-        >
-            <svg class="inline-block w-7 h-7 text-white dark:text-white" aria-hidden="true"
-                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97"/>
-            </svg>
+            >
+                <svg class="inline-block w-5 h-5 text-white dark:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M16 1v5h-5M2 19v-5h5m10-4a8 8 0 0 1-14.947 3.97M1 10a8 8 0 0 1 14.947-3.97"/>
+                </svg>
 
-            <span class="text-lg">Implements rules</span></button
-        >
-        <span class="flex-initial align-bottom text-lg pl-1 pr-1 pt-3">Week number:</span>
-        <span class="flex-initial w-12 pt-3"><input bind:value={weekNumber} class="input rounded pl-1"
-                                                    type="number" min="0" step="1"
-                                                    /></span>
+                <span class="text-lg">Generate Slots</span></button
+            >
 
-        <GoogleEvents/>
+            <button
+                    type="button"
+                    class="btn btn-sm m-1 variant-filled bg-amber-800"
+                    on:click={() => {
+        clearGeneratedAndRefresh();
+      }}
+            >
+
+                <svg class="p-1 w-5 h-5 text-gray-800 dark:text-white" aria-hidden="true"
+                     xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 14 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                </svg>
+
+                Drop Generated Slots
+            </button
+            >
+
+        </div>
+
+        <div class="flex flex-nowrap px-1">
+            <div class="p-1 m-1 w-30 bg-cyan-100">
+                <div class="text-lg pl-1 pr-1 ">Week number:</div>
+                <div class="w-14"><input bind:value={weekNumber} class="input rounded pl-1"
+                                         type="number" min="0" step="1"
+                /></div>
+            </div>
+            <div class="flex p-1 ml-0 m-1 bg-cyan-100">
+                <div class="flex text-lg mr-1">Year:</div>
+                <div>
+                    <RadioGroup class="flex px-1 py-1">
+                        <RadioItem bind:group={value} value={0}>Previous</RadioItem>
+                        <RadioItem bind:group={value} value={1}>Current</RadioItem>
+                        <RadioItem bind:group={value} value={2}>Next</RadioItem>
+                    </RadioGroup>
+                </div>
+            </div>
+        </div>
+        <GoogleEvents bind:gapiLoaded={gapiLoaded} bind:gisLoaded={gisLoaded} />
 
     </div>
 

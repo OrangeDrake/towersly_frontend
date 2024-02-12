@@ -5,6 +5,8 @@
     /* exported handleAuthClick */
     /* exported handleSignoutClick */
 
+    import {tokenClient, gisInited, gapiInited, isSingoutButtonVisible, isAuthorizeButtonVisible} from "$lib/stores/googleEventStrore.js";
+
     // TODO(developer): Set to client ID and API key from the Developer Console
     const CLIENT_ID = '994620839209-q02km2f69vuc8dj9ojen2gmji6qut534.apps.googleusercontent.com';
     const API_KEY = 'AIzaSyCSWEXHhRrLOyFS4VcuOqYMX8NpIrqbFb0';
@@ -16,25 +18,15 @@
     // included, separated by spaces.
     const SCOPES = 'https://www.googleapis.com/auth/calendar';
 
-    let tokenClient;
-    let gapiInited = false;
-    let gisInited = false;
-
-    let isAuthorizeButtonVisible = false;
-    let isSingoutButtonVisible = false;
-
-    // document.getElementById('authorize_button').style.visibility = 'hidden';
-    // document.getElementById('signout_button').style.visibility = 'hidden';
-
     const setButtonsAfterSignOn = () => {
-        isSingoutButtonVisible = true;
-        isAuthorizeButtonVisible = false;
+        $isSingoutButtonVisible = true;
+        $isAuthorizeButtonVisible = false;
     }
 
     /**
      * Callback after api.js is loaded.
      */
-    function gapiLoaded() {
+    export function gapiLoaded() {
         gapi.load('client', initializeGapiClient);
     }
 
@@ -47,15 +39,15 @@
             apiKey: API_KEY,
             discoveryDocs: [DISCOVERY_DOC],
         });
-        gapiInited = true;
+        $gapiInited = true;
         maybeEnableButtons();
     }
 
     /**
      * Callback after Google Identity Services are loaded.
      */
-    function gisLoaded() {
-        tokenClient = google.accounts.oauth2.initTokenClient({
+    export function gisLoaded() {
+        $tokenClient = google.accounts.oauth2.initTokenClient({
             client_id: CLIENT_ID,
             scope: SCOPES,
             // callback: (tokenResponse) => setButtonsAfterSignOn(), // defined later
@@ -63,7 +55,7 @@
             //     console.log("tokenResponse")
             // }
         });
-        gisInited = true;
+        $gisInited = true;
         maybeEnableButtons();
     }
 
@@ -71,8 +63,8 @@
      * Enables user interaction after all libraries are loaded.
      */
     function maybeEnableButtons() {
-        if (gapiInited && gisInited) {
-            isAuthorizeButtonVisible = true;
+        if ($gapiInited && $gisInited) {
+            $isAuthorizeButtonVisible = true;
         }
     }
 
@@ -80,7 +72,7 @@
      *  Sign in the user upon button click.
      */
     export function handleAuthClick() {
-        tokenClient.callback = async (resp) => {
+        $tokenClient.callback = async (resp) => {
             setButtonsAfterSignOn();
             if (resp.error !== undefined) {
                 throw (resp);
@@ -93,7 +85,7 @@
             // Prompt the user to select a Google Account and ask for consent to share their data
             // when establishing a new session.
             console.log("auth if");
-            tokenClient.requestAccessToken({prompt: 'consent'});
+            $tokenClient.requestAccessToken({prompt: 'consent'});
         } else {
             // Skip display of account chooser and consent dialog for an existing session.
             console.log("auth else");
@@ -116,8 +108,8 @@
             //document.getElementById('signout_button').style.visibility = 'hidden';
             isSingoutButtonVisible = false;
         }
-        isSingoutButtonVisible = false;
-        isAuthorizeButtonVisible = true;
+        $isSingoutButtonVisible = false;
+        $isAuthorizeButtonVisible = true;
     }
 
     /**
@@ -156,12 +148,6 @@
 
 </script>
 
-<svelte:head>
-
-    <script async defer src="https://apis.google.com/js/api.js" on:load="{gapiLoaded()}"></script>
-    <script async defer src="https://accounts.google.com/gsi/client" on:load="{gisLoaded()}"></script>
-
-</svelte:head>
 
 <!--<button-->
 <!--        type="button"-->
@@ -174,9 +160,9 @@
 <!--</button-->
 <!--&gt;-->
 
-{#if isAuthorizeButtonVisible}
+{#if $isAuthorizeButtonVisible}
     <button type="button" id="authorize_button" class="btn btn-sm m-2 variant-filled rounded" on:click={() => handleAuthClick()}>Authorize</button>
 {/if}
-{#if isSingoutButtonVisible}
+{#if $isSingoutButtonVisible}
     <button type="button" id="signout_button" class="btn btn-sm m-2 variant-filled rounded" on:click={() => handleSignoutClick()}>Sign Out</button>
 {/if}

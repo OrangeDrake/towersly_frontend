@@ -17,7 +17,18 @@
   let end1;
   let element;
 
+  let gapiLoaded;
+  let gisLoaded;
+
 </script>
+
+<svelte:head>
+
+  <script async defer src="https://apis.google.com/js/api.js" on:load="{gapiLoaded()}"></script>
+  <script async defer src="https://accounts.google.com/gsi/client" on:load="{gisLoaded()}"></script>
+
+</svelte:head>
+
 
 {#key $reDrawCurves}
   <div class="w-max bg-white" bind:this={element}>
@@ -28,7 +39,7 @@
     <Library />
     <ConnectionBackground />
     <Planning />    
-    <Calendar />
+    <Calendar bind:gapiLoaded={gapiLoaded} bind:gisLoaded={gisLoaded} />
   </div>
 {/key}
 
