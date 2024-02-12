@@ -175,8 +175,8 @@
 <!--&gt;-->
 
 {#if isAuthorizeButtonVisible}
-    <button id="authorize_button" on:click={() => handleAuthClick()}>Authorize</button>
+    <button type="button" id="authorize_button" class="btn btn-sm m-2 variant-filled rounded" on:click={() => handleAuthClick()}>Authorize</button>
 {/if}
 {#if isSingoutButtonVisible}
-    <button id="signout_button" on:click={() => handleSignoutClick()}>Sign Out</button>
+    <button type="button" id="signout_button" class="btn btn-sm m-2 variant-filled rounded" on:click={() => handleSignoutClick()}>Sign Out</button>
 {/if}

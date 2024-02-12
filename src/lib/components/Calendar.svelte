@@ -80,6 +80,13 @@
     let offsetWidth;
     let offsetHeight;
 
+    const currentDate = new Date();
+    const startDate = new Date(currentDate.getFullYear(), 0, 1);
+    let days = Math.floor((currentDate - startDate) /
+        (24 * 60 * 60 * 1000));
+
+    let weekNumber = Math.ceil(days / 7);
+
     // const getGoogleEvents = async () => {
     //
     //     const token_value = "Bearer " + $keycloak.token;
@@ -220,6 +227,10 @@
 
             <span class="text-lg">Implements rules</span></button
         >
+        <span class="flex-initial align-bottom text-lg pl-1 pr-1 pt-3">Week number:</span>
+        <span class="flex-initial w-12 pt-3"><input bind:value={weekNumber} class="input rounded pl-1"
+                                                    type="number" min="0" step="1"
+                                                    /></span>
 
         <GoogleEvents/>
 
