@@ -20,6 +20,7 @@
         addToDistributionsLocations
     } from "$lib/stores/planningStore.js";
     import {
+        shelves,
         ordered_shelves_names,
         ordered_shelves,
         shelves_locations,
@@ -178,6 +179,34 @@
     afterUpdate(() => {
         getElementLocation();
     });
+
+    const getAcualShefAndWokrFromDistribution = (distribution) => {
+        if (distribution.connection == null || distribution.connection.length === 0 ) {
+            return "";
+        }
+        const shelvesNames = distribution.connection.shelves_names;
+        console.log( "shelvesNames :" + JSON.stringify(shelvesNames))
+        if (distribution.connection.type === "concat") {
+            for (let i = 0; i < shelvesNames.length; i++) {
+                const shelfName = shelvesNames[i];
+                let shelf;
+                console.log( "shelves :" + JSON.stringify($shelves))
+                for (let j = 0; j < $shelves.length; j++) {
+                    if(shelfName === $shelves[j].name) {
+                        console.log(": " + shelfName + " : " + $shelves[j].name)
+                        shelf = $shelves[j];
+                        break;
+                    }
+                }
+                console.log("++shelf: " + JSON.stringify(shelf))
+                if (shelf.works.length !== 0){
+                    return shelf.name + ": " + shelf.works[0].name;
+                }
+            }
+        }
+    };
+
+
 </script>
 
 <div class="ml-2 m-0 mt-0 p-5 bg-white"></div>
@@ -267,8 +296,9 @@
             <GoogleEvents bind:gapiLoaded={gapiLoaded} bind:gisLoaded={gisLoaded}/>
         </div>
 
-    </div >
+    </div>
 
+<!--    {if}-->
     <div class="card m-2 p-2 m-2S pb-10 w-min">
         <svg height={daysLinesHeight + gapBottom} width={hoursLinesWidth + gapRight}>
             <!-- <text x="0" y={gapTop} textLength="100px" lengthAdjust="spacingAndGlyphs"> neco</text> -->
@@ -295,7 +325,8 @@
                             height={durationToLength(slot.duration) - 2}
                             style={slot.isGenerated ? "fill:rgb(100,116,139);stroke:rgb(255,255,255)" : "fill:rgb(50,50,50);stroke:rgb(255,255,255)"}
                     />
-                    <text x={dayToXCoordinate(day) + 5} y={timeToYCoordinate(slot.start) + 25} >{slot.rule}:{slot.distribution.name}</text>
+                    <text x={dayToXCoordinate(day) + 5} y={timeToYCoordinate(slot.start) + 25}>{slot.rule}
+                        :{getAcualShefAndWokrFromDistribution(slot.distribution)}</text>
                 {/each}
             {/each}
         </svg>
