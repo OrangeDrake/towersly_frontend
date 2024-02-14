@@ -195,13 +195,16 @@
 
     <div class="flex flex-nowrap">
 
-        <div class="flex p-2 m-1 w-30 bg-cyan-300">
+        <div class="flex p-2 m-1 w-30 bg-zinc-400">
             <button class="btn btn-sm m-1 variant-filled rounded" use:popup={popupFeatured}>
-                <svg class="w-5 h-5 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m11.5 11.5 2 2M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.2-5.3a1.5 1.5 0 0 1 2 2L10 17Zm-5 3h14c.6 0 1-.4 1-1V7c0-.6-.4-1-1-1H5a1 1 0 0 0-1 1v12c0 .6.4 1 1 1Z"/>
+                <svg class="w-5 h-5 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="m11.5 11.5 2 2M4 10h5m11 0h-1.5M12 7V4M7 7V4m10 3V4m-7 13H8v-2l5.2-5.3a1.5 1.5 0 0 1 2 2L10 17Zm-5 3h14c.6 0 1-.4 1-1V7c0-.6-.4-1-1-1H5a1 1 0 0 0-1 1v12c0 .6.4 1 1 1Z"/>
                 </svg>
 
-                Create Custom Slot</button>
+                Create Custom Slot
+            </button>
 
             <button
                     bind:this={generateButtonElement}
@@ -242,13 +245,13 @@
         </div>
 
         <div class="flex flex-nowrap px-1">
-            <div class="p-1 m-1 w-30 bg-cyan-100">
+            <div class="p-1 m-1 w-30 bg-zinc-200">
                 <div class="text-lg pl-1 pr-1 ">Week number:</div>
                 <div class="w-14"><input bind:value={weekNumber} class="input rounded pl-1"
                                          type="number" min="0" step="1"
                 /></div>
             </div>
-            <div class="flex p-1 ml-0 m-1 bg-cyan-100">
+            <div class="flex p-1 ml-0 m-1 bg-zinc-200">
                 <div class="flex text-lg mr-1">Year:</div>
                 <div>
                     <RadioGroup class="flex px-1 py-1">
@@ -259,9 +262,12 @@
                 </div>
             </div>
         </div>
-        <GoogleEvents bind:gapiLoaded={gapiLoaded} bind:gisLoaded={gisLoaded} />
 
-    </div>
+        <div class="flex p-1 ml-0 m-1 bg-zinc-300">
+            <GoogleEvents bind:gapiLoaded={gapiLoaded} bind:gisLoaded={gisLoaded}/>
+        </div>
+
+    </div >
 
     <div class="card m-2 p-2 m-2S pb-10 w-min">
         <svg height={daysLinesHeight + gapBottom} width={hoursLinesWidth + gapRight}>
@@ -289,6 +295,7 @@
                             height={durationToLength(slot.duration) - 2}
                             style={slot.isGenerated ? "fill:rgb(100,116,139);stroke:rgb(255,255,255)" : "fill:rgb(50,50,50);stroke:rgb(255,255,255)"}
                     />
+                    <text x={dayToXCoordinate(day) + 5} y={timeToYCoordinate(slot.start) + 25} >{slot.rule}:{slot.distribution.name}</text>
                 {/each}
             {/each}
         </svg>

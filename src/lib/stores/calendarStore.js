@@ -269,7 +269,7 @@ export const generatePlan = () => {
                 const startInMinutes = hoursWithMinutesToMinutes(rules[j].start);
                 const durationInMinutes = hoursWithMinutesToMinutes(rules[j].duration);
                 const slotToPlace = {
-                    distribution: ordered_distributions_value[i].name,
+                    distribution: ordered_distributions_value[i],
                     rule: rules[j].name,
                     start: startInMinutes,
                     duration: durationInMinutes,
