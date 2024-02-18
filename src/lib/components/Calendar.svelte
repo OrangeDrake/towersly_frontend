@@ -181,12 +181,13 @@
     });
 
     const getAcualShefAndWokrFromDistribution = (distribution) => {
+        console.log("//distribution: " + JSON.stringify(distribution));
         if (distribution.connection == null || distribution.connection.length === 0 ) {
             return "";
         }
         const shelvesNames = distribution.connection.shelves_names;
         console.log( "shelvesNames :" + JSON.stringify(shelvesNames))
-        if (distribution.connection.type === "concat") {
+        if (distribution.connection.type === "concat" || !distribution.hasOwnProperty("type")) {
             for (let i = 0; i < shelvesNames.length; i++) {
                 const shelfName = shelvesNames[i];
                 let shelf;
