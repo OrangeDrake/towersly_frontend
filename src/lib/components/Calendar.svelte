@@ -85,7 +85,7 @@
     let offsetWidth;
     let offsetHeight;
 
-    let choosenYear = 1;
+    let choosenYear = "Current";
 
     let plan = null;
 
@@ -208,6 +208,19 @@
     const onChangeWeekNumber = () => {
         getPlanFromStoreOrDatabase();
     };
+
+    const changeYear = () => {
+        if (choosenYear === "Current"){
+            $year = new Date().getFullYear();
+        }
+        else if (choosenYear === "Previous"){
+            $year = new Date().getFullYear() - 1;
+        }
+        else if (choosenYear === "Next"){
+            $year = new Date().getFullYear() + 1;
+        }
+        getPlanFromStoreOrDatabase();
+    }
 
     $: {
         if (element != null && $ordered_distributions != null && $ordered_shelves != null && Object.keys($distributions_locations).length === $ordered_distributions.length && Object.keys($shelves_locations).length === $ordered_shelves.length) {
@@ -350,9 +363,9 @@
                 <div class="flex text-lg mr-1">Year:</div>
                 <div>
                     <RadioGroup class="flex px-1 py-1">
-                        <RadioItem bind:group={choosenYear} value={0}>Previous</RadioItem>
-                        <RadioItem bind:group={choosenYear} value={1}>Current</RadioItem>
-                        <RadioItem bind:group={choosenYear} value={2}>Next</RadioItem>
+                        <RadioItem bind:group={choosenYear} value={"Previous"}  on:change={() => changeYear()}>Previous</RadioItem>
+                        <RadioItem bind:group={choosenYear} value={"Current"} on:change={() => changeYear()}>Current</RadioItem>
+                        <RadioItem bind:group={choosenYear} value={"Next"} on:change={() => changeYear()}>Next</RadioItem>
                     </RadioGroup>
                 </div>
             </div>
