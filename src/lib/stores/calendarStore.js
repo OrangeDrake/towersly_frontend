@@ -1,53 +1,62 @@
 import {get, derived, writable} from "svelte/store";
 import {ordered_distributions, distributions} from "$lib/stores/planningStore.js";
+import {shelves} from "$lib/stores/libraryStore.js";
+import currentWeekNumber from "current-week-number";
 
 const DAYS = ["mo", "tu", "we", "th", "fr", "sa", "su"];
 
-export const plan = writable({});
+export let plansMap = new Map();
+export const plans = writable( {});
+export const weekNumber = writable(currentWeekNumber());
+
+export const year = writable(new Date().getFullYear());
+
+
+
+// export const plan = writable({});
 export const generateButton_location = writable(null);
+
 
 export const createSlot = (day, start, duration) => {
     const startInMinutes = hoursWithMinutesToMinutes(start);
     const durationInMinutes = hoursWithMinutesToMinutes(duration);
 
     //   let createdSlotsValue = get(createdSlots);
-    let planValue = get(plan);
+    const plan = getSelectedPlan();
 
     // console.log('createdSlotsValue:'  + JSON.stringify(createdSlotsValue, null,2))
     const slotToPlace = {start: startInMinutes, duration: durationInMinutes, isGenerated: false};
     console.log("slotToPlace:" + JSON.stringify(slotToPlace, null, 2));
-    let isPlaced = placeExact(day, slotToPlace, planValue);
+    let isPlaced = placeExact(day, slotToPlace, plan);
     // console.log('createdSlotsValue:'  + JSON.stringify(createdSlotsValue, null,2))
-    plan.set(planValue);
     return isPlaced;
 };
 
-export const clearGeneratedAndRefresh = () => {
-    clearGenerated();
-    const planValue = get(plan);
-    plan.set(planValue);
+export const clearGeneratedSelected = () => {;
+    const plan = getSelectedPlan();
+    clearGenerated(plan);
 }
 
 const clearPlan = () => {
     plan.set([]);
 };
 
-const clearGenerated = () => {
+const clearGenerated = (plan) => {
+    console.log("clear planValue: " + JSON.stringify(plan));
     console.log("loop generetated");
-    const planValue = get(plan);
-    for (const day in planValue) {
+    for (const day in plan) {
         console.log("in loop");
-        console.log(`${day}: ${planValue[day]}`);
-        const slotsInDay = planValue[day];
+        console.log(`${day}: ${plan[day]}`);
+        const slotsInDay = plan[day];
         let isDeleted = true;
         while (isDeleted) {
             isDeleted = false;
             for (let i = 0; i < slotsInDay.length; i++) {
                 const slot = slotsInDay[i];
                 if (slot.isGenerated) {
-                    console.log("***deleting:" + JSON.stringify(planValue, null, 2));
+                    console.log("***deleting:" + JSON.stringify(plan, null, 2));
                     slotsInDay.splice(i, 1);
-                    console.log("***after deleting:" + JSON.stringify(planValue, null, 2));
+                    console.log("***after deleting:" + JSON.stringify(plan, null, 2));
                     isDeleted = true;
                     break;
                 }
@@ -55,6 +64,13 @@ const clearGenerated = () => {
         }
     }
 };
+
+const getSelectedPlan = () => {
+    const plansValue = get(plans);
+    const key = "" + get(year)+get(weekNumber);
+    const plan = plansValue[key];
+    return plan;
+}
 
 const hoursWithMinutesToMinutes = (time) => {
     const hoursAndMinutes = time.split(":");
@@ -244,10 +260,15 @@ const applyOption = (day, slotToPlace, generatedPlan, options) => {
 };
 
 export const generatePlan = () => {
-    //   clearPlan();
-    //   let generatedPlan = {};
-    clearGenerated();
-    let planValue = get(plan);
+    const plans_value = get(plans)
+    const key = "" + get(year)+get(weekNumber);
+    let planValue = {};
+    if(plans_value.hasOwnProperty(key)) {
+        planValue = plans_value[key];
+    }
+    console.log("planValue " + JSON.stringify(planValue));
+    clearGenerated(planValue);
+
     const ordered_distributions_value = get(ordered_distributions);
 
     console.log("in generate slot: " + ordered_distributions_value);
@@ -270,6 +291,7 @@ export const generatePlan = () => {
                 const durationInMinutes = hoursWithMinutesToMinutes(rules[j].duration);
                 const slotToPlace = {
                     distribution: ordered_distributions_value[i],
+                    shelfAndWork: getAcualShefAndWokrFromDistribution(ordered_distributions_value[i]),
                     rule: rules[j].name,
                     start: startInMinutes,
                     duration: durationInMinutes,
@@ -285,5 +307,40 @@ export const generatePlan = () => {
             }
         }
     }
-    plan.set(planValue);
+
+    plans_value[key] = planValue;
+
+    // plan.set(planValue);
 };
+
+
+const getAcualShefAndWokrFromDistribution = (distribution) => {
+    const shelves_values =get(shelves)
+    console.log("//distribution: " + JSON.stringify(distribution));
+    if (distribution.connection === null || distribution.connection.shelves_names === null || distribution.connection.shelves_names.length === 0 ) {
+        return "no goal";
+    }
+    const shelvesNames = distribution.connection.shelves_names;
+    console.log( "shelvesNames :" + JSON.stringify(shelvesNames))
+    if (distribution.connection.type === "concat" || !distribution.hasOwnProperty("type")) {
+        for (let i = 0; i < shelvesNames.length; i++) {
+            const shelfName = shelvesNames[i];
+            let shelf;
+            console.log( "shelves :" + JSON.stringify(shelves_values))
+            for (let j = 0; j < shelves_values.length; j++) {
+                if(shelfName === shelves_values[j].name) {
+                    console.log(": " + shelfName + " : " +shelves_values[j].name)
+                    shelf = shelves_values[j];
+                    break;
+                }
+            }
+            console.log("++shelf: " + JSON.stringify(shelf))
+            if (shelf.works.length !== 0){
+                return shelf.name + ": " + shelf.works[0].name;
+            }
+            return  shelf.name + ": no task";
+        }
+    }
+    return "no goal2";
+};
+

@@ -1,17 +1,11 @@
 <script>
-    import {afterUpdate} from "svelte";
-    import {
-        createSlot,
-        plan,
-        generatePlan,
-        clearGeneratedAndRefresh,
-        generateButton_location
-    } from "$lib/stores/calendarStore.js";
+    import {afterUpdate, onMount} from "svelte";
     import {popup} from "@skeletonlabs/skeleton";
     import {storePopup} from "@skeletonlabs/skeleton";
     import {toastStore} from "@skeletonlabs/skeleton";
+    import {RadioGroup, RadioItem} from '@skeletonlabs/skeleton';
     import {computePosition, autoUpdate, offset, shift, flip, arrow} from "@floating-ui/dom";
-    import {resetLocations, calculateCurves} from "$lib/stores/connectionStore.js";
+    import {resetLocations, calculateCurves, reDrawCurves} from "$lib/stores/connectionStore.js";
     import {resetLocations2, calculateCurves2} from "$lib/stores/connectionStore2.js";
     import {
         ordered_distributions,
@@ -24,15 +18,20 @@
         ordered_shelves_names,
         ordered_shelves,
         shelves_locations,
-        numberOfVisibleWork
+        numberOfVisibleWork, workDisplayChange
     } from "$lib/stores/libraryStore.js";
-    import {tick} from 'svelte';
-    import {tracking} from "$lib/stores/timeTrackingStore.js";
-    import {keycloak} from "$lib/stores/keycloakStore.js";
-    import {PUBLIC_API_URL} from "$env/static/public";
     import GoogleEvents from "$lib/components/GoogleEvents.svelte";
-    import currentWeekNumber from "current-week-number";
-    import {RadioGroup, RadioItem} from '@skeletonlabs/skeleton';
+    import {
+        createSlot,
+        generatePlan,
+        clearGeneratedSelected,
+        generateButton_location,
+        plans,
+        weekNumber,
+        year,
+        plansMap
+    } from "$lib/stores/calendarStore.js";
+
 
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
@@ -86,9 +85,40 @@
     let offsetWidth;
     let offsetHeight;
 
-    let weekNumber = currentWeekNumber();
+    let choosenYear = 1;
 
-    let value = 0;
+    let plan = null;
+
+    const getPlanFromStoreOrDatabase = () => {
+        console.log("plans: " +JSON.stringify($plans));
+        //const key = "22";
+        const key = "" + $year + $weekNumber;
+        if ($plans.hasOwnProperty(key)) {
+            plan = $plans[key];
+            return;
+        }
+        $plans[key] = {};
+        plan = $plans[key];
+    }
+
+    // const getPlanFromStoreOrDatabase = () => {
+    //     console.log("plans0: " + [...JSON.stringify(plansMap.entries())]);
+    //     const key = "" + $year + $weekNumber;
+    //      // const key = "" + 2023
+    //     //console.log("key: " + key)
+    //     if ($plans.has(key)) {
+    //         plan = $plans.get(key);
+    //         return;
+    //     }
+    //
+    //     //($plans).set(key, {});
+    //     ($plans)[key] = {};
+    //     console.log("plans1: " + [...JSON.stringify(plansMap.entries())]);
+    //     plan = ($plans)[key];
+    //
+    // }
+
+
 
     // const getGoogleEvents = async () => {
     //
@@ -122,7 +152,7 @@
         }
     };
 
-    const addSlot = () => {
+    const addSlotAndRefresh = () => {
         let isPLaced = createSlot(slot_day, slot_start, slot_duration);
 
         if (!isPLaced) {
@@ -135,6 +165,7 @@
         toastRuleAddad.background = "bg-green-500";
         toastRuleAddad.message = "Custom slot Added";
         toastStore.trigger(toastRuleAddad);
+        getPlanFromStoreOrDatabase();
     };
 
     const dayToXCoordinate = (day) => {
@@ -164,6 +195,20 @@
         return (time / 60) * hoursHeight;
     };
 
+    const generatePlanAndRefresh = () => {
+        generatePlan();
+        getPlanFromStoreOrDatabase();
+    }
+
+    const clearGeneratedAndRefresh = () => {
+        clearGeneratedSelected();
+        getPlanFromStoreOrDatabase();
+    }
+
+    const onChangeWeekNumber = () => {
+        getPlanFromStoreOrDatabase();
+    };
+
     $: {
         if (element != null && $ordered_distributions != null && $ordered_shelves != null && Object.keys($distributions_locations).length === $ordered_distributions.length && Object.keys($shelves_locations).length === $ordered_shelves.length) {
 
@@ -178,34 +223,53 @@
 
     afterUpdate(() => {
         getElementLocation();
+
     });
 
-    const getAcualShefAndWokrFromDistribution = (distribution) => {
-        console.log("//distribution: " + JSON.stringify(distribution));
-        if (distribution.connection == null || distribution.connection.length === 0 ) {
-            return "";
-        }
-        const shelvesNames = distribution.connection.shelves_names;
-        console.log( "shelvesNames :" + JSON.stringify(shelvesNames))
-        if (distribution.connection.type === "concat" || !distribution.hasOwnProperty("type")) {
-            for (let i = 0; i < shelvesNames.length; i++) {
-                const shelfName = shelvesNames[i];
-                let shelf;
-                console.log( "shelves :" + JSON.stringify($shelves))
-                for (let j = 0; j < $shelves.length; j++) {
-                    if(shelfName === $shelves[j].name) {
-                        console.log(": " + shelfName + " : " + $shelves[j].name)
-                        shelf = $shelves[j];
-                        break;
-                    }
-                }
-                console.log("++shelf: " + JSON.stringify(shelf))
-                if (shelf.works.length !== 0){
-                    return shelf.name + ": " + shelf.works[0].name;
-                }
-            }
-        }
-    };
+    onMount(() => {
+
+        getPlanFromStoreOrDatabase();
+    });
+
+    // const getPlanFromStoreOrDatabase = () => {
+    //     const key = "" + $year + $weekNumber;
+    //     //const key = "22";
+    //     if ($plans.hasOwnProperty(key)) {
+    //         plan = $plans[key];
+    //         return;
+    //     }
+    //     $plans[key] = {};
+    //     plan = $plans[key];
+    // }
+
+
+
+    // const getAcualShefAndWokrFromDistribution = (distribution) => {
+    //     console.log("//distribution: " + JSON.stringify(distribution));
+    //     if (distribution.connection == null || distribution.connection.length === 0) {
+    //         return "";
+    //     }
+    //     const shelvesNames = distribution.connection.shelves_names;
+    //     console.log("shelvesNames :" + JSON.stringify(shelvesNames))
+    //     if (distribution.connection.type === "concat" || !distribution.hasOwnProperty("type")) {
+    //         for (let i = 0; i < shelvesNames.length; i++) {
+    //             const shelfName = shelvesNames[i];
+    //             let shelf;
+    //             console.log("shelves :" + JSON.stringify($shelves))
+    //             for (let j = 0; j < $shelves.length; j++) {
+    //                 if (shelfName === $shelves[j].name) {
+    //                     console.log(": " + shelfName + " : " + $shelves[j].name)
+    //                     shelf = $shelves[j];
+    //                     break;
+    //                 }
+    //             }
+    //             console.log("++shelf: " + JSON.stringify(shelf))
+    //             if (shelf.works.length !== 0) {
+    //                 return shelf.name + ": " + shelf.works[0].name;
+    //             }
+    //         }
+    //     }
+    // };
 
 
 </script>
@@ -241,7 +305,7 @@
                     type="button"
                     class="btn m-1 btn-sm variant-filled rounded"
                     on:click={() => {
-        generatePlan();
+        generatePlanAndRefresh();
       }}
             >
                 <svg class="inline-block w-5 h-5 text-white dark:text-white" aria-hidden="true"
@@ -257,7 +321,7 @@
                     type="button"
                     class="btn btn-sm m-1 variant-filled bg-amber-800"
                     on:click={() => {
-        clearGeneratedAndRefresh();
+        clearGeneratedAndRefresh($plan);
       }}
             >
 
@@ -277,17 +341,18 @@
         <div class="flex flex-nowrap px-1">
             <div class="p-1 m-1 w-30 bg-zinc-200">
                 <div class="text-lg pl-1 pr-1 ">Week number:</div>
-                <div class="w-14"><input bind:value={weekNumber} class="input rounded pl-1"
-                                         type="number" min="0" step="1"
+                <div class="w-14"><input bind:value={$weekNumber} class="input rounded pl-1"
+                                         type="number" min="0" step="1"on:change={onChangeWeekNumber}
+
                 /></div>
             </div>
             <div class="flex p-1 ml-0 m-1 bg-zinc-200">
                 <div class="flex text-lg mr-1">Year:</div>
                 <div>
                     <RadioGroup class="flex px-1 py-1">
-                        <RadioItem bind:group={value} value={0}>Previous</RadioItem>
-                        <RadioItem bind:group={value} value={1}>Current</RadioItem>
-                        <RadioItem bind:group={value} value={2}>Next</RadioItem>
+                        <RadioItem bind:group={choosenYear} value={0}>Previous</RadioItem>
+                        <RadioItem bind:group={choosenYear} value={1}>Current</RadioItem>
+                        <RadioItem bind:group={choosenYear} value={2}>Next</RadioItem>
                     </RadioGroup>
                 </div>
             </div>
@@ -299,7 +364,7 @@
 
     </div>
 
-<!--    {if}-->
+    <!--    {if}-->
     <div class="card m-2 p-2 m-2S pb-10 w-min">
         <svg height={daysLinesHeight + gapBottom} width={hoursLinesWidth + gapRight}>
             <!-- <text x="0" y={gapTop} textLength="100px" lengthAdjust="spacingAndGlyphs"> neco</text> -->
@@ -314,22 +379,25 @@
                 <line x1={daysWidth * index + hoursNumberwidth} y1="0" x2={daysWidth * index + hoursNumberwidth}
                       y2={daysLinesHeight} style="stroke:rgb(0,0,0);stroke-width:0.5"/>
             {/each}
-
-            {#each Object.entries($plan) as [day, slots], index (day)}
-                {#each slots as slot, i}
-                    <rect
-                            x={dayToXCoordinate(day) + 1}
-                            y={timeToYCoordinate(slot.start) + 1}
-                            rx="3"
-                            ry="3"
-                            width={daysWidth - 10}
-                            height={durationToLength(slot.duration) - 2}
-                            style={slot.isGenerated ? "fill:rgb(100,116,139);stroke:rgb(255,255,255)" : "fill:rgb(50,50,50);stroke:rgb(255,255,255)"}
-                    />
-                    <text x={dayToXCoordinate(day) + 5} y={timeToYCoordinate(slot.start) + 25}>{slot.rule}
-                        :{getAcualShefAndWokrFromDistribution(slot.distribution)}</text>
+            {#if plan !== null }
+                {#each Object.entries(plan) as [day, slots], index (day)}
+                    {#each slots as slot, i}
+                        <rect
+                                x={dayToXCoordinate(day) + 1}
+                                y={timeToYCoordinate(slot.start) + 1}
+                                rx="3"
+                                ry="3"
+                                width={daysWidth - 10}
+                                height={durationToLength(slot.duration) - 2}
+                                style={slot.isGenerated ? "fill:rgb(100,116,139);stroke:rgb(255,255,255)" : "fill:rgb(50,50,50);stroke:rgb(255,255,255)"}
+                        />
+                        {#if slot.isGenerated}
+                            <text x={dayToXCoordinate(day) + 5} y={timeToYCoordinate(slot.start) + 25}>{slot.rule}
+                                :{slot.shelfAndWork}</text>
+                        {/if}
+                    {/each}
                 {/each}
-            {/each}
+            {/if}
         </svg>
     </div>
 
@@ -357,7 +425,7 @@
                 type="button"
                 class="btn btn-sm m-2 variant-filled bg-green-500"
                 on:click={() => {
-        addSlot();
+        addSlotAndRefresh();
       }}
         >
             <svg class="p-1 w-6 h-6 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
