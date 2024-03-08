@@ -89,15 +89,20 @@
     let plan = null;
 
     const getPlanFromStoreOrDatabase = () => {
-        console.log("plans: " + JSON.stringify($plans));
-        //const key = "22";
-        const key = "" + $year + $weekNumber;
-        if ($plans.hasOwnProperty(key)) {
+        try {
+            console.log("plans: " + JSON.stringify($plans));
+            //const key = "22";
+            const key = "" + $year + $weekNumber;
+            if ($plans.hasOwnProperty(key)) {
+                plan = $plans[key];
+                return;
+            }
+
+            $plans[key] = {};
             plan = $plans[key];
-            return;
+        } catch (err) {
+            console.log("errorr: " + err.message);
         }
-        //$plans[key] = {};
-        //plan = $plans[key];
     }
 
     // const getPlanFromStoreOrDatabase = () => {
@@ -373,10 +378,12 @@
       }}
             >
 
-                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 19V5m0 14-4-4m4 4 4-4"/>
                 </svg>
-               Load Previus Plan
+                Load Previus Plan
             </button
             >
 
