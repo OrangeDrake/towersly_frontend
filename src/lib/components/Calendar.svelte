@@ -33,7 +33,6 @@
     } from "$lib/stores/calendarStore.js";
 
 
-
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
 
     export let gapiLoaded;
@@ -90,15 +89,15 @@
     let plan = null;
 
     const getPlanFromStoreOrDatabase = () => {
-        console.log("plans: " +JSON.stringify($plans));
+        console.log("plans: " + JSON.stringify($plans));
         //const key = "22";
         const key = "" + $year + $weekNumber;
         if ($plans.hasOwnProperty(key)) {
             plan = $plans[key];
             return;
         }
-        $plans[key] = {};
-        plan = $plans[key];
+        //$plans[key] = {};
+        //plan = $plans[key];
     }
 
     // const getPlanFromStoreOrDatabase = () => {
@@ -117,7 +116,6 @@
     //     plan = ($plans)[key];
     //
     // }
-
 
 
     // const getGoogleEvents = async () => {
@@ -210,13 +208,11 @@
     };
 
     const changeYear = () => {
-        if (choosenYear === "Current"){
+        if (choosenYear === "Current") {
             $year = new Date().getFullYear();
-        }
-        else if (choosenYear === "Previous"){
+        } else if (choosenYear === "Previous") {
             $year = new Date().getFullYear() - 1;
-        }
-        else if (choosenYear === "Next"){
+        } else if (choosenYear === "Next") {
             $year = new Date().getFullYear() + 1;
         }
         getPlanFromStoreOrDatabase();
@@ -254,7 +250,6 @@
     //     $plans[key] = {};
     //     plan = $plans[key];
     // }
-
 
 
     // const getAcualShefAndWokrFromDistribution = (distribution) => {
@@ -351,11 +346,48 @@
 
         </div>
 
+        <div class="flex p-2 m-1 w-30 bg-zinc-400">
+
+            <button
+
+                    type="button"
+                    class="btn m-1 btn-sm variant-filled rounded bg-green-500"
+                    on:click={() => {
+        generatePlanAndRefresh();
+      }}
+            >
+                <svg class="w-7 h-7 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                     fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 6v13m0-13 4 4m-4-4-4 4"/>
+                </svg>
+
+                <span class="text-lg">Save Plan</span></button
+            >
+
+            <button
+                    type="button"
+                    class="btn btn-sm m-1 variant-filled bg-amber-800"
+                    on:click={() => {
+        clearGeneratedAndRefresh($plan);
+      }}
+            >
+
+                <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V5m0 14-4-4m4 4 4-4"/>
+                </svg>
+               Load Previus Plan
+            </button
+            >
+
+        </div>
+
+
         <div class="flex flex-nowrap px-1">
             <div class="p-1 m-1 w-30 bg-zinc-200">
                 <div class="text-lg pl-1 pr-1 ">Week number:</div>
                 <div class="w-14"><input bind:value={$weekNumber} class="input rounded pl-1"
-                                         type="number" min="0" step="1"on:change={onChangeWeekNumber}
+                                         type="number" min="0" step="1" on:change={onChangeWeekNumber}
 
                 /></div>
             </div>
@@ -363,9 +395,12 @@
                 <div class="flex text-lg mr-1">Year:</div>
                 <div>
                     <RadioGroup class="flex px-1 py-1">
-                        <RadioItem bind:group={choosenYear} value={"Previous"}  on:change={() => changeYear()}>Previous</RadioItem>
-                        <RadioItem bind:group={choosenYear} value={"Current"} on:change={() => changeYear()}>Current</RadioItem>
-                        <RadioItem bind:group={choosenYear} value={"Next"} on:change={() => changeYear()}>Next</RadioItem>
+                        <RadioItem bind:group={choosenYear} value={"Previous"} on:change={() => changeYear()}>Previous
+                        </RadioItem>
+                        <RadioItem bind:group={choosenYear} value={"Current"} on:change={() => changeYear()}>Current
+                        </RadioItem>
+                        <RadioItem bind:group={choosenYear} value={"Next"} on:change={() => changeYear()}>Next
+                        </RadioItem>
                     </RadioGroup>
                 </div>
             </div>

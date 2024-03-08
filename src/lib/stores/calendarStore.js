@@ -290,7 +290,7 @@ export const generatePlan = () => {
                 const startInMinutes = hoursWithMinutesToMinutes(rules[j].start);
                 const durationInMinutes = hoursWithMinutesToMinutes(rules[j].duration);
                 const slotToPlace = {
-                    distribution: ordered_distributions_value[i],
+                    //distribution: ordered_distributions_value[i],
                     shelfAndWork: getAcualShefAndWokrFromDistribution(ordered_distributions_value[i]),
                     rule: rules[j].name,
                     start: startInMinutes,
