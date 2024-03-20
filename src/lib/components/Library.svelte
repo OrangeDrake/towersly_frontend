@@ -1,7 +1,5 @@
 <script>
     import {ordered_shelves, numberOfVisibleWork, workDisplayChange} from "$lib/stores/libraryStore.js";
-    import {toastStore} from "@skeletonlabs/skeleton";
-    import {popup} from "@skeletonlabs/skeleton";
     import {keycloak} from "$lib/stores/keycloakStore.js";
     import {storePopup} from "@skeletonlabs/skeleton";
     import {computePosition, autoUpdate, offset, shift, flip, arrow} from "@floating-ui/dom";
@@ -11,19 +9,11 @@
     import TimeTracing from "$lib/components/TimeTracing.svelte";
     import {reDrawCurves} from "$lib/stores/connectionStore.js";
     import {PUBLIC_API_URL} from "$env/static/public";
+    import {toast, defaultToastStore} from "$lib/shared/DefaultToast.svelte"
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
 
     const flipDurationMs = 300;
-
-    let toastShelf = {
-        message: "",
-        hideDismiss: true,
-        timeout: 10000,
-        background: "bg-green-500",
-        position: "r",
-        padding: "p-4",
-    };
 
     let shelves;
     let shelvesToDisplay;
@@ -121,6 +111,11 @@
 
         }
 
+        if (movedShelf == null) {
+            rollbackMove(shelfRollback);
+            return;
+        }
+
         shelfRollback.push({id: movedShelf.id, rank: movedShelf.rank});
         movedShelf.rank = newMovedRank;
         shelvesUpdate.shelves.push({id: movedShelf.id, rank: movedShelf.rank});
@@ -148,31 +143,30 @@
         });
 
         if (!response.ok) {
-            console.log("response: " + response);
-            console.log("update works failed");
-            toastShelf.background = "bg-yellow-200";
-            toastShelf.message = "Works move failed";
-            toastStore.trigger(toastShelf);
-            //shelf.works = works_backup;
-            //invalidateAll();
-            console.log("shelfRollback: " + JSON.stringify(shelfRollback));
-            for (let i = 0; i < shelfRollback.length; i++) {
-                for (let j = 0; j < shelves.length; j++) {
-                    if (shelves[j].id == shelfRollback[i].id) {
-                        shelves[j].rank = shelfRollback[i].rank;
-                        break;
-                    }
-                }
-            }
-            $reDrawCurves = "work moved: " + new Date().getTime();
+            rollbackMove(shelfRollback);
             return;
         }
 
-        toastShelf.background = "bg-green-500";
-        toastShelf.message = "Work " + movedShelf.name + " moved";
-        toastStore.trigger(toastShelf);
+        toast.background = "bg-green-500";
+        toast.message = "Work " + movedShelf.name + " moved";
+        defaultToastStore.trigger(toast);
         $reDrawCurves = "shelves moved: " + new Date().getTime();
 
+    }
+
+    const rollbackMove = (shelfRollback) => {
+        toast.background = "bg-yellow-200";
+        toast.message = "Shelves move failed";
+        defaultToastStore.trigger(toast);
+        for (let i = 0; i < shelfRollback.length; i++) {
+            for (let j = 0; j < shelves.length; j++) {
+                if (shelves[j].id == shelfRollback[i].id) {
+                    shelves[j].rank = shelfRollback[i].rank;
+                    break;
+                }
+            }
+        }
+        $reDrawCurves = "shelves moved: " + new Date().getTime();
     }
 
 </script>
@@ -197,10 +191,12 @@
     </div>
     <div class="flex p-3 bg-slate-300">
         <TimeTracing/>
+        <div>
         <span class="flex-initial align-bottom text-lg pl-1 pr-1 pt-3">Display Works:</span>
         <span class="flex-initial w-12 pt-3"><input bind:value={$numberOfVisibleWork} class="input rounded pl-1"
                                                     type="number" min="0" step="1"
                                                     on:change={onChangeNumberOfVisibleWork}/></span>
+        </div>
     </div>
 
     {#if shelvesToDisplay == null}
