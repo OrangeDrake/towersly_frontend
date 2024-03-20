@@ -31,6 +31,8 @@
         year,
         plansMap
     } from "$lib/stores/calendarStore.js";
+    import {keycloak} from "$lib/stores/keycloakStore.js";
+    import {PUBLIC_API_URL} from "$env/static/public";
 
 
     storePopup.set({computePosition, autoUpdate, offset, shift, flip, arrow});
@@ -103,6 +105,10 @@
         } catch (err) {
             console.log("errorr: " + err.message);
         }
+    }
+
+    const getPlanFromDatabase = async () => {
+        console.log("load plan from database");
     }
 
     // const getPlanFromStoreOrDatabase = () => {
@@ -211,6 +217,20 @@
     const onChangeWeekNumber = () => {
         getPlanFromStoreOrDatabase();
     };
+
+    const savePlan = async () => {
+        console.log("in add plan")
+        const token_value = "Bearer " + $keycloak.token;
+        const key = "" + $year + $weekNumber;
+        const response = await fetch(PUBLIC_API_URL + "/calendar/addplan?" + new URLSearchParams({'yearAndWeekNumber': key}), {
+            method: "POST",
+            headers: {
+                Authorization: token_value,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({plan: $plans[key]}),
+        });
+    }
 
     const changeYear = () => {
         if (choosenYear === "Current") {
@@ -356,15 +376,15 @@
             <button
 
                     type="button"
-                    class="btn m-1 btn-sm variant-filled rounded bg-green-500"
+                    class="btn pl-0 m-1 btn-sm variant-filled rounded bg-green-600"
                     on:click={() => {
-        generatePlanAndRefresh();
+        savePlan();
       }}
             >
                 <svg class="w-7 h-7 text-white dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                      fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 6v13m0-13 4 4m-4-4-4 4"/>
+                          d="M14 6v13m0-13 4 4m-4-4-4 4"/>
                 </svg>
 
                 <span class="text-lg">Save Plan</span></button
@@ -374,7 +394,7 @@
                     type="button"
                     class="btn btn-sm m-1 variant-filled bg-amber-800"
                     on:click={() => {
-        clearGeneratedAndRefresh($plan);
+        savePlan();
       }}
             >
 
